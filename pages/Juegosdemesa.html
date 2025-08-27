@@ -9,7 +9,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 </head>
@@ -26,7 +26,8 @@
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             Categorías
                         </a>
                         <ul class="dropdown-menu">
@@ -44,7 +45,7 @@
                 </ul>
 
                 <ul class="navbar-nav ms-auto d-flex flex-row align-items-center">
-                     <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="#">Iniciar Sesión</a>
                     </li>
                     <li class="nav-item">
@@ -54,10 +55,10 @@
                 <form class="d-flex mx-lg-2" role="search">
                     <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar">
                     <button class="btn btn-outline-secondary" type="submit">
-                         <img src="/img/Search.png" alt="Buscar">
+                        <img src="/img/Search.png" alt="Buscar">
                     </button>
                 </form>
-                 <a class="nav-link" href="#">
+                <a class="nav-link" href="#">
                     <img src="/img/Basket_alt_3_fill.png" alt="Carrito">
                 </a>
             </div>
@@ -77,11 +78,13 @@
                 <div class="accordion" id="filtersAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTiendas">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTiendas">
                                 Tiendas
                             </button>
                         </h2>
-                        <div id="collapseTiendas" class="accordion-collapse collapse show" data-bs-parent="#filtersAccordion">
+                        <div id="collapseTiendas" class="accordion-collapse collapse show"
+                            data-bs-parent="#filtersAccordion">
                             <div class="accordion-body">
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="checkbox" id="checkInternet">
@@ -100,7 +103,8 @@
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMarcas">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseMarcas">
                                 Marcas
                             </button>
                         </h2>
@@ -112,11 +116,13 @@
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrecios">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapsePrecios">
                                 Rango de precios
                             </button>
                         </h2>
-                        <div id="collapsePrecios" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
+                        <div id="collapsePrecios" class="accordion-collapse collapse"
+                            data-bs-parent="#filtersAccordion">
                             <div class="accordion-body">
                                 <p>Filtros de precios...</p>
                             </div>
@@ -147,35 +153,20 @@
                 </div>
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
-                    
                     <div class="col">
-                        <div class="card h-100 position-relative shadow-sm">
-                            <div class="position-absolute top-0 end-0 p-3 form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="compareCheckProduct1">
-                                <label class="form-check-label text-muted" for="compareCheckProduct1">Comparar</label>
-                            </div>
-                            <div class="card-body d-flex flex-column pt-5">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column p-4">
                                 <div class="text-center">
-                                    <img src="/img/play5.webp" class="img-fluid" alt="Producto">
-                                    <img src="https://via.placeholder.com/100x30.png?text=24+Cuotas" class="mt-2" alt="24 cuotas sin interés">
+                                    <img src="/img/play5.webp" class="img-fluid" alt="Producto"
+                                        style="max-height: 200px;">
                                 </div>
-                                <div class="mt-3">
+                                <div class="mt-3 flex-grow-1">
                                     <h6 class="card-subtitle text-muted fw-normal">Microsoft®</h6>
                                     <h5 class="card-title fw-bolder mt-1">Código Digital Suscripción Xbox Game Pass</h5>
-                                    <div class="d-flex justify-content-between text-muted small mt-2">
-                                        <span>ID 39789</span>
-                                        <span>+100 Unid.</span>
-                                    </div>
                                 </div>
-                                <div class="d-flex align-items-end my-3">
-                                    <div class="me-3">
-                                        <h4 class="fw-bolder mb-0">$10.690</h4>
-                                        <small class="text-muted">Transferencia</small>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-normal text-muted mb-0">$10.990</h6>
-                                        <small class="text-muted">Otros medios de pagos</small>
-                                    </div>
+                                <div class="my-2">
+                                    <h4 class="fw-bolder mb-0">$10.690</h4>
+                                    <small class="text-muted">Transferencia</small>
                                 </div>
                                 <a href="#" class="btn btn-dark w-100 mt-auto fw-bold">
                                     <i class="bi bi-cart-plus-fill me-2"></i>Agregar al carro
@@ -185,33 +176,19 @@
                     </div>
 
                     <div class="col">
-                        <div class="card h-100 position-relative shadow-sm">
-                            <div class="position-absolute top-0 end-0 p-3 form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="compareCheckProduct2">
-                                <label class="form-check-label text-muted" for="compareCheckProduct2">Comparar</label>
-                            </div>
-                            <div class="card-body d-flex flex-column pt-5">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column p-4">
                                 <div class="text-center">
-                                    <img src="/img/play5.webp" class="img-fluid" alt="Producto">
-                                    <img src="https://via.placeholder.com/100x30.png?text=24+Cuotas" class="mt-2" alt="24 cuotas sin interés">
+                                    <img src="/img/play5.webp" class="img-fluid" alt="Producto"
+                                        style="max-height: 200px;">
                                 </div>
-                                <div class="mt-3">
+                                <div class="mt-3 flex-grow-1">
                                     <h6 class="card-subtitle text-muted fw-normal">Microsoft®</h6>
                                     <h5 class="card-title fw-bolder mt-1">Código Digital Suscripción Xbox Game Pass</h5>
-                                    <div class="d-flex justify-content-between text-muted small mt-2">
-                                        <span>ID 39789</span>
-                                        <span>+100 Unid.</span>
-                                    </div>
                                 </div>
-                                <div class="d-flex align-items-end my-3">
-                                    <div class="me-3">
-                                        <h4 class="fw-bolder mb-0">$10.690</h4>
-                                        <small class="text-muted">Transferencia</small>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-normal text-muted mb-0">$10.990</h6>
-                                        <small class="text-muted">Otros medios de pagos</small>
-                                    </div>
+                                <div class="my-2">
+                                    <h4 class="fw-bolder mb-0">$10.690</h4>
+                                    <small class="text-muted">Transferencia</small>
                                 </div>
                                 <a href="#" class="btn btn-dark w-100 mt-auto fw-bold">
                                     <i class="bi bi-cart-plus-fill me-2"></i>Agregar al carro
@@ -221,33 +198,19 @@
                     </div>
 
                     <div class="col">
-                        <div class="card h-100 position-relative shadow-sm">
-                            <div class="position-absolute top-0 end-0 p-3 form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="compareCheckProduct3">
-                                <label class="form-check-label text-muted" for="compareCheckProduct3">Comparar</label>
-                            </div>
-                            <div class="card-body d-flex flex-column pt-5">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column p-4">
                                 <div class="text-center">
-                                    <img src="/img/play5.webp" class="img-fluid" alt="Producto">
-                                    <img src="https://via.placeholder.com/100x30.png?text=24+Cuotas" class="mt-2" alt="24 cuotas sin interés">
+                                    <img src="/img/play5.webp" class="img-fluid" alt="Producto"
+                                        style="max-height: 200px;">
                                 </div>
-                                <div class="mt-3">
+                                <div class="mt-3 flex-grow-1">
                                     <h6 class="card-subtitle text-muted fw-normal">Microsoft®</h6>
                                     <h5 class="card-title fw-bolder mt-1">Código Digital Suscripción Xbox Game Pass</h5>
-                                    <div class="d-flex justify-content-between text-muted small mt-2">
-                                        <span>ID 39789</span>
-                                        <span>+100 Unid.</span>
-                                    </div>
                                 </div>
-                                <div class="d-flex align-items-end my-3">
-                                    <div class="me-3">
-                                        <h4 class="fw-bolder mb-0">$10.690</h4>
-                                        <small class="text-muted">Transferencia</small>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-normal text-muted mb-0">$10.990</h6>
-                                        <small class="text-muted">Otros medios de pagos</small>
-                                    </div>
+                                <div class="my-2">
+                                    <h4 class="fw-bolder mb-0">$10.690</h4>
+                                    <small class="text-muted">Transferencia</small>
                                 </div>
                                 <a href="#" class="btn btn-dark w-100 mt-auto fw-bold">
                                     <i class="bi bi-cart-plus-fill me-2"></i>Agregar al carro
@@ -255,10 +218,10 @@
                             </div>
                         </div>
                     </div>
-                    
                 </div>
             </main>
         </div>
     </div>
 </body>
+
 </html>
