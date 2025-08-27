@@ -51,3 +51,8 @@ table {
     background-color: black;
     color: white; /* Para asegurar que el texto sea visible */
 }
+
+.body-2 {
+    background-color: rgb(245, 245, 245);
+    color: black; /* Para asegurar que el texto sea visible */
+}
