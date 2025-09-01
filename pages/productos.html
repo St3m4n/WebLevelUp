@@ -4,46 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos</title>
+    <title>Productos - Level-Up Gamer</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <link rel="stylesheet" href="/css/style2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css">
 
 </head>
 
 <body>
-
-    <nav class="navbar navbar-expand-lg border-bottom py-3">
-        <div class="container"> <a class="navbar-brand" href="#">
-                <img src="/img/logo.png" alt="Logo" style="width: 40px;">
-            </a>
-
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Level-UP Gamer</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
-
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="productos.html">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Blogs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
-
-                    <form class="d-flex" role="search">
-                        <div class="input-group">
-                            <input class="form-control" type="search" placeholder="Buscar..." aria-label="Buscar">
-                            <button class="btn btn-outline-secondary" type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
-
                     <div class="nav-item dropdown ms-3">
                         <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle fs-4"></i>
@@ -53,149 +43,170 @@
                             <li><a class="dropdown-item" href="#">Registrarse</a></li>
                         </ul>
                     </div>
-
-                    <a href="#" class="nav-link ms-3">
-                        <i class="bi bi-cart fs-4"></i>
-                    </a>
-
+                    <a href="#" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!--unete a level up-->
-    <div class="p-5 text-center bg-light" style="color: #1E90FF; background-color: gray">
-        <h1 class="text-center">Productos</h1>
+    <div class="text-center welcome-section">
+        <h1>Nuestros Productos</h1>
+        <p>Explora todas nuestras categorías disponibles. 🎮</p>
     </div>
-
 
     <div class="container my-5">
-        <div class="row g-4">
-
-            <div class="col-lg-4 col-md-6">
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Juegos de Mesa</h5>
-                        <i class="bi bi-dice-5-fill category-icon"></i>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Juegos de Mesa</h5>
+                            <i class="bi bi-dice-5-fill category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Catan</a></li>
+                            <li><a href="#">Carcassonne</a></li>
+                        </ul>
                     </div>
-                    <ul>
-                        <li><a href="#">Catan</a></li>
-                        <li><a href="#">Carcassonne</a></li>
-                    </ul>
-                </div>
-                <hr>
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Accesorios</h5>
-                        <i class="bi bi-joystick category-icon"></i>
-                    </div>
-                    <ul>
-                        <li><a href="#">Controlador Inalámbrico Xbox Series X</a></li>
-                        <li><a href="#">Auriculares Gamer HyperX Cloud II</a></li>
-                    </ul>
-                </div>
-                <hr>
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Consolas</h5>
-                        <i class="bi bi-controller category-icon"></i>
-                    </div>
-                    <ul>
-                        <li><a href="#">PlayStation 5</a></li>
-                    </ul>
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6">
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Computadores Gamers</h5>
-                        <i class="bi bi-pc-display-horizontal category-icon"></i>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Accesorios</h5>
+                            <i class="bi bi-joystick category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Controlador Inalámbrico Xbox</a></li>
+                            <li><a href="#">Auriculares HyperX Cloud II</a></li>
+                        </ul>
                     </div>
-                    <ul>
-                        <li><a href="#">PC Gamer ASUS ROG Strix</a></li>
-                    </ul>
-                </div>
-                <hr>
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Sillas Gamers</h5>
-                        <i class="bi bi-person-workspace category-icon"></i>
-                    </div>
-                    <ul>
-                        <li><a href="#">Silla Gamer Secretlab Titan</a></li>
-                    </ul>
-                </div>
-                <hr>
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Mouse</h5>
-                        <i class="bi bi-mouse2-fill category-icon"></i>
-                    </div>
-                    <ul>
-                        <li><a href="#">Mouse Gamer Logitech G502 HERO</a></li>
-                    </ul>
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6">
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Mousepad</h5>
-                        <i class="bi bi-aspect-ratio-fill category-icon"></i>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Consolas</h5>
+                            <i class="bi bi-controller category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">PlayStation 5</a></li>
+                        </ul>
                     </div>
-                    <ul>
-                        <li><a href="#">Mousepad Razer Goliathus Extended Chroma</a></li>
-                    </ul>
-                </div>
-                <hr>
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Poleras Personalizadas</h5>
-                        <i class="bi bi-person-bounding-box category-icon"></i>
-                    </div>
-                    <ul>
-                        <li><a href="#">Polera Gamer Personalizada 'Level-Up'</a></li>
-                    </ul>
-                </div>
-                <hr>
-                <div class="category-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Polerones Gamers Personalizados</h5>
-                        <i class="bi bi-person-square category-icon"></i>
-                    </div>
-                    <ul>
-                        <li><a href="#">(Próximamente)</a></li>
-                    </ul>
                 </div>
             </div>
 
-        </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Computadores Gamers</h5>
+                            <i class="bi bi-pc-display-horizontal category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">PC Gamer ASUS ROG Strix</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Sillas Gamers</h5>
+                            <i class="bi bi-person-workspace category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Silla Gamer Secretlab Titan</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Mouse</h5>
+                            <i class="bi bi-mouse2-fill category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Mouse Logitech G502 HERO</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Mousepad</h5>
+                            <i class="bi bi-aspect-ratio-fill category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Razer Goliathus Extended</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Poleras Personalizadas</h5>
+                            <i class="bi bi-person-bounding-box category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Polera 'Level-Up'</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Polerones Gamers</h5>
+                            <i class="bi bi-person-square category-icon"></i>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li><a href="#">(Próximamente)</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            </div>
     </div>
+
+    <footer class="container-fluid py-3 mt-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="mb-3 mb-md-0">
+                <a href="index.html" class="navbar-brand">Level-UP Gamer</a>
+            </div>
+            <div class="nav mb-3 mb-md-0">
+                <a class="nav-link" href="index.html">Inicio</a>
+                <a class="nav-link" href="productos.html">Productos</a>
+                <a class="nav-link" href="#">Nosotros</a>
+                <a class="nav-link" href="#">Blogs</a>
+                <a class="nav-link" href="#">Contacto</a>
+            </div>
+            <div class="d-flex">
+                <a href="#" class="nav-link fs-4"><i class="bi bi-twitch"></i></a>
+                <a href="#" class="nav-link fs-4"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="nav-link fs-4"><i class="bi bi-discord"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
-<footer class="py-5 my-5 border-top m-5">
-    <div class="row">
-
-        <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
-            <h5 class="fw-bold">Level-UP Gamer</h5>
-        </div>
-
-        <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 d-flex align-items-center justify-content-lg-center">
-            <a class="nav-link" href="index.html">Inicio</a>
-            <span class="mx-3 text-muted">|</span>
-            <a class="nav-link" href="productos.html">Productos</a>
-            <span class="mx-3 text-muted">|</span>
-            <a class="nav-link" href="nosotros.html">Nosotros</a>
-            <span class="mx-3 text-muted">|</span>
-            <a class="nav-link" href="blogs.html">Blogs</a>
-            <span class="mx-3 text-muted">|</span>
-            <a class="nav-link" href="contacto.html">Contacto</a>
-        </div>
-
-
-    </div>
-</footer>
-
 
 </html>
