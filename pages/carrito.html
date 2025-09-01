@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacto - Level-Up Gamer</title>
+    <title>Carrito de Compras - Level-Up Gamer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -19,7 +19,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Level-UP Gamer</a>
+            <a class="navbar-brand" href="#">Level-UP Gamer</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -48,87 +48,78 @@
         </div>
     </nav>
 
+
     <div class="text-center welcome-section">
-        <h1>Contáctanos</h1>
-        <p>Estamos aquí para ayudarte con tus dudas o darte soporte técnico. 🛠️</p>
+        <h1>Carrito de Compras</h1>
+        <p>Revisa tus productos y prepárate para el siguiente nivel. 🛒</p>
     </div>
 
     <div class="container my-5">
         <div class="row g-5">
-            <div class="col-lg-5">
-                <h2 class="mb-4">Información Directa</h2>
-                <div class="d-flex align-items-center mb-3">
-                    <i class="bi bi-envelope-fill fs-3 me-3 text-neon-blue"></i>
-                    <div>
-                        <strong>Email</strong><br>
-                        <span class="text-secondary">contacto@levelupgamer.cl</span>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center mb-3">
-                    <i class="bi bi-telephone-fill fs-3 me-3 text-neon-blue"></i>
-                    <div>
-                        <strong>Teléfono</strong><br>
-                        <span class="text-secondary">+56 9 1234 5678</span>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center mb-4">
-                    <i class="bi bi-clock-fill fs-3 me-3 text-neon-blue"></i>
-                    <div>
-                        <strong>Horario de Atención</strong><br>
-                        <span class="text-secondary">Lunes a Viernes de 09:00 a 18:00 hrs.</span>
-                    </div>
-                </div>
-
-                <hr class="contact-hr">
-
-                <h4 class="mt-4">Soporte Técnico</h4>
-                <p class="text-secondary">Para soporte técnico inmediato, contáctanos directamente por WhatsApp.</p>
-                <a href="https://wa.me/56912345678" target="_blank" class="btn btn-neon w-100">
-                    <i class="bi bi-whatsapp me-2"></i>Chatear por WhatsApp
-                </a>
-            </div>
-
-            <div class="col-lg-7">
+            <div class="col-lg-8">
                 <div class="card p-4">
-                    <h2 class="mb-4">Envíanos un Mensaje</h2>
-                    <form>
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre Completo</label>
-                            <input type="text" class="form-control" id="nombre" required>
+                    
+                    <div class="cart-item-row">
+                        <img src="/img/play5.webp" alt="PlayStation 5" class="cart-item-img">
+                        <div class="cart-item-details">
+                            <h5 class="card-title mb-1">PlayStation 5</h5>
+                            <p class="card-text text-secondary mb-2">Consola</p>
+                            <div class="quantity-selector">
+                                <button class="btn btn-sm btn-outline-secondary">-</button>
+                                <input type="number" class="form-control form-control-sm text-center" value="1">
+                                <button class="btn btn-sm btn-outline-secondary">+</button>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="email" required>
+                        <div class="cart-item-price">
+                            <p class="mb-0">$549.990</p>
+                            <button class="btn btn-remove-item"><i class="bi bi-trash3-fill"></i></button>
                         </div>
-                        <div class="mb-3">
-                            <label for="asunto" class="form-label">Asunto</label>
-                            <input type="text" class="form-control" id="asunto" required>
+                    </div>
+                    
+                    <hr class="cart-hr">
+                    
+                    <div class="cart-item-row">
+                        <img src="/img/audifonos.jpg" alt="HyperX Cloud II" class="cart-item-img">
+                        <div class="cart-item-details">
+                            <h5 class="card-title mb-1">Auriculares Gamer HyperX Cloud II</h5>
+                            <p class="card-text text-secondary mb-2">Accesorios</p>
+                            <div class="quantity-selector">
+                                <button class="btn btn-sm btn-outline-secondary">-</button>
+                                <input type="number" class="form-control form-control-sm text-center" value="2">
+                                <button class="btn btn-sm btn-outline-secondary">+</button>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="mensaje" class="form-label">Mensaje</label>
-                            <textarea class="form-control" id="mensaje" rows="5" required></textarea>
+                        <div class="cart-item-price">
+                            <p class="mb-0">$79.990</p>
+                            <button class="btn btn-remove-item"><i class="bi bi-trash3-fill"></i></button>
                         </div>
-                        <button type="submit" class="btn btn-add-cart w-100">Enviar Mensaje</button>
-                    </form>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card p-4">
+                    <h2 class="mb-4">Resumen del Pedido</h2>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Subtotal</span>
+                        <span>$709.970</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-secondary">Despacho</span>
+                        <span>$4.990</span>
+                    </div>
+                    <hr class="cart-hr">
+                    <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
+                        <span>Total</span>
+                        <span>$714.960</span>
+                    </div>
+                    <button class="btn btn-neon w-100">Proceder al Pago</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container my-5">
-        <div class="text-center mb-4">
-            <h2>Encuéntranos en Eventos</h2>
-            <p class="text-secondary">¡Gana puntos LevelUp visitándonos en los principales eventos gamers del país!</p>
         </div>
-        <div class="card p-3">
-            <div class="ratio ratio-16x9">
-                <iframe class="map-iframe"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3401.763462840674!2d-71.5541606849182!3d-33.03362698084478!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662390cc42838ed%3A0x4cda48f3521a0a40!2sDuoc%20UC%3A%20Sede%20Vi%C3%B1a%20del%20Mar!5e0!3m2!1ses-419!2scl!4v1662586737248!5m2!1ses-419!2scl"
-                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
-            </div>
-        </div>
-    </div>
 
     <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
@@ -150,5 +141,4 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

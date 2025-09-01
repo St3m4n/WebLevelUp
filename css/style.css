@@ -188,3 +188,84 @@ footer .bi:hover { transform: scale(1.2); }
     border-radius: 5px;
     filter: invert(100%) grayscale(80%) brightness(95%) contrast(100%);
 }
+
+/* --- NUEVO: Página de Login --- */
+.form-text {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+}
+.form-text:hover {
+    color: var(--color-accent-blue);
+}
+
+.form-check-input {
+    background-color: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.form-check-input:checked {
+    background-color: var(--color-accent-neon);
+    border-color: var(--color-accent-neon);
+}
+
+.special-offer-card {
+    border-color: var(--color-accent-neon);
+    background: radial-gradient(ellipse at center, rgba(57, 255, 20, 0.1), transparent 80%);
+}
+
+
+/* --- NUEVO: Página del Carrito de Compras --- */
+.cart-item-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cart-item-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.cart-item-details {
+    flex-grow: 1;
+}
+
+.cart-item-price {
+    text-align: right;
+}
+
+.quantity-selector {
+    display: flex;
+    width: 120px;
+}
+
+.quantity-selector .form-control {
+    background-color: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+    border-radius: 0;
+}
+
+.quantity-selector .btn {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary);
+}
+
+.btn-remove-item {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 1.2rem;
+    padding: 0;
+    transition: color 0.2s ease-in-out;
+}
+
+.btn-remove-item:hover {
+    color: #dc3545; /* Rojo de Bootstrap para eliminar */
+}
+
+.cart-hr {
+    border-color: rgba(30, 144, 255, 0.2);
+    margin: 1.5rem 0;
+}
