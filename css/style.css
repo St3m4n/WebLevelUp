@@ -300,3 +300,60 @@ footer .bi:hover { transform: scale(1.2); }
     color: var(--color-text-primary);
     box-shadow: 0 0 15px rgba(30, 144, 255, 0.5);
 }
+
+/* --- NUEVO: Página de Producto Detalle --- */
+.breadcrumb-item a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+}
+.breadcrumb-item a:hover {
+    color: var(--color-accent-neon);
+}
+.breadcrumb-item.active {
+    color: var(--color-text-primary);
+}
+
+.product-title {
+    font-size: 3rem;
+}
+
+.price-highlight {
+    color: var(--color-accent-neon);
+}
+
+.product-thumbnail {
+    cursor: pointer;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    border-width: 2px;
+}
+.product-thumbnail:hover, .product-thumbnail.active {
+    opacity: 1;
+    border-color: var(--color-accent-blue);
+}
+
+.btn-social {
+    color: var(--color-text-secondary);
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.btn-social:hover {
+    color: var(--color-accent-blue);
+    transform: scale(1.2);
+}
+
+/* Estilos para las pestañas */
+.nav-tabs .nav-link {
+    background-color: transparent;
+    border-color: rgba(30, 144, 255, 0.3);
+    color: var(--color-text-secondary);
+}
+.nav-tabs .nav-link.active {
+    background-color: rgba(30, 144, 255, 0.1);
+    border-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+}
