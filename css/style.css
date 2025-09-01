@@ -269,3 +269,34 @@ footer .bi:hover { transform: scale(1.2); }
     border-color: rgba(30, 144, 255, 0.2);
     margin: 1.5rem 0;
 }
+
+
+/* --- NUEVO: Login de Administrador --- */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.divider:not(:empty)::before {
+    margin-right: .5em;
+}
+.divider:not(:empty)::after {
+    margin-left: .5em;
+}
+
+.btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+.btn-outline-light:hover {
+    border-color: var(--color-accent-blue);
+    background-color: rgba(30, 144, 255, 0.1);
+    color: var(--color-text-primary);
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.5);
+}
