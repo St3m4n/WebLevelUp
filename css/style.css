@@ -74,7 +74,7 @@ h1, h2 {
     box-shadow: 0 0 25px rgba(57, 255, 20, 0.8);
 }
 
-/* --- Tarjetas (Productos y Categorías) --- */
+/* --- Tarjetas (Estilo General) --- */
 .card {
     background: rgba(26, 26, 26, 0.6);
     backdrop-filter: blur(10px);
@@ -111,22 +111,10 @@ h1, h2 {
 footer { 
     border-top: 1px solid rgba(30, 144, 255, 0.3) !important; 
 }
-
-footer .nav-link { 
-    color: var(--color-text-secondary); 
-}
-
-footer .nav-link:hover, footer .bi:hover {
-    color: var(--color-accent-neon);
-}
-
-footer .bi { 
-    transition: all 0.2s ease-in-out; 
-}
-
-footer .bi:hover { 
-    transform: scale(1.2); 
-}
+footer .nav-link { color: var(--color-text-secondary); }
+footer .nav-link:hover, footer .bi:hover { color: var(--color-accent-neon); }
+footer .bi { transition: all 0.2s ease-in-out; }
+footer .bi:hover { transform: scale(1.2); }
 
 /* --- Página de Productos --- */
 .category-icon {
@@ -134,16 +122,14 @@ footer .bi:hover {
     color: var(--color-accent-blue);
     text-shadow: 0 0 10px var(--color-accent-blue);
 }
-
 .category-card ul li a {
     color: var(--color-text-secondary);
     text-decoration: none;
     transition: all 0.2s ease-in-out;
 }
-
 .category-card ul li a:hover {
     color: var(--color-accent-neon);
-    padding-left: 5px; /* Efecto de desplazamiento al pasar el mouse */
+    padding-left: 5px;
 }
 
 /* --- Página Nosotros --- */
@@ -151,4 +137,54 @@ footer .bi:hover {
     font-size: 3rem;
     color: var(--color-accent-blue);
     text-shadow: 0 0 15px var(--color-accent-blue);
+}
+
+/* --- Página de Blog --- */
+.blog-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+    align-self: flex-start;
+}
+
+/* CAMBIO: La regla ahora solo afecta a las tarjetas del blog */
+.blog-card .card-img-top {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+
+/* --- NUEVO: Página de Contacto --- */
+.text-neon-blue {
+    color: var(--color-accent-blue);
+}
+
+.contact-hr {
+    border-color: rgba(30, 144, 255, 0.3);
+}
+
+/* Estilos para el formulario en tema oscuro */
+.form-control, .form-select {
+    background-color: #1a1a1a;
+    color: var(--color-text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #1a1a1a;
+    color: var(--color-text-primary);
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
+}
+
+/* Filtro para que el mapa de Google se vea oscuro */
+.map-iframe {
+    border-radius: 5px;
+    filter: invert(100%) grayscale(80%) brightness(95%) contrast(100%);
 }

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Level-Up Gamer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Level-UP Gamer</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="productos.html">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="nav-item dropdown ms-3">
+                        <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i
+                                class="bi bi-person-circle fs-4"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Iniciar sesión</a></li>
+                            <li><a class="dropdown-item" href="#">Registrarse</a></li>
+                        </ul>
+                    </div>
+                    <a href="#" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="text-center welcome-section">
+        <h1>Nuestro Blog</h1>
+        <p>Noticias, guías y todo sobre el universo gamer. 🎮</p>
+    </div>
+
+    <div class="container my-5">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="/img/blog.webp" class="card-img-top" alt="PC Gamer Limpio">
+                    <div class="card-body d-flex flex-column">
+                        <span class="blog-tag mb-2">GUÍA</span>
+                        <h5 class="card-title">Guía: Cómo Limpiar tu PC Gamer sin Riesgos</h5>
+                        <p class="card-text text-secondary">Mantén tu equipo en perfectas condiciones para maximizar el
+                            rendimiento y la vida útil de tus componentes.</p>
+                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
+                                class="bi bi-arrow-right-short"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="/img/blog.webp" class="card-img-top"
+                        alt="Próximos lanzamientos de videojuegos">
+                    <div class="card-body d-flex flex-column">
+                        <span class="blog-tag mb-2"
+                            style="background-color: var(--color-accent-neon); color: var(--color-background);">NOTICIA</span>
+                        <h5 class="card-title">Anunciados los Próximos Lanzamientos para Fin de Año</h5>
+                        <p class="card-text text-secondary">Desde esperadas secuelas hasta nuevas IPs. Revisa aquí el
+                            calendario de los juegos que no te puedes perder.</p>
+                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
+                                class="bi bi-arrow-right-short"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="/img/blog.webp" class="card-img-top" alt="Controles profesionales de consola">
+                    <div class="card-body d-flex flex-column">
+                        <span class="blog-tag mb-2">REVIEW</span>
+                        <h5 class="card-title">Review: ¿Valen la pena los nuevos controles Scuf para Xbox?</h5>
+                        <p class="card-text text-secondary">Probamos a fondo los últimos controles profesionales. ¿Son
+                            una ventaja real para el juego competitivo?</p>
+                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
+                                class="bi bi-arrow-right-short"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="/img/blog.webp" class="card-img-top" alt="Ergonomía en silla gamer">
+                    <div class="card-body d-flex flex-column">
+                        <span class="blog-tag mb-2">CONSEJOS</span>
+                        <h5 class="card-title">Optimiza tu Silla Gamer para Máximo Confort</h5>
+                        <p class="card-text text-secondary">Descubre los secretos de la ergonomía para evitar la fatiga
+                            en largas sesiones de juego.</p>
+                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
+                                class="bi bi-arrow-right-short"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="/img/blog.webp" class="card-img-top" alt="Juegos de mesa">
+                    <div class="card-body d-flex flex-column">
+                        <span class="blog-tag mb-2">COMUNIDAD</span>
+                        <h5 class="card-title">Top 3 Juegos de Mesa para una Noche con Amigos</h5>
+                        <p class="card-text text-secondary">¿Buscas una alternativa a los videojuegos? Te recomendamos
+                            los mejores juegos de mesa para compartir.</p>
+                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
+                                class="bi bi-arrow-right-short"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="/img/blog.webp" class="card-img-top" alt="Setup gamer con luces">
+                    <div class="card-body d-flex flex-column">
+                        <span class="blog-tag mb-2">GUÍA</span>
+                        <h5 class="card-title">Cómo Crear el Setup Gamer de tus Sueños con Poco Presupuesto</h5>
+                        <p class="card-text text-secondary">No necesitas gastar una fortuna para tener un espacio
+                            increíble. Te damos ideas para empezar.</p>
+                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
+                                class="bi bi-arrow-right-short"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="container-fluid py-3 mt-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="mb-3 mb-md-0"><a href="index.html" class="navbar-brand">Level-UP Gamer</a></div>
+            <div class="nav mb-3 mb-md-0">
+                <a class="nav-link" href="index.html">Inicio</a>
+                <a class="nav-link" href="productos.html">Productos</a>
+                <a class="nav-link" href="nosotros.html">Nosotros</a>
+                <a class="nav-link" href="blogs.html">Blogs</a>
+                <a class="nav-link" href="contacto.html">Contacto</a>
+            </div>
+            <div class="d-flex">
+                <a href="#" class="nav-link fs-4"><i class="bi bi-twitch"></i></a>
+                <a href="#" class="nav-link fs-4"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="nav-link fs-4"><i class="bi bi-discord"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
