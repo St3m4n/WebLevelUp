@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin | Productos</title>
+  <title>Admin | Usuarios</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Roboto:wght@300;400;500;700&display=swap"
     rel="stylesheet">
@@ -14,6 +14,7 @@
 
 <body class="bg-dark text-light">
   <div class="d-flex">
+    <!-- Sidebar -->
     <aside class="lup-sidebar d-flex flex-column p-3">
       <a href="./index.html" class="d-flex align-items-center mb-3 text-decoration-none">
         <span class="lup-logo me-2">👾</span><span class="lup-brand">LEVEL-UP ADMIN</span>
@@ -27,12 +28,12 @@
         <li><a href="./usuario-form.html" class="nav-link">➕ Nuevo usuario</a></li>
       </ul>
     </aside>
-
+    <!-- Main -->
     <main class="flex-grow-1">
       <nav class="navbar navbar-dark border-bottom lup-topbar">
         <div class="container-fluid">
-          <span class="navbar-brand fw-bold">Productos</span>
-          <a href="./producto-form.html" class="btn btn-success btn-sm">Nuevo producto</a>
+          <span class="navbar-brand fw-bold">Usuarios</span>
+          <a href="./usuario-form.html" class="btn btn-success btn-sm">Nuevo usuario</a>
         </div>
       </nav>
 
@@ -41,20 +42,14 @@
           <div class="card-body">
             <div class="row g-2 mb-3">
               <div class="col-md-4">
-                <input class="form-control" placeholder="Buscar por nombre o código…">
+                <input class="form-control" placeholder="Buscar por RUN, nombre o correo…">
               </div>
               <div class="col-md-3">
                 <select class="form-select">
-                  <option value="">Todas las categorías</option>
-                  <option>Juegos de Mesa</option>
-                  <option>Accesorios</option>
-                  <option>Consolas</option>
-                  <option>Computadores Gamers</option>
-                  <option>Sillas Gamers</option>
-                  <option>Mouse</option>
-                  <option>Mousepad</option>
-                  <option>Poleras Personalizadas</option>
-                  <option>Polerones Gamers Personalizados</option>
+                  <option value="">Todos los perfiles</option>
+                  <option>Administrador</option>
+                  <option>Vendedor</option>
+                  <option>Cliente</option>
                 </select>
               </div>
               <div class="col-md-5 text-md-end">
@@ -67,38 +62,45 @@
               <table class="table table-dark table-striped align-middle">
                 <thead>
                   <tr>
-                    <th>Código</th>
+                    <th>RUN</th>
                     <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th class="text-end">Precio</th>
-                    <th class="text-end">Stock</th>
+                    <th>Apellidos</th>
+                    <th>Correo</th>
+                    <th>Perfil</th>
+                    <th>Región</th>
+                    <th>Comuna</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
+                  <!-- Ejemplos estáticos (luego JS) -->
                   <tr>
-                    <td>JM001</td>
-                    <td>Catan</td>
-                    <td>Juegos de Mesa</td>
-                    <td class="text-end">$29.990</td>
-                    <td class="text-end">12</td>
+                    <td>19011022K</td>
+                    <td>Felipe</td>
+                    <td>Ahumada</td>
+                    <td>felipe@duoc.cl</td>
+                    <td>Cliente</td>
+                    <td>Biobío</td>
+                    <td>Concepción</td>
                     <td class="text-end">
-                      <a class="btn btn-sm btn-outline-primary" href="./producto-form.html?id=JM001">Editar</a>
+                      <a class="btn btn-sm btn-outline-primary" href="./usuario-form.html?id=19011022K">Editar</a>
                       <button class="btn btn-sm btn-outline-danger">Eliminar</button>
                     </td>
                   </tr>
                   <tr>
-                    <td>AC001</td>
-                    <td>Control Xbox Series X</td>
-                    <td>Accesorios</td>
-                    <td class="text-end">$59.990</td>
-                    <td class="text-end">5</td>
+                    <td>12345678-5</td>
+                    <td>Ana</td>
+                    <td>Pérez</td>
+                    <td>ana@gmail.com</td>
+                    <td>Vendedor</td>
+                    <td>RM</td>
+                    <td>Santiago</td>
                     <td class="text-end">
-                      <a class="btn btn-sm btn-outline-primary" href="./producto-form.html?id=AC001">Editar</a>
+                      <a class="btn btn-sm btn-outline-primary" href="./usuario-form.html?id=12345678-5">Editar</a>
                       <button class="btn btn-sm btn-outline-danger">Eliminar</button>
                     </td>
                   </tr>
-                  <!-- Más filas dinámicas desde JS en la próxima etapa -->
+                  <!-- Más filas dinámicas después -->
                 </tbody>
               </table>
             </div>
