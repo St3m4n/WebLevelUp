@@ -1,0 +1,95 @@
+:root{
+  --bg:#000000;
+  --fg:#ffffff;
+  --muted:#d3d3d3;
+  --accent:#1E90FF;  /* azul eléctrico */
+  --accent-2:#39FF14;/* verde neón */
+  --card:#0f0f12;
+  --border:#2a2a2a;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+}
+
+.lup-brand{
+  font-family:"Orbitron", ui-sans-serif, system-ui;
+  letter-spacing: .5px;
+  font-weight:700;
+  font-size:1.05rem;
+}
+
+.lup-logo{font-size:1.4rem}
+.lup-sidebar{
+  width: 260px;
+  background: linear-gradient(180deg, #0a0a0a 0%, #07070a 100%);
+  border-right: 1px solid var(--border);
+  min-height: 100vh;
+}
+.lup-sidebar .nav-link{
+  color: var(--muted);
+  border:1px solid transparent;
+}
+.lup-sidebar .nav-link:hover{
+  color: var(--fg);
+  border-color: var(--border);
+}
+.lup-sidebar .nav-link.active{
+  background: linear-gradient(90deg, var(--accent) 0%, #6239ff 100%);
+  color:#000;
+  font-weight:600;
+  border: none;
+}
+
+.lup-topbar{
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px);
+  border-color: var(--border) !important;
+}
+
+.lup-card{
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius: 14px;
+}
+.lup-card .card-title{font-weight:600}
+.lup-badge{
+  background: var(--accent-2);
+  color:#000;
+  font-weight:700;
+  border-radius: 20px;
+  padding: .25rem .6rem;
+}
+
+/* Formularios */
+.form-control, .form-select{
+  background:#0b0b0e;
+  border-color:#222;
+  color:var(--fg);
+}
+.form-control:focus, .form-select:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 .2rem rgba(30,144,255,.2);
+}
+
+/* Botones */
+.btn-primary{
+  background: var(--accent);
+  border: none;
+  color:#000;
+  font-weight:700;
+}
+.btn-success{
+  background: var(--accent-2);
+  border: none;
+  color:#000;
+  font-weight:700;
+}
+
+/* Utilidades */
+.text-secondary{color:var(--muted)!important}
+.border-secondary{border-color:var(--border)!important}
