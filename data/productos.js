@@ -1,7 +1,7 @@
 // data/productos.js
 // datos de productos fake
 // En la siguiente etapa lo persistiremos con localStorage.
-const productos = [
+window.productos = [
   {
     codigo: "JM001",
     nombre: "Catan",

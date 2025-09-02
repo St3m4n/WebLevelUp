@@ -43,7 +43,7 @@
     <main class="flex-grow-1">
       <nav class="navbar navbar-light bg-white border-bottom lup-topbar">
         <div class="container-fluid">
-          <span class="navbar-brand fw-bold" data-ref="titulo">Dashboard</span>
+          <span class="navbar-brand fw-bold" data-ref="titulo">Usuarios</span>
           <div class="d-flex gap-2">
             <button class="btn btn-outline-light btn-sm">Perfil</button>
             <button class="btn btn-outline-light btn-sm">Cerrar sesión</button>
@@ -57,10 +57,10 @@
           <div class="card-body">
             <div class="row g-2 mb-3">
               <div class="col-md-4">
-                <input class="form-control" placeholder="Buscar por RUN, nombre o correo…">
+                <input class="form-control" placeholder="Buscar por RUN, nombre o correo…" data-ref="busqueda">
               </div>
               <div class="col-md-3">
-                <select class="form-select">
+                <select class="form-select" data-ref="perfil">
                   <option value="">Todos los perfiles</option>
                   <option>Administrador</option>
                   <option>Vendedor</option>
@@ -68,10 +68,11 @@
                 </select>
               </div>
               <div class="col-md-5 text-md-end">
-                <button class="btn btn-outline-light">Filtrar</button>
-                <button class="btn btn-outline-secondary">Limpiar</button>
+                <button class="btn btn-outline-light" type="button" data-ref="btn-filtrar">Filtrar</button>
+                <button class="btn btn-outline-secondary" type="button" data-ref="btn-limpiar">Limpiar</button>
               </div>
             </div>
+
 
             <div class="table-responsive">
               <table class="table table-striped align-middle">
@@ -89,55 +90,28 @@
                 </thead>
                 <tbody>
                   <!-- Ejemplos estáticos (luego JS) -->
-                  <tr>
-                    <td>19011022K</td>
-                    <td>Felipe</td>
-                    <td>Ahumada</td>
-                    <td>felipe@duoc.cl</td>
-                    <td>Cliente</td>
-                    <td>Biobío</td>
-                    <td>Concepción</td>
-                    <td class="text-end">
-                      <a class="btn btn-sm btn-outline-primary" href="./usuario-form.html?id=19011022K">Editar</a>
-                      <button class="btn btn-sm btn-outline-danger">Eliminar</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>12345678-5</td>
-                    <td>Ana</td>
-                    <td>Pérez</td>
-                    <td>ana@gmail.com</td>
-                    <td>Vendedor</td>
-                    <td>RM</td>
-                    <td>Santiago</td>
-                    <td class="text-end">
-                      <a class="btn btn-sm btn-outline-primary" href="./usuario-form.html?id=12345678-5">Editar</a>
-                      <button class="btn btn-sm btn-outline-danger">Eliminar</button>
-                    </td>
-                  </tr>
+                  
                   <!-- Más filas dinámicas después -->
                 </tbody>
               </table>
             </div>
-
           </div>
         </div>
       </section>
     </main>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../data/usuarios.js"></script>
   <script src="../../js/admin/admin-usuarios.js"></script>
   <script>
-        (function () {
-            const path = location.pathname.split('/').pop() || 'index.html';
-            document.querySelectorAll('#lup-menu .nav-link').forEach(a => {
-                const href = a.getAttribute('href');
-                a.classList.toggle('active', href === path);
-            });
-        })();
-    </script>
+    (function () {
+      const path = location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('#lup-menu .nav-link').forEach(a => {
+        const href = a.getAttribute('href');
+        a.classList.toggle('active', href === path);
+      });
+    })();
+  </script>
 </body>
 
 </html>
