@@ -18,36 +18,57 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">Level-UP Gamer</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="productos.html">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <div class="nav-item dropdown ms-3">
-                        <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle fs-4"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
-                            <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
-                        </ul>
+
+    <header class="fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">Level-UP Gamer</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="productos.html">Categorias</a></li>
+                        <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <div class="nav-item dropdown ms-3">
+                            <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
+                                <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
+                            </ul>
+                        </div>
+                        <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
                     </div>
-                    <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+
+        <nav class="navbar navbar-expand-lg secondary-nav">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav justify-content-center w-100">
+                        <li class="nav-item"><a class="nav-link" href="#">Juegos de Mesa</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Accesorios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Consolas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Computadores Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Sillas Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Mouse</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Mousepad</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Poleras Personalizadas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Polerones Gamers</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <div class="text-center welcome-section">
         <h1>Nuestra Historia</h1>
@@ -62,10 +83,14 @@
             <div class="col-lg-6">
                 <h2>Nacimos para Jugar</h2>
                 <p class="text-secondary">
-                    Level-Up Gamer es una tienda online dedicada a satisfacer las necesidades de los entusiastas de los videojuegos en Chile. Lanzada hace dos años como respuesta a la creciente demanda durante la pandemia, ofrecemos una amplia gama de productos para gamers, desde consolas y accesorios hasta computadores y sillas especializadas.
+                    Level-Up Gamer es una tienda online dedicada a satisfacer las necesidades de los entusiastas de los
+                    videojuegos en Chile. Lanzada hace dos años como respuesta a la creciente demanda durante la
+                    pandemia, ofrecemos una amplia gama de productos para gamers, desde consolas y accesorios hasta
+                    computadores y sillas especializadas.
                 </p>
                 <p class="text-secondary">
-                    Aunque no contamos con una ubicación física, realizamos despachos a todo el país para que nunca te falte lo que necesitas para tu próxima partida.
+                    Aunque no contamos con una ubicación física, realizamos despachos a todo el país para que nunca te
+                    falte lo que necesitas para tu próxima partida.
                 </p>
             </div>
         </div>
@@ -80,7 +105,9 @@
                         <i class="bi bi-bullseye mission-vision-icon mb-3"></i>
                         <h3>Misión</h3>
                         <p class="text-secondary">
-                            Proporcionar productos de alta calidad para gamers en todo Chile, ofreciendo una experiencia de compra única y personalizada, con un enfoque en la satisfacción del cliente y el crecimiento de la comunidad gamer.
+                            Proporcionar productos de alta calidad para gamers en todo Chile, ofreciendo una experiencia
+                            de compra única y personalizada, con un enfoque en la satisfacción del cliente y el
+                            crecimiento de la comunidad gamer.
                         </p>
                     </div>
                 </div>
@@ -91,14 +118,15 @@
                         <i class="bi bi-binoculars-fill mission-vision-icon mb-3"></i>
                         <h3>Visión</h3>
                         <p class="text-secondary">
-                            Ser la tienda online líder en productos para gamers en Chile, reconocida por su innovación, servicio al cliente excepcional, y un programa de fidelización basado en gamificación.
+                            Ser la tienda online líder en productos para gamers en Chile, reconocida por su innovación,
+                            servicio al cliente excepcional, y un programa de fidelización basado en gamificación.
                         </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="text-center welcome-section">
         <h2>¡Únete a la Comunidad!</h2>
         <p>¡Explora, juega y gana con nosotros!</p>
@@ -111,7 +139,7 @@
             </div>
             <div class="nav mb-3 mb-md-0">
                 <a class="nav-link" href="index.html">Inicio</a>
-                <a class="nav-link" href="productos.html">Productos</a>
+                <a class="nav-link" href="productos.html">Categorias</a>
                 <a class="nav-link" href="nosotros.html">Nosotros</a>
                 <a class="nav-link" href="blogs.html">Blogs</a>
                 <a class="nav-link" href="contacto.html">Contacto</a>
@@ -126,4 +154,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

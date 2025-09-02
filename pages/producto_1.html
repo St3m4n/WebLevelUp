@@ -17,36 +17,57 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark py-3 fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">Level-UP Gamer</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="productos.html">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <div class="nav-item dropdown ms-3">
-                        <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle fs-4"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
-                            <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
-                        </ul>
+
+    <header class="fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">Level-UP Gamer</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="productos.html">Categorias</a></li>
+                        <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <div class="nav-item dropdown ms-3">
+                            <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
+                                <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
+                            </ul>
+                        </div>
+                        <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
                     </div>
-                    <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+
+        <nav class="navbar navbar-expand-lg secondary-nav">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav justify-content-center w-100">
+                        <li class="nav-item"><a class="nav-link" href="#">Juegos de Mesa</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Accesorios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Consolas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Computadores Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Sillas Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Mouse</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Mousepad</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Poleras Personalizadas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Polerones Gamers</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <div class="container my-5">
         <nav aria-label="breadcrumb">
@@ -69,10 +90,12 @@
                 <h1 class="product-title">Catan</h1>
                 <p class="text-secondary">Código: JM001</p>
                 <p class="display-5 fw-bold price-highlight">$29.990 CLP</p>
-                <p class="text-secondary">Un clásico juego de estrategia donde los jugadores compiten por colonizar y expandirse en la isla de Catan. [cite: 117] Ideal para 3-4 jugadores y perfecto para noches de juego en familia o con amigos. [cite: 118]</p>
-                
+                <p class="text-secondary">Un clásico juego de estrategia donde los jugadores compiten por colonizar y
+                    expandirse en la isla de Catan. [cite: 117] Ideal para 3-4 jugadores y perfecto para noches de juego
+                    en familia o con amigos. [cite: 118]</p>
+
                 <hr class="contact-hr my-4">
-                
+
                 <div class="d-flex align-items-center mb-4">
                     <span class="me-3">Cantidad:</span>
                     <div class="quantity-selector">
@@ -82,7 +105,8 @@
                     </div>
                 </div>
 
-                <button class="btn btn-neon w-100 mb-4"><i class="bi bi-cart-plus-fill me-2"></i>Agregar al Carro</button>
+                <button class="btn btn-neon w-100 mb-4"><i class="bi bi-cart-plus-fill me-2"></i>Agregar al
+                    Carro</button>
 
                 <div class="social-share">
                     <span class="text-secondary me-2">Compartir:</span>
@@ -97,18 +121,24 @@
             <div class="card p-3">
                 <ul class="nav nav-tabs" id="productTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Descripción</button>
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab"
+                            data-bs-target="#description" type="button" role="tab">Descripción</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">Origen y Especificaciones</button>
+                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs"
+                            type="button" role="tab">Origen y Especificaciones</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reseñas (3)</button>
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews"
+                            type="button" role="tab">Reseñas (3)</button>
                     </li>
                 </ul>
                 <div class="tab-content p-4" id="productTabContent">
                     <div class="tab-pane fade show active" id="description" role="tabpanel">
-                        <p class="text-secondary">"Catan" es un juego de mesa para toda la familia que se ha convertido en un fenómeno mundial. Se trata de un juego que aúna la estrategia, la astucia y la capacidad para negociar y en el que los jugadores tratan de colonizar una isla, Catan, rica en recursos naturales. Construyendo pueblos, estableciendo rutas comerciales, etc.</p>
+                        <p class="text-secondary">"Catan" es un juego de mesa para toda la familia que se ha convertido
+                            en un fenómeno mundial. Se trata de un juego que aúna la estrategia, la astucia y la
+                            capacidad para negociar y en el que los jugadores tratan de colonizar una isla, Catan, rica
+                            en recursos naturales. Construyendo pueblos, estableciendo rutas comerciales, etc.</p>
                     </div>
                     <div class="tab-pane fade" id="specs" role="tabpanel">
                         <ul class="list-unstyled text-secondary">
@@ -119,7 +149,7 @@
                         </ul>
                     </div>
                     <div class="tab-pane fade" id="reviews" role="tabpanel">
-                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -140,12 +170,30 @@
                         </div>
                     </div>
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 
-    <footer class="container-fluid py-3 mt-5">
-        </footer>
+        <footer class="container-fluid py-3 mt-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="mb-3 mb-md-0">
+                <a href="/" class="navbar-brand">Level-UP Gamer</a>
+            </div>
+            <div class="nav mb-3 mb-md-0">
+                <a class="nav-link" href="index.html">Inicio</a>
+                <a class="nav-link" href="productos.html">Categorias</a>
+                <a class="nav-link" href="nosotros.html">Nosotros</a>
+                <a class="nav-link" href="blogs.html">Blogs</a>
+                <a class="nav-link" href="contacto.html">Contacto</a>
+            </div>
+            <div class="d-flex">
+                <a href="#" class="nav-link fs-4"><i class="bi bi-twitch"></i></a>
+                <a href="#" class="nav-link fs-4"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="nav-link fs-4"><i class="bi bi-discord"></i></a>
+            </div>
+        </div>
+    </footer>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
