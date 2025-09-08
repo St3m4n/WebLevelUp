@@ -194,3 +194,50 @@ footer .bi:hover { transform: scale(1.2); }
 .btn-social:hover { color: var(--color-accent-blue); transform: scale(1.2); }
 .nav-tabs .nav-link { background-color: transparent; border-color: rgba(30, 144, 255, 0.3); color: var(--color-text-secondary); }
 .nav-tabs .nav-link.active { background-color: rgba(30, 144, 255, 0.1); border-color: var(--color-accent-blue); color: var(--color-text-primary); }
+
+
+/* --- ESTILOS PARA LA NUEVA BARRA SUPERIOR --- */
+.top-nav {
+    background: #1a1a1a; /* Un fondo ligeramente distinto */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0; /* Lo hacemos más delgada */
+}
+
+.top-nav .nav-link {
+    color: var(--color-text-secondary);
+    font-size: 0.8rem; /* Letra más pequeña */
+    padding: 0.25rem 0.75rem;
+}
+
+.top-nav .nav-link:hover {
+    color: var(--color-text-primary);
+}
+
+
+/* --- AJUSTE DEL ESPACIADO DEL BODY --- */
+/* Aumenta el padding-top para compensar la altura de la nueva barra */
+body {
+    padding-top: 175px; /* Ajusta este valor si es necesario */
+}
+
+/* --- ESTILO PERSONALIZADO PARA LA BARRA DE BÚSQUEDA DEL HEADER --- */
+
+/* Estilo del campo de búsqueda normal */
+.primary-nav .form-control {
+    background-color: rgba(255, 255, 255, 0.05); /* Fondo muy sutil y semitransparente */
+    color: var(--color-text-primary);             /* Texto en color blanco */
+    border-color: rgba(30, 144, 255, 0.5);       /* Borde con el color de acento azul */
+}
+
+/* Estilo para el texto del placeholder (ej. "Buscar productos...") */
+.primary-nav .form-control::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.8;
+}
+
+/* Estilo del campo de búsqueda cuando haces clic en él (focus) */
+.primary-nav .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.1);  /* Se aclara un poco al seleccionarlo */
+    border-color: var(--color-accent-blue);       /* Borde azul más intenso */
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.6); /* El brillo azul característico de tu web */
+}

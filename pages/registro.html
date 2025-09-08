@@ -17,8 +17,21 @@
 </head>
 
 <body>
-
     <header class="fixed-top">
+        <nav class="navbar navbar-expand-lg top-nav d-none d-lg-block">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias.html">Categorias</a></li>
+                        <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
         <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
             <div class="container">
                 <a class="navbar-brand" href="index.html">Level-UP Gamer</a>
@@ -27,24 +40,37 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav mx-auto">
+
+                    <ul class="navbar-nav mt-3 d-lg-none">
                         <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias.html">Categorias</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
                         <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
                     </ul>
-                    <div class="d-flex align-items-center">
-                        <div class="nav-item dropdown ms-3">
-                            <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle fs-4"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
-                                <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
-                            </ul>
+
+                    <hr class="d-lg-none text-white-50">
+
+                    <form class="d-flex mx-auto w-50 my-2" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Buscar productos..."
+                            aria-label="Search">
+                        <button class="btn btn-outline-light" type="submit"><i class="bi bi-search"></i></button>
+                    </form>
+
+                    <div class="d-flex justify-content-end">
+                        <div class="d-flex align-items-center">
+                            <div class="nav-item dropdown ms-3">
+                                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="bi bi-person-circle fs-4"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
+                                    <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
+                                </ul>
+                            </div>
+                            <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
                         </div>
-                        <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
                     </div>
                 </div>
             </div>
@@ -54,7 +80,7 @@
             <div class="container">
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav justify-content-center w-100">
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Juegos de Mesa</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Juegos de Mesa</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Accesorios</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Consolas</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Computadores Gamers</a></li>
