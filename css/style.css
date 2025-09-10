@@ -476,3 +476,85 @@ footer .bi:hover { transform: scale(1.2); }
         font-size: 1.25rem;
     }
 }
+
+/* --- ESTILOS PARA TARJETAS DE CATEGORÍA --- */
+
+/* Arreglo del Blur: Estilo específico para los íconos de categoría */
+.category-icon {
+    font-size: 2.5rem; /* Tamaño del ícono */
+    color: var(--color-accent-blue); /* Color de acento azul */
+    text-shadow: none; /* ¡IMPORTANTE! Esto elimina el blur excesivo */
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover para el ícono cuando pasas el mouse por la tarjeta */
+.category-card:hover .category-icon {
+    transform: scale(1.2) rotate(15deg);
+    color: var(--color-accent-neon); /* Cambia al color neón en hover */
+}
+
+/* Estilo para los elementos de la lista dentro de la tarjeta */
+.category-card ul li {
+    color: var(--color-text-secondary);
+    padding: 0.25rem 0;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Efecto hover para la lista cuando pasas el mouse por la tarjeta */
+.category-card:hover ul li {
+    color: var(--color-text-primary);
+    padding-left: 8px; /* Pequeño desplazamiento a la derecha */
+}
+
+/* --- ESTILO MEJORADO PARA LA CABECERA DE PRODUCTOS --- */
+
+/* Usamos la clase .welcome-section que ya tienes y la especializamos */
+.welcome-section {
+    border: 1px solid rgba(199, 41, 242, 0.4); /* Borde morado semitransparente */
+    border-radius: 20px; /* Bordes más redondeados */
+    padding: 3rem;
+    
+    /* Fondo con gradiente radial para un efecto de luz central */
+    background: radial-gradient(ellipse at center, rgba(199, 41, 242, 0.1), transparent 70%);
+    
+    /* Sombra exterior para el efecto de resplandor neón */
+    box-shadow: 0 0 25px rgba(199, 41, 242, 0.2), 
+                inset 0 0 15px rgba(199, 41, 242, 0.1);
+    
+    transition: all 0.3s ease;
+}
+
+.welcome-section:hover {
+    transform: scale(1.02); /* Efecto de zoom sutil al pasar el mouse */
+    box-shadow: 0 0 35px rgba(199, 41, 242, 0.4), 
+                inset 0 0 20px rgba(199, 41, 242, 0.2);
+}
+
+/* Estilo para el título principal dentro de la sección */
+.welcome-section h1 {
+    font-size: 3rem; /* Tamaño del título */
+    font-weight: 700;
+    display: flex; /* Usamos flex para alinear el ícono y el texto */
+    align-items: center;
+    justify-content: center;
+    gap: 1rem; /* Espacio entre el ícono y el texto */
+}
+
+/* Estilo para el ícono */
+.welcome-section h1 i {
+    font-size: 2.5rem; /* Ajusta el tamaño del ícono */
+    color: var(--color-accent-blue); /* Usa tu color de acento azul */
+    text-shadow: 0 0 10px var(--color-accent-blue);
+}
+
+/* Estilo para la palabra resaltada "Productos" */
+.welcome-section .highlight {
+    color: var(--color-accent-neon);
+    text-shadow: 0 0 10px var(--color-accent-neon);
+}
+
+/* Estilo para el párrafo de descripción */
+.welcome-section p {
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+}
