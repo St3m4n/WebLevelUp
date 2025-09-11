@@ -1,16 +1,28 @@
 // /js/admin/admin-usuarios.js
 
-const LS_KEY_USUARIOS = "usuarios";
+// --- Storage helpers ---
+const LS_KEY_USU = "usuarios";
 
 function loadUsuarios() {
+  // 1) intenta desde localStorage
   try {
-    const raw = localStorage.getItem(LS_KEY_USUARIOS);
+    const raw = localStorage.getItem(LS_KEY_USU);
     if (raw) {
       const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr : [];
+      if (Array.isArray(arr) && arr.length > 0) {
+        return arr; // hay datos guardados
+      }
     }
   } catch (e) { /* ignore */ }
-  return Array.isArray(window.usuarios) ? [...window.usuarios] : [];
+
+  // 2) fallback: usar seed global (si existe) y sembrar en LS
+  if (Array.isArray(window.usuarios) && window.usuarios.length > 0) {
+    localStorage.setItem(LS_KEY_USU, JSON.stringify(window.usuarios));
+    return [...window.usuarios];
+  }
+
+  // 3) nada de nada
+  return [];
 }
 
 function saveUsuarios(arr) {

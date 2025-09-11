@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       originalRun = found.run;
       titulo.textContent = `Editar usuario: ${found.run}`;
 
-      iRun.value = found.run;
+      iRun.value = normalizarRun(found.run);
       iRun.setAttribute('readonly','readonly'); // clave primaria
       iNombre.value = found.nombre || "";
       iApellidos.value = found.apellidos || "";
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     const payload = {
-      run: iRun.value.trim().toUpperCase(),
+      run: normalizarRun(iRun.value),
       nombre: iNombre.value.trim(),
       apellidos: iApellidos.value.trim(),
       correo: iCorreo.value.trim(),

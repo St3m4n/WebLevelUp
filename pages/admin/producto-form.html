@@ -49,10 +49,12 @@
             <button class="btn btn-outline-light btn-sm">Perfil</button>
             <button class="btn btn-outline-light btn-sm">Cerrar sesión</button>
           </div>
+          <div class="d-flex gap-2">
+            <a href="./productos.html" class="btn btn-outline-light btn-sm">Volver a listado</a>
+            <button class="btn btn-success btn-sm" type="button" data-ref="btn-guardar">Guardar</button>
+          </div>
         </div>
       </nav>
-
-
       <section class="container py-4">
         <form class="card lup-card" novalidate data-ref="form">
           <div class="card-body">
@@ -138,14 +140,14 @@
   <script src="../../data/productos.js"></script>
   <script src="../../js/admin/admin-producto-form.js"></script>
   <script>
-        (function () {
-            const path = location.pathname.split('/').pop() || 'index.html';
-            document.querySelectorAll('#lup-menu .nav-link').forEach(a => {
-                const href = a.getAttribute('href');
-                a.classList.toggle('active', href === path);
-            });
-        })();
-    </script>
+    (function () {
+      const path = location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('#lup-menu .nav-link').forEach(a => {
+        const href = a.getAttribute('href');
+        a.classList.toggle('active', href === path);
+      });
+    })();
+  </script>
 </body>
 
 </html>
