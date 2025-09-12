@@ -26,32 +26,51 @@ function loadUsuarios() {
 }
 
 function saveUsuarios(arr) {
-  localStorage.setItem(LS_KEY_USUARIOS, JSON.stringify(arr));
+  // Fixed key: use LS_KEY_USU consistently
+  localStorage.setItem(LS_KEY_USU, JSON.stringify(arr));
 }
 
 function el(q, ctx=document){ return ctx.querySelector(q); }
 function els(q, ctx=document){ return [...ctx.querySelectorAll(q)]; }
+
+function formatRunDisplay(runRaw){
+  const clean = String(runRaw || "").toUpperCase().replace(/[^0-9K]/g,'');
+  if (clean.length < 2) return clean;
+  const body = clean.slice(0,-1), dv = clean.slice(-1);
+  let out = '', cnt=0;
+  for (let i=body.length-1; i>=0; i--){
+    out = body[i] + out; cnt++;
+    if (cnt===3 && i!==0){ out = '.' + out; cnt=0; }
+  }
+  return `${out}-${dv}`;
+}
 
 let dataUsuarios = loadUsuarios();
 
 function renderTabla(list){
   const tbody = el("table tbody");
   if (!tbody) return;
-  tbody.innerHTML = list.map(u=>`
+  tbody.innerHTML = list.map(u=>{
+    const domain = String(u.correo||'').toLowerCase().split('@')[1] || '';
+    const hasDiscount = !!u.descuentoVitalicio || (u.perfil === 'Cliente' && domain === 'duoc.cl');
+    const badge = hasDiscount ? '<span class="badge bg-success">20% DUOC</span>' : '';
+    return `
     <tr>
-      <td>${u.run}</td>
+      <td>${formatRunDisplay(u.run)}</td>
       <td>${u.nombre}</td>
       <td>${u.apellidos}</td>
       <td>${u.correo}</td>
       <td>${u.perfil}</td>
       <td>${u.region}</td>
       <td>${u.comuna}</td>
+      <td>${badge}</td>
       <td class="text-end">
         <a class="btn btn-sm btn-outline-primary" href="./usuario-form.html?id=${encodeURIComponent(u.run)}">Editar</a>
         <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${u.run}">Eliminar</button>
       </td>
     </tr>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function aplicarFiltros(){

@@ -91,29 +91,77 @@
             <div class="col-md-8 col-lg-6">
                 <div class="card p-4 p-md-5">
                     <h2 class="text-center mb-4">Formulario de Registro</h2>
-                    <form>
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre Completo</label>
-                            <input type="text" class="form-control" id="nombre" required>
+                    <form id="registerForm" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="run" class="form-label">RUN</label>
+                                <input type="text" class="form-control" id="run" placeholder="Ej: 12345678-9" maxlength="12" required>
+                                <div class="invalid-feedback" id="e-run">Ingresa un RUN válido.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="email" maxlength="100" required>
+                                <div class="invalid-feedback" id="e-email">Ingresa un correo válido.</div>
+                                <div class="form-text text-success d-none" id="duoc-hint"><i class="bi bi-award me-1"></i>Detectamos correo Duoc: tendrás 20% de descuento de por vida.</div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="email" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombres" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="nombres" maxlength="50" required>
+                                <div class="invalid-feedback" id="e-nombres">Ingresa tus nombres.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="apellidos" class="form-label">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidos" maxlength="100" required>
+                                <div class="invalid-feedback" id="e-apellidos">Ingresa tus apellidos.</div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password" required>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleRegPassword"><i class="bi bi-eye"></i></button>
+                                </div>
+                                <div class="form-text">Mínimo 8 caracteres.</div>
+                                <div class="invalid-feedback" id="e-password">La contraseña es inválida.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-                                <input type="password" class="form-control" id="confirmPassword" required>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleRegConfirm"><i class="bi bi-eye"></i></button>
+                                </div>
+                                <div class="invalid-feedback" id="e-confirm">Las contraseñas no coinciden.</div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
                             <input type="date" class="form-control" id="fechaNacimiento" required>
                             <div class="form-text">Debes ser mayor de 18 años para registrarte.</div>
+                            <div class="invalid-feedback" id="e-fecha">Debes tener 18 años o más.</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="region" class="form-label">Región</label>
+                                <select id="region" class="form-select" required>
+                                    <option value="" selected disabled>Selecciona región</option>
+                                </select>
+                                <div class="invalid-feedback" id="e-region">Selecciona una región.</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="comuna" class="form-label">Comuna</label>
+                                <select id="comuna" class="form-select" required disabled>
+                                    <option value="" selected disabled>Selecciona comuna</option>
+                                </select>
+                                <div class="invalid-feedback" id="e-comuna">Selecciona una comuna.</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" maxlength="300" required>
+                                <div class="invalid-feedback" id="e-direccion">Ingresa tu dirección.</div>
+                            </div>
                         </div>
                         <div class="mb-4">
                             <label for="referido" class="form-label">Código de Referido (Opcional)</label>
@@ -165,6 +213,10 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Data scripts and main logic -->
+    <script src="../../data/regiones-comunas.js"></script>
+    <script src="../../data/usuarios.js"></script>
+    <script src="../../js/script.js"></script>
 </body>
 
 </html>

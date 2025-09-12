@@ -36,7 +36,10 @@
     <main class="flex-grow-1 d-flex flex-column min-vh-100">
       <nav class="navbar navbar-light bg-white border-bottom lup-topbar">
         <div class="container-fluid">
-          <span class="navbar-brand fw-bold" data-ref="titulo">Nuevo usuario</span>
+          <span class="navbar-brand fw-bold d-flex align-items-center gap-2" data-ref="titulo">
+            Nuevo usuario
+            <span class="badge bg-success d-none" data-ref="badge-duoc">Descuento DUOC</span>
+          </span>
           <div class="d-flex gap-2">
             <a href="./usuarios.html" class="btn btn-outline-light btn-sm">Volver a listado</a>
             <button class="btn btn-success btn-sm" type="button" data-ref="btn-guardar">Guardar</button>
@@ -51,8 +54,8 @@
               <!-- RUN -->
               <div class="col-sm-4">
                 <label class="form-label">RUN <span class="text-success">*</span></label>
-                <input type="text" class="form-control" id="run" placeholder="Ej: 19011022K" maxlength="9" required>
-                <div class="form-text">Sin puntos ni guion; 7 a 9 caracteres. Validaremos dígito verificador.</div>
+                <input type="text" class="form-control" id="run" placeholder="Ej: 11.111.111-1" maxlength="12" required>
+                <div class="form-text">Se formatea automáticamente (ej: 11.111.111-1). Validaremos dígito verificador.</div>
                 <div class="invalid-feedback">RUN inválido.</div>
               </div>
 

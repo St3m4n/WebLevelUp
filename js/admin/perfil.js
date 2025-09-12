@@ -53,7 +53,16 @@
   // pintar header
   function paintHeader(u){
     DOM('[data-ref="nombre-completo"]').textContent = `${u.nombre} ${u.apellidos}`;
-    DOM('[data-ref="run"]').textContent = u.run;
+    // Mostrar RUN formateado
+    const runClean = String(u.run || '').toUpperCase().replace(/[^0-9K]/g,'');
+    let runFmt = runClean;
+    if (runClean.length >= 2){
+      const body = runClean.slice(0,-1), dv = runClean.slice(-1);
+      let out = '', cnt=0;
+      for (let i=body.length-1; i>=0; i--){ out = body[i] + out; cnt++; if (cnt===3 && i!==0){ out='.'+out; cnt=0; } }
+      runFmt = `${out}-${dv}`;
+    }
+    DOM('[data-ref="run"]').textContent = runFmt;
     DOM('[data-ref="correo"]').textContent = u.correo;
     DOM('[data-ref="perfil"]').textContent = u.perfil;
   }

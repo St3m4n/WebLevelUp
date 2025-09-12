@@ -23,7 +23,21 @@ function saveUsuarios(arr){
 // Valida sin puntos ni guion. DV puede ser 0-9 o K.
 // Implementación estándar módulo 11.
 function normalizarRun(run){
-  return (run || "").toUpperCase().replace(/\s+/g,'').replace(/[^0-9K]/g,''); // quita cualquier char extraño
+  return String(run || "").toUpperCase().replace(/[^0-9K]/g,'');
+}
+function formatearRun(runRaw){
+  const clean = normalizarRun(runRaw);
+  if (clean.length < 2) return clean;
+  const cuerpo = clean.slice(0, -1);
+  const dv = clean.slice(-1);
+  let out = '';
+  let cnt = 0;
+  for (let i = cuerpo.length - 1; i >= 0; i--){
+    out = cuerpo[i] + out;
+    cnt++;
+    if (cnt === 3 && i !== 0){ out = '.' + out; cnt = 0; }
+  }
+  return `${out}-${dv}`;
 }
 function validarRun(runRaw){
   const run = normalizarRun(runRaw);
@@ -82,6 +96,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const form = $('[data-ref="form"]');
   const btnGuardar = $('[data-ref="btn-guardar"]');
   const titulo = $('[data-ref="titulo"]');
+  const badgeDuoc = $('[data-ref="badge-duoc"]');
 
   // inputs
   const iRun = $('#run');
@@ -105,9 +120,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if (found){
       editing = true;
       originalRun = found.run;
-      titulo.textContent = `Editar usuario: ${found.run}`;
+      // Mostrar correo en el título cuando se edita
+      titulo.textContent = `Editar usuario: ${found.correo || found.run}`;
 
-      iRun.value = normalizarRun(found.run);
+      // Mostrar RUN formateado, pero persistir normalizado al guardar
+      iRun.value = formatearRun(found.run);
       iRun.setAttribute('readonly','readonly'); // clave primaria
       iNombre.value = found.nombre || "";
       iApellidos.value = found.apellidos || "";
@@ -124,11 +141,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
       iComuna.value = found.comuna || "";
 
       iDireccion.value = found.direccion || "";
+
+      // Mostrar badge si aplica
+      const domain = String(found.correo||'').split('@')[1]?.toLowerCase()||'';
+      const hasDesc = !!found.descuentoVitalicio || (String(found.perfil)==='Cliente' && domain==='duoc.cl');
+      if (badgeDuoc) badgeDuoc.classList.toggle('d-none', !hasDesc);
     } else {
       titulo.textContent = "Nuevo usuario";
+      if (badgeDuoc) badgeDuoc.classList.add('d-none');
     }
   } else {
     titulo.textContent = "Nuevo usuario";
+    if (badgeDuoc) badgeDuoc.classList.add('d-none');
   }
 
   // ---- Validaciones básicas en tiempo real
@@ -137,9 +161,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
     inp.addEventListener('change', ()=>inp.classList.remove('is-invalid'));
   });
 
-  // Forzar mayúsculas en RUN y quitar espacios
+  // Toggle badge en tiempo real segun correo/perfil
+  function updateBadgeRealtime(){
+    const email = String(iCorreo.value||'').trim().toLowerCase();
+    const domain = email.split('@')[1] || '';
+    const isCliente = iPerfil.value === 'Cliente';
+    const show = isCliente && domain.toLowerCase()==='duoc.cl';
+    if (badgeDuoc) badgeDuoc.classList.toggle('d-none', !show);
+  }
+  iCorreo.addEventListener('input', updateBadgeRealtime);
+  iPerfil.addEventListener('change', updateBadgeRealtime);
+
+  // RUN: sanitiza mientras escribe, formatea al salir
   iRun.addEventListener('input', ()=>{
-    iRun.value = normalizarRun(iRun.value);
+    const before = iRun.value;
+    const clean = normalizarRun(before);
+    // Evitar saltos de cursor: solo reescribe si hay cambios ajenos (espacios, signos)
+    if (before.replace(/[^0-9kK]/g,'').toUpperCase() !== clean){
+      iRun.value = clean;
+    }
+  });
+  iRun.addEventListener('blur', ()=>{
+    iRun.value = formatearRun(iRun.value);
   });
 
   function setInvalid(el){ el.classList.add('is-invalid'); return false; }
@@ -150,12 +193,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     // RUN
     const runVal = iRun.value.trim();
-    if (!validarRun(runVal)) ok = setInvalid(iRun); else {
-      // duplicado solo si estamos creando
-      if (!editing){
+    if (editing){
+      // En edición no exigimos DV por compatibilidad con datos legados; campo es solo lectura
+      clearInvalid(iRun);
+    } else {
+      if (!validarRun(runVal)) ok = setInvalid(iRun); else {
+        // duplicado solo si estamos creando
         const dup = data.some(u => normalizarRun(u.run) === normalizarRun(runVal));
         if (dup) ok = setInvalid(iRun); else clearInvalid(iRun);
-      } else clearInvalid(iRun);
+      }
     }
 
     // Nombre / Apellidos
@@ -195,6 +241,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
       comuna: iComuna.value,
       direccion: iDireccion.value.trim()
     };
+
+      // Descuento vitalicio para Clientes con correo @duoc.cl
+      try {
+        const domain = (payload.correo.split('@')[1] || '').toLowerCase();
+        if (payload.perfil === 'Cliente' && domain === 'duoc.cl') {
+          payload.descuentoVitalicio = true;
+        }
+      } catch (e) { /* ignore */ }
 
     if (editing){
       data = data.map(u => normalizarRun(u.run) === normalizarRun(originalRun) ? {...u, ...payload, run: originalRun} : u);
