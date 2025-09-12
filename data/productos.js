@@ -1,6 +1,5 @@
 // data/productos.js
 // datos de productos fake
-// En la siguiente etapa lo persistiremos con localStorage.
 window.productos = [
   {
     codigo: "JM001",

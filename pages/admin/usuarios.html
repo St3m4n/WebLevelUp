@@ -31,7 +31,7 @@
         <li class="nav-item"><a href="./index.html" class="nav-link">🏠 Dashboard</a></li>
         <li><a href="./productos.html" class="nav-link">🛒 Productos</a></li>
         <li><a href="./producto-form.html" class="nav-link">➕ Nuevo producto</a></li>
-        <li><a href="./usuarios.html" class="nav-link">👤 Usuarios</a></li>
+        <li><a href="./usuarios.html" class="nav-link active">👤 Usuarios</a></li>
         <li><a href="./usuario-form.html" class="nav-link">➕ Nuevo usuario</a></li>
       </ul>
 
@@ -44,14 +44,8 @@
       <nav class="navbar navbar-light bg-white border-bottom lup-topbar">
         <div class="container-fluid">
           <span class="navbar-brand fw-bold" data-ref="titulo">Usuarios</span>
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-light btn-sm">Perfil</button>
-            <button class="btn btn-outline-light btn-sm">Cerrar sesión</button>
-          </div>
         </div>
       </nav>
-
-
       <section class="container py-4">
         <div class="card lup-card">
           <div class="card-body">
@@ -103,15 +97,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../data/usuarios.js"></script>
   <script src="../../js/admin/admin-usuarios.js"></script>
-  <script>
-    (function () {
-      const path = location.pathname.split('/').pop() || 'index.html';
-      document.querySelectorAll('#lup-menu .nav-link').forEach(a => {
-        const href = a.getAttribute('href');
-        a.classList.toggle('active', href === path);
-      });
-    })();
-  </script>
 </body>
 
 </html>

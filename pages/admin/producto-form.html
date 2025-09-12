@@ -30,25 +30,19 @@
       <ul class="nav nav-pills flex-column mb-auto gap-1" id="lup-menu">
         <li class="nav-item"><a href="./index.html" class="nav-link">🏠 Dashboard</a></li>
         <li><a href="./productos.html" class="nav-link">🛒 Productos</a></li>
-        <li><a href="./producto-form.html" class="nav-link">➕ Nuevo producto</a></li>
+        <li><a href="./producto-form.html" class="nav-link active">➕ Nuevo producto</a></li>
         <li><a href="./usuarios.html" class="nav-link">👤 Usuarios</a></li>
         <li><a href="./usuario-form.html" class="nav-link">➕ Nuevo usuario</a></li>
       </ul>
 
       <hr class="border-secondary mt-auto">
       <div class="small text-secondary">Administrador</div>
-
     </aside>
-
     <!-- Main -->
     <main class="flex-grow-1">
       <nav class="navbar navbar-light bg-white border-bottom lup-topbar">
         <div class="container-fluid">
           <span class="navbar-brand fw-bold" data-ref="titulo">Formulario de Productos</span>
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-light btn-sm">Perfil</button>
-            <button class="btn btn-outline-light btn-sm">Cerrar sesión</button>
-          </div>
           <div class="d-flex gap-2">
             <a href="./productos.html" class="btn btn-outline-light btn-sm">Volver a listado</a>
             <button class="btn btn-success btn-sm" type="button" data-ref="btn-guardar">Guardar</button>
@@ -139,15 +133,5 @@
   <!-- Data base + lógica del form (orden importa) -->
   <script src="../../data/productos.js"></script>
   <script src="../../js/admin/admin-producto-form.js"></script>
-  <script>
-    (function () {
-      const path = location.pathname.split('/').pop() || 'index.html';
-      document.querySelectorAll('#lup-menu .nav-link').forEach(a => {
-        const href = a.getAttribute('href');
-        a.classList.toggle('active', href === path);
-      });
-    })();
-  </script>
 </body>
-
 </html>

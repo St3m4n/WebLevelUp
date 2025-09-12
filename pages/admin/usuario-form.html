@@ -126,15 +126,5 @@
   <script src="../../data/usuarios.js"></script>
   <script src="../../data/regiones-comunas.js"></script>
   <script src="../../js/admin/admin-usuario-form.js"></script>
-
-  <!-- Menú activo -->
-  <script>
-    (function(){
-      const path = location.pathname.split('/').pop() || 'index.html';
-      document.querySelectorAll('#lup-menu .nav-link').forEach(a=>{
-        a.classList.toggle('active', a.getAttribute('href') === path);
-      });
-    })();
-  </script>
 </body>
 </html>

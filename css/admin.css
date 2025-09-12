@@ -46,12 +46,12 @@ body{
 }
 .lup-sidebar .nav-link:hover{
   color: var(--fg);
-  background:#f3f4f6;
-  border-color:#f3f4f6;
+  background:#98aacf;
+  border-color:#96a5c4;
 }
 .lup-sidebar .nav-link.active{
   background: var(--primary);
-  color:#fff;
+  color: blue;
   font-weight:600;
   border:none;
 }
