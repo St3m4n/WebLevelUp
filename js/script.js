@@ -214,4 +214,44 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // =========================================================================
+    // --- 5. LOGIN ADMIN (VALIDACIÓN CON usuarios.js + REDIRECCIÓN) ---
+    // =========================================================================
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('adminUser');
+            const pass = document.getElementById('adminPass');
+
+            const correo = (user?.value || '').trim().toLowerCase();
+            const password = (pass?.value || '').trim();
+
+            // Validación base
+            const userOk = correo !== '';
+            const passOk = password !== '';
+            if (user) user.classList.toggle('is-invalid', !userOk);
+            if (pass) pass.classList.toggle('is-invalid', !passOk);
+            if (!userOk || !passOk) {
+                try { if (typeof showNotification === 'function') showNotification('Completa usuario y contraseña.', 'bi-exclamation-triangle-fill', 'text-warning'); } catch {}
+                return;
+            }
+
+            // Verificar que el correo corresponda a un usuario Administrador en window.usuarios
+            const lista = Array.isArray(window.usuarios) ? window.usuarios : [];
+            const admin = lista.find(u => String(u.correo || '').toLowerCase() === correo && String(u.perfil || '') === 'Administrador');
+
+            if (!admin) {
+                // Usuario no es admin o no existe
+                try { if (typeof showNotification === 'function') showNotification('Usuario no autorizado. Debe ser Administrador.', 'bi-x-octagon-fill', 'text-danger'); } catch {}
+                if (user) user.classList.add('is-invalid');
+                return;
+            }
+
+            // Credenciales válidas para demo (no hay verificación real de password)
+            try { localStorage.setItem('isAdmin', '1'); } catch {}
+            window.location.href = '../admin/index.html';
+        });
+    }
 });
