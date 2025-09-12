@@ -311,6 +311,19 @@ footer .bi:hover { transform: scale(1.2); }
     margin: 0 1rem;              
 }
 
+/* Variantes reutilizables de fondo para secciones hero */
+.hero-container.hero-bg-gamer {
+    background-image: url('/assets/gamer.jpg');
+}
+
+/* Hero para páginas de eventos (con overlay) */
+.event-hero {
+    background: linear-gradient(rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 0.9)), url('/assets/worlds.webp');
+    background-size: cover;
+    background-position: center;
+    padding: 6rem 0;
+}
+
 .welcome-section {
     max-width: 1200px;           
     margin: 0 auto;             

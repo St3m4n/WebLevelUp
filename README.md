@@ -146,7 +146,6 @@ git clone https://github.com/usuario/proyecto-levelup.git
 2. Abrir:
 - Admin → `/pages/admin/index.html`
 - Tienda → `/pages/tienda/index.html`
-
 ---
 
 ## 🌿 Flujo de ramas (Git)
