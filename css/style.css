@@ -303,7 +303,7 @@ footer .bi:hover { transform: scale(1.2); }
 /* --- ESTILOS PARA EL NUEVO HERO SECTION --- */
 .hero-container {
     padding: 7rem 2rem;
-    background-image: url('/img/background.png'); 
+    background-image: url('/assets/background.png'); 
     background-size: cover;      
     background-position: center; 
     background-attachment: fixed;
