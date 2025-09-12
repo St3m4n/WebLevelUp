@@ -28,10 +28,24 @@
     } catch { return false; }
   }
 
+  function norm(s){
+    return String(s||'')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
   function getParamCategoria(){
     const usp = new URLSearchParams(window.location.search);
     const cat = usp.get('categoria');
     return cat ? decodeURIComponent(cat) : null;
+  }
+
+  function getParamQuery(){
+    const usp = new URLSearchParams(window.location.search);
+    const q = usp.get('q');
+    return q ? decodeURIComponent(q) : '';
   }
 
   function uniqueCategories(list){
@@ -90,22 +104,9 @@
     return arr;
   }
 
-  function updateSecondaryNavLinks(){
-    const nav = document.querySelector('.secondary-nav');
-    const productos = Array.isArray(window.productos) ? window.productos : [];
-    const cats = uniqueCategories(productos);
-    if (!nav) return;
-    const links = nav.querySelectorAll('a.nav-link');
-    links.forEach((a, idx)=>{
-      const cat = cats[idx] || a.textContent?.trim() || '';
-      a.href = `categoria.html?categoria=${encodeURIComponent(cat)}`;
-    });
-  }
-
   function render(){
     const productos = Array.isArray(window.productos) ? window.productos : [];
     if (!productos.length) return;
-    updateSecondaryNavLinks();
 
     let categoria = getParamCategoria();
     const cats = uniqueCategories(productos);
@@ -123,11 +124,11 @@
     if (!grid) return;
 
     // sort init
-    const sortSel = document.getElementById('sort-by');
-    const stockChk = document.getElementById('f-stock');
-    const minInput = document.getElementById('f-price-min');
-    const maxInput = document.getElementById('f-price-max');
-    const searchInput = document.getElementById('f-search');
+  const sortSel = document.getElementById('sort-by');
+  const stockChk = document.getElementById('f-stock');
+  const minInput = document.getElementById('f-price-min');
+  const maxInput = document.getElementById('f-price-max');
+  const searchInput = document.getElementById('f-search');
     const pageSizeSel = document.getElementById('page-size');
     const paginationUl = document.getElementById('pagination');
 
@@ -161,18 +162,25 @@
       });
     }
 
+    // Inicializar búsqueda desde q (si viene de la barra global)
+    const initialQ = getParamQuery();
+    if (searchInput && initialQ) {
+      searchInput.value = initialQ;
+    }
+
     const applyRender = () => {
       const mode = sortSel?.value || '0';
       const mustStock = stockChk?.checked;
       const minV = Number(minInput?.value || 0) || 0;
       const maxV = Number(maxInput?.value || 0) || 0;
-      const q = (searchInput?.value || '').trim().toLowerCase();
+      const q = (searchInput?.value || '').trim();
+      const qn = norm(q);
 
       let filtered = baseList.filter(p => {
         if (mustStock && !(Number(p.stock) > 0)) return false;
         if (minV && Number(p.precio) < minV) return false;
         if (maxV && Number(p.precio) > maxV) return false;
-        if (q && !String(p.nombre).toLowerCase().includes(q)) return false;
+        if (qn && !norm(p.nombre).includes(qn)) return false;
         return true;
       });
 
@@ -188,12 +196,12 @@
       try { if (window.Carrito) window.Carrito.renderBadge(); } catch {}
     };
 
-  sortSel?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
-  stockChk?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
-  minInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
-  maxInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
-  searchInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
-  pageSizeSel?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
+    sortSel?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
+    stockChk?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
+    minInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
+    maxInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
+    searchInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
+    pageSizeSel?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
     applyRender();
   }
 

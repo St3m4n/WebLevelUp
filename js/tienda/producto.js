@@ -164,18 +164,9 @@
     // Productos relacionados
     renderRelated(p);
 
-    // Actualizar links de la secondary nav y marcar activa la categoría del producto
+    // Marcar activa la categoría del producto en la secondary nav (los links ya los genera secondary-nav.js)
     const nav = document.querySelector('.secondary-nav');
     if (nav){
-      if (window.Session && typeof window.Session.updateSecondaryNavLinks === 'function'){
-        window.Session.updateSecondaryNavLinks();
-      } else {
-        const links = nav.querySelectorAll('a.nav-link');
-        links.forEach(a => {
-          const label = (a.textContent||'').trim();
-          if (label) a.href = `categoria.html?categoria=${encodeURIComponent(label)}`;
-        });
-      }
       // Marcar como activa la categoría del producto actual
       const prodCatLower = String(p.categoria||'').toLowerCase();
       nav.querySelectorAll('a.nav-link').forEach(a => {

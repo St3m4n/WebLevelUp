@@ -564,4 +564,57 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = '../admin/index.html';
         });
     }
+
+    // =========================================================================
+    // --- 9. BUSCADOR GLOBAL DEL NAVBAR ---
+    // =========================================================================
+    (function setupGlobalNavbarSearch(){
+        const forms = document.querySelectorAll('form[role="search"]');
+        if (!forms || forms.length === 0) return;
+
+        const norm = (s) => String(s || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+
+        const getUniqueCategories = (list) => {
+            const seen = new Set();
+            const out = [];
+            (Array.isArray(list) ? list : []).forEach(p => {
+                const c = p && p.categoria ? String(p.categoria).trim() : '';
+                if (c && !seen.has(c)) { seen.add(c); out.push(c); }
+            });
+            return out;
+        };
+
+    const productos = Array.isArray(window.productos) ? window.productos : [];
+    const categorias = getUniqueCategories(productos);
+
+        forms.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                // Bloquear cualquier comportamiento por defecto y otros handlers
+                try { e.preventDefault(); } catch {}
+                try { e.stopPropagation(); } catch {}
+                try { e.stopImmediatePropagation(); } catch {}
+
+                try {
+                    const input = form.querySelector('input[type="search"]');
+                    const raw = input ? input.value : '';
+                    const q = String(raw || '').trim();
+                    if (!q) return; // no buscar vacío
+                    // Unificar experiencia: siempre ir a la página de resultados
+                    window.location.href = `busqueda.html?q=${encodeURIComponent(q)}`;
+                } catch {
+                    // Cualquier error: llevar a la página de búsqueda con el término ingresado
+                    try {
+                        const input = form.querySelector('input[type="search"]');
+                        const raw = input ? input.value : '';
+                        const q = String(raw || '').trim();
+                        if (q) window.location.href = `busqueda.html?q=${encodeURIComponent(q)}`;
+                    } catch {}
+                }
+            }, true); // captura primero y evita conflictos
+        });
+    })();
 });

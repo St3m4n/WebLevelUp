@@ -122,30 +122,13 @@
     }
   }
 
-  // Actualiza los links de la barra secundaria para apuntar a categoria.html?categoria=...
-  function updateSecondaryNavLinks() {
-    try {
-      const nav = document.querySelector('.secondary-nav');
-      if (!nav) return;
-      const links = nav.querySelectorAll('a.nav-link');
-      const usp = new URLSearchParams(window.location.search);
-      const currentCat = (usp.get('categoria') || '').trim().toLowerCase();
-      links.forEach(a => {
-        const label = (a.textContent || '').trim();
-        if (!label) return;
-        a.href = `categoria.html?categoria=${encodeURIComponent(label)}`;
-        // Marcar activo si coincide con la categoría actual de la URL
-        const matches = label.trim().toLowerCase() === currentCat && currentCat.length > 0;
-        a.classList.toggle('active', matches);
-      });
-    } catch {}
-  }
+  // Nota: La barra secundaria ahora se genera y gestiona en js/secondary-nav.js.
+  // Cualquier lógica previa para actualizar sus enlaces/estado fue retirada de este archivo.
 
   // Inicialización
   document.addEventListener('DOMContentLoaded', () => {
     migrateLegacy();
     updateNavbarWithSession();
-    updateSecondaryNavLinks();
   });
 
   // Expone API mínima global
@@ -153,7 +136,6 @@
     get: readSesActual,
     set: writeSesActual,
     clear: clearSesActual,
-    updateNavbar: updateNavbarWithSession,
-    updateSecondaryNavLinks
+    updateNavbar: updateNavbarWithSession
   };
 })();
