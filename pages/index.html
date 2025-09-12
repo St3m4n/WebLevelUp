@@ -26,7 +26,7 @@
                         <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias.html">Categorias</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="comunidad.html">Comunidad</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
                     </ul>
                 </div>
@@ -48,7 +48,7 @@
                         <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias.html">Categorias</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="comunidad.html">Comunidad</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
                     </ul>
 
@@ -70,6 +70,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
                                     <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
+                                    <li><a class="dropdown-item" href="perfil.html">Perfil</a></li>
                                 </ul>
                             </div>
                             <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
@@ -99,11 +100,12 @@
     </header>
 
     <div class="hero-container">
-        <div class="text-center welcome-section">
+        <div class="text-center hero-banner">
             <h1>BIENVENIDO A <span class="text-accent">LEVEL-UP</span></h1>
             <p class="lead">Explora, juega y gana recompensas.</p>
-            <button type="button" class="btn btn-neon mt-2">¡Únete a la comunidad!</button>
+            <a href="registro.html" class="btn btn-neon mt-2" role="button">¡Únete a la comunidad!</a>
         </div>
+
     </div>
 
     <section class="container my-5">
@@ -257,7 +259,7 @@
                 <a class="nav-link" href="index.html">Inicio</a>
                 <a class="nav-link" href="categorias.html">Categorias</a>
                 <a class="nav-link" href="nosotros.html">Nosotros</a>
-                <a class="nav-link" href="blogs.html">Blogs</a>
+                <a class="nav-link" href="comunidad.html">Comunidad</a>
                 <a class="nav-link" href="contacto.html">Contacto</a>
             </div>
             <div class="d-flex gap-3">
@@ -268,7 +270,23 @@
         </div>
     </footer>
 
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="notificationToast" class="toast toast-custom" role="alert" aria-live="assertive" aria-atomic="true" data-bs-theme="dark">
+        <div class="toast-header">
+            <i id="toast-icon" class="bi bi-check-circle-fill text-success me-2"></i>
+            <strong class="me-auto">Level-Up Gamer</strong>
+            <small>Ahora</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="toast-body" class="toast-body">
+            ¡Producto añadido al carrito exitosamente!
+        </div>
+    </div>
+</div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
 </body>
 
 </html>

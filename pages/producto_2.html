@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer</title>
+    <title>Carcassonne - Level-Up Gamer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -26,7 +26,7 @@
                         <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias.html">Categorias</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="comunidad.html">Comunidad</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
                     </ul>
                 </div>
@@ -48,7 +48,7 @@
                         <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias.html">Categorias</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                        <li class="nav-item"><a class="nav-link" href="comunidad.html">Comunidad</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
                     </ul>
 
@@ -70,6 +70,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="login.html">Iniciar sesión</a></li>
                                     <li><a class="dropdown-item" href="registro.html">Registrarse</a></li>
+                                    <li><a class="dropdown-item" href="perfil.html">Perfil</a></li>
                                 </ul>
                             </div>
                             <a href="carrito.html" class="nav-link ms-3"><i class="bi bi-cart fs-4"></i></a>
@@ -99,89 +100,100 @@
         </nav>
     </header>
 
-    <div class="text-center welcome-section">
-        <h1>Nuestro Blog</h1>
-        <p>Noticias, guías y todo sobre el universo gamer</p>
-    </div>
-
     <div class="container my-5">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <div class="col">
-                <div class="card h-100 blog-card">
-                    <img src="/img/blog.webp" class="card-img-top" alt="PC Gamer Limpio">
-                    <div class="card-body d-flex flex-column">
-                        <span class="blog-tag mb-2">GUÍA</span>
-                        <h5 class="card-title">Guía: Cómo Limpiar tu PC Gamer sin Riesgos</h5>
-                        <p class="card-text text-secondary">Mantén tu equipo en perfectas condiciones para maximizar el
-                            rendimiento y la vida útil de tus componentes.</p>
-                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
-                                class="bi bi-arrow-right-short"></i></a>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="categorias.html">Productos</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Carcassonne</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5 mt-3">
+            <div class="col-lg-6">
+                <img src="/img/Carcassonne.png" class="img-fluid rounded-3 mb-3" alt="Juego de mesa Carcassonne">
+                <div class="d-flex gap-2">
+                    <img src="/img/Carcassonne.png" class="img-thumbnail product-thumbnail active" alt="Thumbnail 1">
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <h1 class="product-title">Carcassonne</h1>
+                <p class="text-secondary">Código: JM002</p>
+                <p class="display-5 fw-bold price-highlight">$24.990 CLP</p>
+                <p class="text-secondary">Un moderno juego de colocación de losetas donde los jugadores construyen el
+                    paisaje medieval de Carcassonne, reclamando ciudades, caminos y granjas. Fácil de aprender pero con
+                    una profunda estrategia.</p>
+
+                <hr class="contact-hr my-4">
+
+                <div class="d-flex align-items-center mb-4">
+                    <span class="me-3">Cantidad:</span>
+                    <div class="quantity-selector">
+                        <button class="btn btn-sm btn-outline-secondary">-</button>
+                        <input type="number" class="form-control form-control-sm text-center" value="1">
+                        <button class="btn btn-sm btn-outline-secondary">+</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-neon w-100 mb-4 btn-add-cart"> <i class="bi bi-cart-plus-fill me-2"></i>Agregar
+                    al Carro</button>
+
+                <div class="social-share">
+                    <span class="text-secondary me-2">Compartir:</span>
+                    <a href="#" class="btn-social"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="btn-social"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="btn-social"><i class="bi bi-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container my-5">
+            <div class="card p-3">
+                <ul class="nav nav-tabs" id="productTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab"
+                            data-bs-target="#description" type="button" role="tab">Descripción</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs"
+                            type="button" role="tab">Especificaciones</button>
+                    </li>
+                </ul>
+                <div class="tab-content p-4" id="productTabContent">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <p class="text-secondary">"Carcassonne" es un aclamado juego de mesa donde los jugadores crean
+                            un tablero único en cada partida. Al colocar una loseta, pueden decidir posicionar a uno de
+                            sus seguidores (meeples) para controlar caminos, ciudades, monasterios o granjas. La clave
+                            está en la gestión inteligente de los meeples y en aprovechar las oportunidades para
+                            completar estructuras y sumar puntos.</p>
+                    </div>
+                    <div class="tab-pane fade" id="specs" role="tabpanel">
+                        <ul class="list-unstyled text-secondary">
+                            <li><strong>Fabricante:</strong> Devir</li>
+                            <li><strong>Jugadores:</strong> 2-5</li>
+                            <li><strong>Tiempo de Juego:</strong> 30-45 min aprox.</li>
+                            <li><strong>Edad Recomendada:</strong> 8+</li>
+                        </ul>
                     </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="card h-100 blog-card">
-                    <img src="/img/blog.webp" class="card-img-top" alt="Próximos lanzamientos de videojuegos">
-                    <div class="card-body d-flex flex-column">
-                        <span class="blog-tag mb-2"
-                            style="background-color: var(--color-accent-neon); color: var(--color-background);">NOTICIA</span>
-                        <h5 class="card-title">Anunciados los Próximos Lanzamientos para Fin de Año</h5>
-                        <p class="card-text text-secondary">Desde esperadas secuelas hasta nuevas IPs. Revisa aquí el
-                            calendario de los juegos que no te puedes perder.</p>
-                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
-                                class="bi bi-arrow-right-short"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 blog-card">
-                    <img src="/img/blog.webp" class="card-img-top" alt="Controles profesionales de consola">
-                    <div class="card-body d-flex flex-column">
-                        <span class="blog-tag mb-2">REVIEW</span>
-                        <h5 class="card-title">Review: ¿Valen la pena los nuevos controles Scuf para Xbox?</h5>
-                        <p class="card-text text-secondary">Probamos a fondo los últimos controles profesionales. ¿Son
-                            una ventaja real para el juego competitivo?</p>
-                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
-                                class="bi bi-arrow-right-short"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 blog-card">
-                    <img src="/img/blog.webp" class="card-img-top" alt="Ergonomía en silla gamer">
-                    <div class="card-body d-flex flex-column">
-                        <span class="blog-tag mb-2">CONSEJOS</span>
-                        <h5 class="card-title">Optimiza tu Silla Gamer para Máximo Confort</h5>
-                        <p class="card-text text-secondary">Descubre los secretos de la ergonomía para evitar la fatiga
-                            en largas sesiones de juego.</p>
-                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
-                                class="bi bi-arrow-right-short"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 blog-card">
-                    <img src="/img/blog.webp" class="card-img-top" alt="Juegos de mesa">
-                    <div class="card-body d-flex flex-column">
-                        <span class="blog-tag mb-2">COMUNIDAD</span>
-                        <h5 class="card-title">Top 3 Juegos de Mesa para una Noche con Amigos</h5>
-                        <p class="card-text text-secondary">¿Buscas una alternativa a los videojuegos? Te recomendamos
-                            los mejores juegos de mesa para compartir.</p>
-                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
-                                class="bi bi-arrow-right-short"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100 blog-card">
-                    <img src="/img/blog.webp" class="card-img-top" alt="Setup gamer con luces">
-                    <div class="card-body d-flex flex-column">
-                        <span class="blog-tag mb-2">GUÍA</span>
-                        <h5 class="card-title">Cómo Crear el Setup Gamer de tus Sueños con Poco Presupuesto</h5>
-                        <p class="card-text text-secondary">No necesitas gastar una fortuna para tener un espacio
-                            increíble. Te damos ideas para empezar.</p>
-                        <a href="#" class="btn btn-add-cart mt-auto align-self-start">Leer Más <i
-                                class="bi bi-arrow-right-short"></i></a>
+        </div>
+
+        <div class="container my-5">
+            <h2 class="mb-4">También te podría interesar</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="/img/catan.webp" class="card-img-top" alt="Catan">
+                        <div class="card-body d-flex flex-column text-center">
+                            <h5 class="card-title">Catan</h5>
+                            <p class="card-text">Juegos de Mesa</p>
+                            <div class="mt-auto">
+                                <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">$29.990</h4>
+                                <a href="producto_1.html" class="btn btn-view-product w-100">Ver Producto</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,7 +209,7 @@
                 <a class="nav-link" href="index.html">Inicio</a>
                 <a class="nav-link" href="categorias.html">Categorias</a>
                 <a class="nav-link" href="nosotros.html">Nosotros</a>
-                <a class="nav-link" href="blogs.html">Blogs</a>
+                <a class="nav-link" href="comunidad.html">Comunidad</a>
                 <a class="nav-link" href="contacto.html">Contacto</a>
             </div>
             <div class="d-flex gap-3">
@@ -207,7 +219,25 @@
             </div>
         </div>
     </footer>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="notificationToast" class="toast toast-custom" role="alert" aria-live="assertive" aria-atomic="true"
+            data-bs-theme="dark">
+            <div class="toast-header">
+                <i id="toast-icon" class="bi bi-check-circle-fill text-success me-2"></i>
+                <strong class="me-auto">Level-Up Gamer</strong>
+                <small>Ahora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toast-body" class="toast-body">
+                ¡Producto añadido al carrito exitosamente!
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
+
 </body>
 
 </html>

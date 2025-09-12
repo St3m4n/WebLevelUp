@@ -9,7 +9,6 @@
 /* --- ESTILOS GENERALES --- */
 body {
     background-color: var(--color-background);
-    background-image: url('/img/dark-texture.png'); 
     color: var(--color-text-primary);
     font-family: 'Roboto', sans-serif;
     padding-top: 175px; 
@@ -304,7 +303,7 @@ footer .bi:hover { transform: scale(1.2); }
 /* --- ESTILOS PARA EL NUEVO HERO SECTION --- */
 .hero-container {
     padding: 7rem 2rem;
-    background-image: url('/img/comunidada.jpg'); 
+    background-image: url('/img/background.png'); 
     background-size: cover;      
     background-position: center; 
     background-attachment: fixed;
@@ -557,4 +556,213 @@ footer .bi:hover { transform: scale(1.2); }
 .welcome-section p {
     font-size: 1.2rem;
     color: var(--color-text-secondary);
+}
+
+/* --- ESTILO PARA EL BANNER DE BIENVENIDA (INDEX) --- */
+.hero-banner {
+    background: rgba(18, 18, 18, 0.65);       /* Fondo gris semitransparente */
+    backdrop-filter: blur(10px);             /* Efecto de vidrio esmerilado */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borde sutil */
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 900px; /* Ancho máximo para el banner */
+    margin: 0 auto;   /* Centra el banner */
+}
+
+/* --- ESTILOS PARA LA NOTIFICACIÓN TOAST PERSONALIZADA --- */
+.toast-custom {
+    /* Usamos los mismos estilos de tus .card para consistencia */
+    background-color: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(10px);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-accent-neon);
+    border-radius: .75rem; /* Bordes un poco más redondeados */
+    box-shadow: 0 0 20px rgba(199, 41, 242, 0.4);
+}
+
+.toast-custom .toast-header {
+    /* Hacemos el encabezado transparente para que se vea el fondo */
+    background-color: transparent;
+    color: var(--color-text-secondary);
+}
+
+/* --- ESTILO PARA EL NUEVO BOTÓN "VER PRODUCTO" --- */
+.card .btn-view-product {
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 0 10px var(--color-accent-blue);
+    transition: all 0.3s ease;
+}
+
+.card .btn-view-product:hover {
+    background-color: var(--color-accent-neon);
+    color: var(--color-background);
+    box-shadow: 0 0 15px var(--color-accent-neon), 0 0 20px rgba(30, 144, 255, 0.4);
+}
+
+
+/* --- ESTILOS MEJORADOS PARA LA PÁGINA DE PERFIL --- */
+
+/* Estilo para el contenedor del avatar */
+.profile-avatar {
+    font-size: 6rem; /* Hacemos el ícono mucho más grande */
+    line-height: 1;
+    color: var(--color-accent-neon);
+    text-shadow: 0 0 15px var(--color-accent-neon);
+}
+
+/* Estilo para las pestañas (añadir un borde inferior) */
+.profile-tabs .nav-link {
+    border-bottom: 3px solid transparent !important;
+}
+
+.profile-tabs .nav-link.active {
+    border-bottom-color: var(--color-accent-neon) !important;
+}
+
+/* Nuevo estilo para el historial de pedidos (reemplaza la tabla) */
+.order-item {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.order-item-detail {
+    flex-grow: 1;
+}
+
+.order-item-detail strong {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    display: block;
+}
+
+.order-item-detail span {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.order-item-actions {
+    margin-left: auto;
+}
+
+/* --- ESTILOS PARA VISTA DE DETALLES EN PERFIL --- */
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item .label {
+    color: var(--color-text-secondary);
+    font-weight: bold;
+}
+
+/* --- ESTILOS PARA LA PÁGINA DE COMUNIDAD --- */
+
+/* Estilo para cada item en la lista de eventos */
+.event-item {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.event-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-accent-neon);
+    box-shadow: 0 5px 20px rgba(199, 41, 242, 0.2);
+}
+
+/* Bloque de la fecha a la izquierda */
+.event-date {
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+    padding: 1rem;
+    text-align: center;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.event-date .day {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.event-date .month {
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Detalles del evento a la derecha */
+.event-details {
+    padding: 1.5rem;
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.event-info {
+    flex-grow: 1;
+}
+
+.event-info h3 {
+    margin-bottom: 0.25rem;
+}
+
+.event-info p {
+    margin-bottom: 0;
+    color: var(--color-text-secondary);
+}
+
+.event-actions {
+    margin-left: auto;
+}
+
+/* --- ESTILOS PARA LISTAS DE PROS Y CONTRAS EN BLOGS --- */
+.pros-cons-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.pros-cons-list li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.pros-cons-list .icon {
+    margin-right: 0.75rem;
+    margin-top: 0.2rem;
+}
+
+.pros-cons-list .text-success .icon {
+    color: #198754;
+}
+
+.pros-cons-list .text-danger .icon {
+    color: #dc3545;
 }

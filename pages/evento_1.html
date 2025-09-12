@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer</title>
+    <title>Torneo de League of Legends 5v5 - Level-Up Gamer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -12,8 +12,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Estilo para la imagen de cabecera del evento */
+        .event-hero {
+            background: linear-gradient(rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 0.9)), url('/img/worlds.webp');
+            background-size: cover;
+            background-position: center;
+            padding: 6rem 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -91,7 +99,8 @@
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Sillas Gamers</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mouse</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mousepad</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Polerones Gamers</a></li>
                     </ul>
                 </div>
@@ -99,83 +108,91 @@
         </nav>
     </header>
 
-
-    <div class="container my-5">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="mb-1">Juegos de Mesa</h1>
-                <p class="text-secondary">Mostrando 2 de 2 productos</p>
-            </div>
-            <div class="d-flex align-items-center">
-                <label for="sort-by" class="form-label me-2 mb-0">Ordenar por:</label>
-                <select class="form-select" id="sort-by">
-                    <option selected>Relevancia</option>
-                    <option value="1">Precio: de menor a mayor</option>
-                    <option value="2">Precio: de mayor a menor</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="row g-4">
-            <aside class="col-lg-3">
-                <div class="card p-3 filter-card">
-                    <h5 class="mb-3">Disponibilidad</h5>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="checkWeb" checked>
-                        <label class="form-check-label" for="checkWeb">Web</label>
-                    </div>
-                    <hr class="contact-hr">
-                    <h5 class="mb-3">Marca</h5>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="checkDevir">
-                        <label class="form-check-label" for="checkDevir">Devir</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="checkAsmodee">
-                        <label class="form-check-label" for="checkAsmodee">Asmodee</label>
-                    </div>
-                </div>
-            </aside>
-
-            <main class="col-lg-9">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-                    <div class="col">
-                        <div class="card h-100 position-relative">
-                            <img src="/img/catan.webp" class="card-img-top" alt="Juego de Mesa Catan">
-                            <div class="card-body d-flex flex-column text-center">
-                                <h5 class="card-title">Devir</h5>
-                                <p class="card-text">
-                                    <a href="producto_1.html"
-                                        class="stretched-link text-white text-decoration-none">Catan</a>
-                                </p>
-                                <div class="mt-auto">
-                                    <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">$29.990</h4>
-                                    <a href="#" class="btn btn-add-cart w-100"><i
-                                            class="bi bi-cart-plus-fill me-2"></i>Agregar al carrito</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card h-100 position-relative">
-                            <img src="/img/Carcassonne.png" class="card-img-top" alt="Juego de Mesa Carcassonne">
-                            <div class="card-body d-flex flex-column text-center">
-                                <h5 class="card-title">Devir</h5>
-                                <p class="card-text">
-                                    <a href="producto_2.html" class="stretched-link text-white text-decoration-none">Carcassonne</a>
-                                </p>
-                                <div class="mt-auto">
-                                    <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">$24.990</h4>
-                                    <a href="#" class="btn btn-add-cart w-100"><i
-                                            class="bi bi-cart-plus-fill me-2"></i>Agregar al carrito</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    <div class="event-hero text-white text-center">
+        <div class="container">
+            <h1 class="display-3 fw-bold text-accent">Torneo de League of Legends 5v5</h1>
+            <p class="lead">Demuestra que tu equipo es el mejor de Concepción.</p>
         </div>
     </div>
+
+    <main class="container my-5">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="comunidad.html">Comunidad</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Torneo de League of Legends 5v5</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5 mt-3">
+
+            <div class="col-lg-8">
+                <h2>Descripción del Evento</h2>
+                <p class="text-secondary">¡Prepara a tu equipo para la batalla! Level-Up Gamer se complace en anunciar
+                    su primer torneo presencial de League of Legends. Equipos de 5 jugadores competirán en la Grieta del
+                    Invocador por la gloria y fantásticos premios. Contaremos con estaciones de juego profesionales para
+                    todos los participantes. ¡No te quedes fuera!</p>
+
+                <h3 class="mt-4">Formato del Torneo</h3>
+                <ul class="text-secondary">
+                    <li>Modo de Juego: Torneo de Reclutamiento 5v5 en la Grieta del Invocador.</li>
+                    <li>Formato: Eliminación simple al mejor de 1 (Bo1). La Gran Final será al mejor de 3 (Bo3).</li>
+                    <li>Plataforma: Servidor de Latinoamérica Sur (LAS).</li>
+                    <li>Equipos: Se requiere un mínimo de 5 jugadores por equipo.</li>
+                </ul>
+
+                <h3 class="mt-4">Premios</h3>
+                <ul class="text-secondary">
+                    <li><strong>1er Lugar:</strong> $100.000 CLP en crédito de tienda + 5 Headsets HyperX Cloud II.</li>
+                    <li><strong>2do Lugar:</strong> $50.000 CLP en crédito de tienda + 5 Mousepads Razer.</li>
+                    <li><strong>3er Lugar:</strong> 5 Teclados Redragon Kumara K552.</li>
+                </ul>
+
+                <h3 class="mt-4">Horario del Evento</h3>
+                <ul class="list-unstyled text-secondary">
+                    <li><strong>10:00 AM:</strong> Check-in y preparación de equipos.</li>
+                    <li><strong>11:00 AM:</strong> Inicio de la Primera Ronda.</li>
+                    <li><strong>02:00 PM:</strong> Semifinales.</li>
+                    <li><strong>04:00 PM:</strong> Gran Final.</li>
+                    <li><strong>06:00 PM:</strong> Ceremonia de premiación.</li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="position-sticky" style="top: 180px;">
+                    <div class="card mb-4">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex align-items-center"><i
+                                    class="bi bi-calendar-event fs-4 me-3 text-accent"></i>
+                                <div><strong>Cuándo:</strong><br> Sábado, 28 de Septiembre, 2025 <br>10:00 AM</div>
+                            </li>
+                            <li class="list-group-item d-flex align-items-center"><i
+                                    class="bi bi-geo-alt-fill fs-4 me-3 text-accent"></i>
+                                <div><strong>Dónde:</strong><br> Tienda Level-Up Gamer <br>Av. O'Higgins 852, Concepción
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex align-items-center"><i
+                                    class="bi bi-cash-coin fs-4 me-3 text-accent"></i>
+                                <div><strong>Inscripción:</strong><br> $25.000 por equipo</div>
+                            </li>
+                        </ul>
+                        <div class="card-body text-center">
+                            <div class="d-grid">
+                                <a href="https://wa.me/56912345678" class="btn btn-neon btn-lg">¡Inscribe a tu Equipo!</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="h5">Ubicación del Evento</h4>
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3194.967622543475!2d-73.06514772344163!3d-36.79532667652396!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9669b4503c9a1735%3A0x3fc32996839e6986!2sDuoc%20UC%3A%20Sede%20San%20Andr%C3%A9s%20De%20Concepci%C3%B3n!5e0!3m2!1ses!2scl!4v1757656521747!5m2!1ses!2scl"
+                        width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
@@ -196,20 +213,6 @@
             </div>
         </div>
     </footer>
-
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-    <div id="notificationToast" class="toast toast-custom" role="alert" aria-live="assertive" aria-atomic="true" data-bs-theme="dark">
-        <div class="toast-header">
-            <i id="toast-icon" class="bi bi-check-circle-fill text-success me-2"></i>
-            <strong class="me-auto">Level-Up Gamer</strong>
-            <small>Ahora</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div id="toast-body" class="toast-body">
-            ¡Producto añadido al carrito exitosamente!
-        </div>
-    </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/script.js"></script>
