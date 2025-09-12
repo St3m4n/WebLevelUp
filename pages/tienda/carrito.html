@@ -84,15 +84,15 @@
             <div class="container">
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav justify-content-center w-100">
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Juegos de Mesa</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Accesorios</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Consolas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Computadores Gamers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Sillas Gamers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mouse</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mousepad</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Polerones Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Juegos de Mesa</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Accesorios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Consolas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Computadores Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Sillas Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Mouse</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Mousepad</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Poleras Personalizadas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categoria.html">Polerones Gamers</a></li>
                     </ul>
                 </div>
             </div>
@@ -109,63 +109,13 @@
         <div class="row g-5">
             <div class="col-lg-8">
                 <div class="card p-4">
-
-                    <div class="cart-item-row">
-                        <img src="../../assets/play5.webp" alt="PlayStation 5" class="cart-item-img">
-                        <div class="cart-item-details">
-                            <h5 class="card-title mb-1">PlayStation 5</h5>
-                            <p class="card-text text-secondary mb-2">Consola</p>
-                            <div class="quantity-selector">
-                                <button class="btn btn-sm btn-outline-secondary">-</button>
-                                <input type="number" class="form-control form-control-sm text-center" value="1">
-                                <button class="btn btn-sm btn-outline-secondary">+</button>
-                            </div>
-                        </div>
-                        <div class="cart-item-price">
-                            <p class="mb-0">$549.990</p>
-                            <button class="btn btn-remove-item"><i class="bi bi-trash3-fill"></i></button>
-                        </div>
-                    </div>
-
-                    <hr class="cart-hr">
-
-                    <div class="cart-item-row">
-                        <img src="../../assets/audifonos.jpg" alt="HyperX Cloud II" class="cart-item-img">
-                        <div class="cart-item-details">
-                            <h5 class="card-title mb-1">Auriculares Gamer HyperX Cloud II</h5>
-                            <p class="card-text text-secondary mb-2">Accesorios</p>
-                            <div class="quantity-selector">
-                                <button class="btn btn-sm btn-outline-secondary">-</button>
-                                <input type="number" class="form-control form-control-sm text-center" value="2">
-                                <button class="btn btn-sm btn-outline-secondary">+</button>
-                            </div>
-                        </div>
-                        <div class="cart-item-price">
-                            <p class="mb-0">$79.990</p>
-                            <button class="btn btn-remove-item"><i class="bi bi-trash3-fill"></i></button>
-                        </div>
-                    </div>
-
+                    <div class="cart-container"></div>
                 </div>
             </div>
 
             <div class="col-lg-4">
                 <div class="card p-4">
-                    <h2 class="mb-4">Resumen del Pedido</h2>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-secondary">Subtotal</span>
-                        <span>$709.970</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="text-secondary">Despacho</span>
-                        <span>$4.990</span>
-                    </div>
-                    <hr class="cart-hr">
-                    <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
-                        <span>Total</span>
-                        <span>$714.960</span>
-                    </div>
-                    <button class="btn btn-neon w-100">Proceder al Pago</button>
+                    <div class="cart-resumen"></div>
                 </div>
             </div>
         </div>
@@ -193,6 +143,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../data/productos.js"></script>
+    <script src="../../js/tienda/carrito.js"></script>
     <script src="../../js/script.js"></script>
 </body>
 
