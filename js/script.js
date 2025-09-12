@@ -558,6 +558,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Credenciales válidas para demo (no hay verificación real de password)
+            // Sesión unificada + back-compat
+            try { if (window.Session && typeof window.Session.set === 'function') { window.Session.set({ correo: admin.correo || 'admin@local', nombre: admin.nombre || 'Administrador', perfil: 'Administrador', remember: true }); } } catch {}
             try { localStorage.setItem('isAdmin', '1'); } catch {}
             window.location.href = '../admin/index.html';
         });

@@ -4,21 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer</title>
+    <title>Producto - Level-Up Gamer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
 
-<header class="fixed-top">
+    <header class="fixed-top">
         <nav class="navbar navbar-expand-lg top-nav d-none d-lg-block">
             <div class="container">
                 <div class="collapse navbar-collapse">
@@ -32,14 +31,12 @@
                 </div>
             </div>
         </nav>
-
         <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
                     <img src="../../assets/logo2.png" alt="Logo Level-UP Gamer">
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -55,16 +52,14 @@
                     <hr class="d-lg-none text-white-50">
 
                     <form class="d-flex mx-auto w-50 my-2" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Buscar productos..."
-                            aria-label="Search">
+                        <input class="form-control me-2" type="search" placeholder="Buscar productos..." aria-label="Search">
                         <button class="btn btn-outline-light" type="submit"><i class="bi bi-search"></i></button>
                     </form>
 
                     <div class="d-flex justify-content-end">
                         <div class="d-flex align-items-center">
                             <div class="nav-item dropdown ms-3">
-                                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-person-circle fs-4"></i>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -79,6 +74,7 @@
                 </div>
             </div>
         </nav>
+
         <nav class="navbar navbar-expand-lg secondary-nav">
             <div class="container">
                 <div class="collapse navbar-collapse">
@@ -97,22 +93,87 @@
             </div>
         </nav>
     </header>
-    <div class="text-center welcome-section mt-5">
-        <h1>Carrito de Compras</h1>
-        <p>Revisa tus productos y prepárate para el siguiente nivel</p>
-    </div>
+
     <div class="container my-5">
-        <div class="row g-5">
-            <div class="col-lg-8">
-                <div class="card p-4">
-                    <div class="cart-container"></div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a id="bc-categoria" href="categorias.html">Productos</a></li>
+                <li class="breadcrumb-item active" id="bc-producto" aria-current="page">Producto</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5 mt-3" id="product-detail" data-producto>
+            <div class="col-lg-6">
+                <img id="product-image" src="../../assets/gamer.jpg" class="img-fluid rounded-3 mb-3" alt="Producto">
+                <div class="d-flex gap-2" id="product-thumbs"></div>
+            </div>
+
+            <div class="col-lg-6">
+                <h1 class="product-title" id="product-title">Producto</h1>
+                <p class="text-secondary" id="product-code">Código: </p>
+                <p class="display-5 fw-bold price-highlight" id="product-price">$0 CLP</p>
+                <p class="text-secondary" id="product-desc">Descubre los detalles de este producto.</p>
+
+                <hr class="contact-hr my-4">
+
+                <div class="d-flex align-items-center mb-4">
+                    <span class="me-3">Cantidad:</span>
+                    <div class="quantity-selector" id="qty-box">
+                        <button class="btn btn-sm btn-outline-secondary" data-action="dec">-</button>
+                        <input type="number" class="form-control form-control-sm text-center" id="qty" value="1" min="1" step="1">
+                        <button class="btn btn-sm btn-outline-secondary" data-action="inc">+</button>
+                    </div>
+                </div>
+
+                <button id="btn-add" class="btn btn-neon w-100 mb-4 btn-add-cart" data-cantidad="1">
+                    <i class="bi bi-cart-plus-fill me-2"></i>Agregar al Carro
+                </button>
+
+                <div class="social-share">
+                    <span class="text-secondary me-2">Compartir:</span>
+                    <a href="#" class="btn-social"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="btn-social"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="btn-social"><i class="bi bi-whatsapp"></i></a>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="card p-4">
-                    <div class="cart-resumen"></div>
+        </div>
+
+        <div class="container my-5">
+            <div class="card p-3">
+                <ul class="nav nav-tabs" id="productTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Descripción</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">Especificaciones</button>
+                    </li>
+                </ul>
+                <div class="tab-content p-4" id="productTabContent">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <p class="text-secondary" id="desc-long">Producto destacado de nuestro catálogo.</p>
+                    </div>
+                    <div class="tab-pane fade" id="specs" role="tabpanel">
+                        <ul class="list-unstyled text-secondary" id="specs-list"></ul>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="container my-5">
+            <h2 class="mb-4">También te podría interesar</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="related-grid"></div>
+        </div>
+    </div>
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="notificationToast" class="toast toast-custom" role="alert" aria-live="assertive" aria-atomic="true" data-bs-theme="dark">
+            <div class="toast-header">
+                <i id="toast-icon" class="bi bi-check-circle-fill text-success me-2"></i>
+                <strong class="me-auto">Level-Up Gamer</strong>
+                <small>Ahora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toast-body" class="toast-body">¡Producto añadido al carrito exitosamente!</div>
         </div>
     </div>
     <footer class="container-fluid py-3 mt-5">
@@ -134,12 +195,14 @@
             </div>
         </div>
     </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/session.js"></script>
+    <script src="../../data/usuarios.js"></script>
     <script src="../../data/productos.js"></script>
     <script src="../../js/tienda/carrito.js"></script>
     <script src="../../js/script.js"></script>
-</body>
+    <script src="../../js/tienda/producto.js"></script>
 
-</html>
+    </body>
+
+    </html>

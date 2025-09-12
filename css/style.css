@@ -102,6 +102,10 @@ h1, h2 {
 .secondary-nav .nav-link:hover {
     color: var(--color-text-primary);
 }
+.secondary-nav .nav-link.active {
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-accent-neon);
+}
 
 /* --- COMPONENTES GENERALES --- */
 .welcome-section {
@@ -231,6 +235,16 @@ footer .bi:hover { transform: scale(1.2); }
 .quantity-selector { display: flex; width: 120px; }
 .quantity-selector .form-control { border-radius: 0; }
 .quantity-selector .btn { border-color: rgba(255, 255, 255, 0.1); color: var(--color-text-secondary); }
+/* Ocultar flechas nativas de inputs numéricos dentro del selector de cantidad */
+.quantity-selector input[type="number"]::-webkit-outer-spin-button,
+.quantity-selector input[type="number"]::-webkit-inner-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+.quantity-selector input[type="number"] { 
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield;      /* Estándar */
+}
 .btn-remove-item { background: none; border: none; color: var(--color-text-secondary); font-size: 1.2rem; padding: 0; transition: color 0.2s ease-in-out; }
 .btn-remove-item:hover { color: #dc3545; }
 .cart-hr { border-color: rgba(187, 62, 255, 0.2); margin: 1.5rem 0; }

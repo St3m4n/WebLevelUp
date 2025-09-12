@@ -92,14 +92,16 @@
             <div class="col-md-8 col-lg-5">
                 <div class="card p-4 p-md-5">
                     <h2 class="text-center mb-4">Iniciar Sesión</h2>
-                    <form>
+                    <form id="clientLoginForm" novalidate>
                         <div class="mb-3">
                             <label for="email" class="form-label">Correo Electrónico</label>
                             <input type="email" class="form-control" id="email" required>
+                            <div class="invalid-feedback">Ingresa un correo válido.</div>
                         </div>
                         <div class="mb-4">
                             <label for="password" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="password" required>
+                            <div class="invalid-feedback">Ingresa tu contraseña.</div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="form-check">
@@ -110,7 +112,9 @@
                             </div>
                             <a href="olvidaste.html" class="form-text">¿Olvidaste tu contraseña?</a>
                         </div>
-                        <button type="submit" class="btn btn-add-cart w-100">Ingresar</button>
+                        <button type="submit" class="btn btn-neon w-100">Ingresar</button>
+
+                        <div id="login-error" class="alert alert-danger mt-3 d-none" role="alert"></div>
 
                         <div class="divider my-4">O</div>
 
@@ -156,6 +160,12 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Session and data -->
+    <script src="../../js/session.js"></script>
+    <!-- Data and logic required for login -->
+    <script src="../../data/usuarios.js"></script>
+    <script src="../../js/script.js"></script>
+    <script src="../../js/tienda/login.js"></script>
 </body>
 
 </html>

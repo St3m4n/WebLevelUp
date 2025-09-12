@@ -15,6 +15,19 @@
     'Polerones Gamers Personalizados': '../../assets/gamer.jpg'
   };
 
+  // Detecta si el usuario actual tiene beneficio DUOC (-20%)
+  function hasDuocDiscount(){
+    try {
+      const ses = window.Session && typeof window.Session.get==='function' ? window.Session.get() : null;
+      if (!ses) return false;
+      const correo = String(ses.correo||'').toLowerCase();
+      if (correo.endsWith('@duoc.cl')) return true;
+      const lista = Array.isArray(window.usuarios) ? window.usuarios : [];
+      const u = lista.find(x => String(x.correo||'').toLowerCase() === correo);
+      return !!(u && u.descuentoVitalicio);
+    } catch { return false; }
+  }
+
   function getParamCategoria(){
     const usp = new URLSearchParams(window.location.search);
     const cat = usp.get('categoria');
@@ -28,28 +41,39 @@
     return out;
   }
 
-  function renderHeader(categoria, count){
+  function renderHeader(categoria, count, from=0, to=0){
     const titleEl = document.getElementById('category-title');
     const countEl = document.getElementById('category-count');
     if (titleEl) titleEl.textContent = categoria;
-    if (countEl) countEl.textContent = `Mostrando ${count} de ${count} productos`;
+    if (countEl) {
+      if (count > 0 && to >= from && to > 0) {
+        countEl.textContent = `Mostrando ${from}-${to} de ${count} productos`;
+      } else {
+        countEl.textContent = `Mostrando ${count} de ${count} productos`;
+      }
+    }
   }
 
   function productCard(prod, categoria){
     const img = IMG_BY_CATEGORY[categoria] || '../../assets/gamer.jpg';
-    const precioFmt = CLP.format(Number(prod.precio)||0);
+    const base = Number(prod.precio)||0;
+    const duoc = hasDuocDiscount();
+    const discounted = duoc ? Math.round(base * 0.8) : base;
+    const precioFmt = CLP.format(discounted);
     return `
     <div class="col">
-      <div class="card h-100 position-relative" data-producto data-codigo="${prod.codigo}" data-nombre="${prod.nombre}" data-precio="${prod.precio}">
+      <div class="card h-100 position-relative" data-producto data-codigo="${prod.codigo}" data-nombre="${prod.nombre}" data-precio="${discounted}">
         <img src="${img}" class="card-img-top" alt="${prod.nombre}">
         <div class="card-body d-flex flex-column text-center">
           <h5 class="card-title">${prod.categoria}</h5>
           <p class="card-text">
-            <a href="#" class="stretched-link text-white text-decoration-none">${prod.nombre}</a>
+            <a href="producto.html?codigo=${encodeURIComponent(prod.codigo)}" class="stretched-link text-white text-decoration-none">${prod.nombre}</a>
           </p>
           <div class="mt-auto">
-            <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">${precioFmt}</h4>
-            <a href="#" class="btn btn-add-cart w-100" data-codigo="${prod.codigo}" data-nombre="${prod.nombre}" data-precio="${prod.precio}"><i class="bi bi-cart-plus-fill me-2"></i>Agregar al carrito</a>
+            <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">
+              ${duoc ? `<span class="text-decoration-line-through text-secondary me-2">${CLP.format(base)}</span> ${CLP.format(discounted)} <span class="badge bg-success ms-1">-20% DUOC</span>` : `${CLP.format(base)}`}
+            </h4>
+            <a href="#" class="btn btn-add-cart w-100" data-codigo="${prod.codigo}" data-nombre="${prod.nombre}" data-precio="${discounted}"><i class="bi bi-cart-plus-fill me-2"></i>Agregar al carrito</a>
           </div>
         </div>
       </div>
@@ -104,6 +128,38 @@
     const minInput = document.getElementById('f-price-min');
     const maxInput = document.getElementById('f-price-max');
     const searchInput = document.getElementById('f-search');
+    const pageSizeSel = document.getElementById('page-size');
+    const paginationUl = document.getElementById('pagination');
+
+    let currentPage = 1;
+
+    function renderPagination(totalItems, pageSize){
+      if (!paginationUl) return;
+      const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const mkLi = (label, page, disabled=false, active=false) => `
+        <li class="page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="${page}">${label}</a>
+        </li>`;
+      const items = [];
+      items.push(mkLi('«', currentPage-1, currentPage===1));
+      const windowSize = 2;
+      const start = Math.max(1, currentPage - windowSize);
+      const end = Math.min(totalPages, currentPage + windowSize);
+      for (let p = start; p <= end; p++) items.push(mkLi(String(p), p, false, p===currentPage));
+      items.push(mkLi('»', currentPage+1, currentPage===totalPages));
+      paginationUl.innerHTML = items.join('');
+      paginationUl.querySelectorAll('a.page-link').forEach(a => {
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const p = Number(a.getAttribute('data-page'));
+          if (!Number.isFinite(p)) return;
+          if (p < 1) return;
+          currentPage = p;
+          applyRender();
+        });
+      });
+    }
 
     const applyRender = () => {
       const mode = sortSel?.value || '0';
@@ -121,16 +177,23 @@
       });
 
       const sorted = sortProducts(filtered, mode);
-      grid.innerHTML = sorted.map(p=>productCard(p, categoria)).join('');
-      renderHeader(categoria, sorted.length);
+      const pageSize = Number(pageSizeSel?.value || 9) || 9;
+      const total = sorted.length;
+      const fromIdx = total ? (currentPage - 1) * pageSize : 0;
+      const toIdx = total ? Math.min(fromIdx + pageSize, total) : 0;
+      const pageItems = sorted.slice(fromIdx, toIdx);
+      grid.innerHTML = pageItems.map(p=>productCard(p, categoria)).join('');
+      renderHeader(categoria, total, total ? fromIdx+1 : 0, total ? toIdx : 0);
+      renderPagination(total, pageSize);
       try { if (window.Carrito) window.Carrito.renderBadge(); } catch {}
     };
 
-  sortSel?.addEventListener('change', applyRender);
-  stockChk?.addEventListener('change', applyRender);
-  minInput?.addEventListener('input', applyRender);
-  maxInput?.addEventListener('input', applyRender);
-  searchInput?.addEventListener('input', applyRender);
+  sortSel?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
+  stockChk?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
+  minInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
+  maxInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
+  searchInput?.addEventListener('input', ()=>{ currentPage = 1; applyRender(); });
+  pageSizeSel?.addEventListener('change', ()=>{ currentPage = 1; applyRender(); });
     applyRender();
   }
 

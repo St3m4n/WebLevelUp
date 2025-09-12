@@ -149,8 +149,8 @@
       `;
     }
 
-    // Delegación de eventos para +/-/del/vaciar
-    cont.addEventListener('click', (e)=>{
+    // Delegación de eventos para +/-/del/vaciar (manejadores persistentes)
+    const onContClick = (e)=>{
       const row = e.target.closest('.cart-item-row');
       if (!row) return;
       const codigo = row.getAttribute('data-codigo');
@@ -170,9 +170,12 @@
         removeFromCarrito(codigo);
         renderCarrito(opts);
       }
-    }, { once:true });
+    };
+    if (cont._cartHandler) cont.removeEventListener('click', cont._cartHandler);
+    cont.addEventListener('click', onContClick);
+    cont._cartHandler = onContClick;
 
-    res?.addEventListener('click', (e)=>{
+    const onResClick = (e)=>{
       if (e.target.closest('[data-action="vaciar"]')){
         vaciarCarrito();
         renderCarrito(opts);
@@ -180,7 +183,12 @@
       if (e.target.closest('[data-action="pagar"]')){
         alert('Flujo de pago no implementado');
       }
-    }, { once:true });
+    };
+    if (res){
+      if (res._cartResHandler) res.removeEventListener('click', res._cartResHandler);
+      res.addEventListener('click', onResClick);
+      res._cartResHandler = onResClick;
+    }
 
     renderBadge();
   }
