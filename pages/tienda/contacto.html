@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
@@ -36,7 +36,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
-                    <img src="/img/logo2.png" alt="Logo Level-UP Gamer">
+                    <img src="../../img/logo2.png" alt="Logo Level-UP Gamer">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,18 +79,70 @@
                 </div>
             </div>
         </nav>
+
+        <nav class="navbar navbar-expand-lg secondary-nav">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav justify-content-center w-100">
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Juegos de Mesa</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Accesorios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Consolas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Computadores Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Sillas Gamers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mouse</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mousepad</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Polerones Gamers</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
 
-    <div class="text-center welcome-section">
-        <h1>Crea tu Cuenta</h1>
-        <p>Únete a la comunidad y accede a beneficios exclusivos.</p>
+
+    <div class="text-center welcome-section mt-5">
+        <h1>Contáctanos</h1>
+        <p>Estamos aquí para ayudarte con tus dudas o darte soporte técnico</p>
     </div>
 
     <div class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card p-4 p-md-5">
-                    <h2 class="text-center mb-4">Formulario de Registro</h2>
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <h2 class="mb-4">Información Directa</h2>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-envelope-fill fs-3 me-3 text-neon-blue"></i>
+                    <div>
+                        <strong>Email</strong><br>
+                        <span class="text-secondary">contacto@levelupgamer.cl</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-telephone-fill fs-3 me-3 text-neon-blue"></i>
+                    <div>
+                        <strong>Teléfono</strong><br>
+                        <span class="text-secondary">+56 9 1234 5678</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-4">
+                    <i class="bi bi-clock-fill fs-3 me-3 text-neon-blue"></i>
+                    <div>
+                        <strong>Horario de Atención</strong><br>
+                        <span class="text-secondary">Lunes a Viernes de 09:00 a 18:00 hrs.</span>
+                    </div>
+                </div>
+
+                <hr class="contact-hr">
+
+                <h4 class="mt-4">Soporte Técnico</h4>
+                <p class="text-secondary">Para soporte técnico inmediato, contáctanos directamente por WhatsApp.</p>
+                <a href="https://wa.me/56912345678" target="_blank" class="btn btn-neon w-100">
+                    <i class="bi bi-whatsapp me-2"></i>Chatear por WhatsApp
+                </a>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card p-4">
+                    <h2 class="mb-4">Envíanos un Mensaje</h2>
                     <form>
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre Completo</label>
@@ -100,55 +152,42 @@
                             <label for="email" class="form-label">Correo Electrónico</label>
                             <input type="email" class="form-control" id="email" required>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-                                <input type="password" class="form-control" id="confirmPassword" required>
-                            </div>
+                        <div class="mb-3">
+                            <label for="asunto" class="form-label">Asunto</label>
+                            <input type="text" class="form-control" id="asunto" required>
                         </div>
                         <div class="mb-3">
-                            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="fechaNacimiento" required>
-                            <div class="form-text">Debes ser mayor de 18 años para registrarte.</div>
+                            <label for="mensaje" class="form-label">Mensaje</label>
+                            <textarea class="form-control" id="mensaje" rows="5" required></textarea>
                         </div>
-                        <div class="mb-4">
-                            <label for="referido" class="form-label">Código de Referido (Opcional)</label>
-                            <input type="text" class="form-control" id="referido">
-                            <div class="form-text">Ingresa un código para ganar puntos LevelUp.</div>
-                        </div>
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" value="" id="terminos" required>
-                            <label class="form-check-label text-secondary" for="terminos">
-                                Acepto los <a href="#" class="form-text">Términos y Condiciones</a>
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn-neon w-100">Crear Cuenta</button>
+                        <button type="submit" class="btn btn-add-cart w-100">Enviar Mensaje</button>
                     </form>
-                </div>
-
-                <div class="text-center mt-4">
-                    <p class="text-secondary">— ¿Ya tienes una cuenta? —</p>
-                    <a href="login.html" class="btn btn-neon">Inicia Sesión</a>
-                </div>
-
-                <div class="card special-offer-card mt-4">
-                    <div class="card-body text-center">
-                        <p class="mb-0"><i class="bi bi-award-fill me-2"></i><strong>Oferta Estudiantes:</strong>
-                            Regístrate con tu correo Duoc y obtén un <strong>20% de descuento de por vida</strong>.</p>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="container my-5">
+        <div class="text-center mb-4">
+            <h2>Encuéntranos en Eventos</h2>
+            <p class="text-secondary">¡Gana puntos LevelUp visitándonos en los principales eventos gamers del país!</p>
+        </div>
+        <div class="card p-3">
+            <div class="ratio ratio-16x9">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3194.967622543475!2d-73.06514772344164!3d-36.79532667652396!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9669b4503c9a1735%3A0x3fc32996839e6986!2sDuoc%20UC%3A%20Sede%20San%20Andr%C3%A9s%20De%20Concepci%C3%B3n!5e0!3m2!1ses!2scl!4v1757651344286!5m2!1ses!2scl"
+                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </div>
+
+
+
     <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
             <div class="mb-3 mb-md-0">
-                <a href="index.html" class="navbar-brand"><img src="/img/logo2.png" alt="Logo Level-UP Gamer"></a>
+                <a href="index.html" class="navbar-brand"><img src="../../img/logo2.png" alt="Logo Level-UP Gamer"></a>
             </div>
             <div class="nav mb-3 mb-md-0">
                 <a class="nav-link" href="index.html">Inicio</a>

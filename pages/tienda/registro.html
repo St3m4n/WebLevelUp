@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
@@ -36,7 +36,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
-                    <img src="/img/logo2.png" alt="Logo Level-UP Gamer">
+                    <img src="../../img/logo2.png" alt="Logo Level-UP Gamer">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,74 +79,76 @@
                 </div>
             </div>
         </nav>
-
-        <nav class="navbar navbar-expand-lg secondary-nav">
-            <div class="container">
-                <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav justify-content-center w-100">
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Juegos de Mesa</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Accesorios</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Consolas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Computadores Gamers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Sillas Gamers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mouse</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mousepad</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Polerones Gamers</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
     </header>
 
+    <div class="text-center welcome-section">
+        <h1>Crea tu Cuenta</h1>
+        <p>Únete a la comunidad y accede a beneficios exclusivos.</p>
+    </div>
 
-
-    <main class="container my-5">
+    <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
-
                 <div class="card p-4 p-md-5">
-                    <div class="card-body">
-
-                        <div class="text-center mb-4">
-                            <i class="bi bi-shield-lock-fill category-icon mb-3"></i>
-                            <h2 class="mb-2">Portal de Administrador</h2>
-                            <p class="text-secondary">Ingresa tus credenciales para gestionar la plataforma.</p>
+                    <h2 class="text-center mb-4">Formulario de Registro</h2>
+                    <form>
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="nombre" required>
                         </div>
-
-                        <form>
-                            <div class="mb-3">
-                                <label for="adminUser" class="form-label">Usuario de Administrador</label>
-                                <input type="text" class="form-control form-control-lg" id="adminUser"
-                                    placeholder="admin.user" required>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="adminPass" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control form-control-lg" id="adminPass"
-                                    placeholder="••••••••••" required>
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-neon btn-lg">Ingresar al Panel</button>
-                            </div>
-                        </form>
-
-                        <div class="text-center mt-4">
-                            <a href="index.html" class="form-text"><i class="bi bi-arrow-left-circle me-1"></i>
-                                Volver al sitio principal</a>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="email" required>
                         </div>
-                    </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="fechaNacimiento" required>
+                            <div class="form-text">Debes ser mayor de 18 años para registrarte.</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="referido" class="form-label">Código de Referido (Opcional)</label>
+                            <input type="text" class="form-control" id="referido">
+                            <div class="form-text">Ingresa un código para ganar puntos LevelUp.</div>
+                        </div>
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" value="" id="terminos" required>
+                            <label class="form-check-label text-secondary" for="terminos">
+                                Acepto los <a href="#" class="form-text">Términos y Condiciones</a>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-neon w-100">Crear Cuenta</button>
+                    </form>
                 </div>
 
+                <div class="text-center mt-4">
+                    <p class="text-secondary">— ¿Ya tienes una cuenta? —</p>
+                    <a href="login.html" class="btn btn-neon">Inicia Sesión</a>
+                </div>
+
+                <div class="card special-offer-card mt-4">
+                    <div class="card-body text-center">
+                        <p class="mb-0"><i class="bi bi-award-fill me-2"></i><strong>Oferta Estudiantes:</strong>
+                            Regístrate con tu correo Duoc y obtén un <strong>20% de descuento de por vida</strong>.</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
             <div class="mb-3 mb-md-0">
-                <a href="index.html" class="navbar-brand"><img src="/img/logo2.png" alt="Logo Level-UP Gamer"></a>
+                <a href="index.html" class="navbar-brand"><img src="../../img/logo2.png" alt="Logo Level-UP Gamer"></a>
             </div>
             <div class="nav mb-3 mb-md-0">
                 <a class="nav-link" href="index.html">Inicio</a>
@@ -162,7 +164,6 @@
             </div>
         </div>
     </footer>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

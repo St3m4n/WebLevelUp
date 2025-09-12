@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer</title>
+    <title>Torneo de League of Legends 5v5 - Level-Up Gamer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -12,8 +12,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
         rel="stylesheet">
-
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        /* Estilo para la imagen de cabecera del evento */
+        .event-hero {
+            background: linear-gradient(rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 0.9)), url('../../img/worlds.webp');
+            background-size: cover;
+            background-position: center;
+            padding: 6rem 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -36,7 +44,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
-                    <img src="/img/logo2.png" alt="Logo Level-UP Gamer">
+                    <img src="../../img/logo2.png" alt="Logo Level-UP Gamer">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +99,8 @@
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Sillas Gamers</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mouse</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mousepad</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Polerones Gamers</a></li>
                     </ul>
                 </div>
@@ -99,50 +108,96 @@
         </nav>
     </header>
 
+    <div class="event-hero text-white text-center">
+        <div class="container">
+            <h1 class="display-3 fw-bold text-accent">Torneo de League of Legends 5v5</h1>
+            <p class="lead">Demuestra que tu equipo es el mejor de Concepción.</p>
+        </div>
+    </div>
 
+    <main class="container my-5">
 
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="comunidad.html">Comunidad</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Torneo de League of Legends 5v5</li>
+            </ol>
+        </nav>
 
-<main class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
+        <div class="row g-5 mt-3">
 
-                <div class="card p-4 p-md-5">
-                    <div class="card-body">
+            <div class="col-lg-8">
+                <h2>Descripción del Evento</h2>
+                <p class="text-secondary">¡Prepara a tu equipo para la batalla! Level-Up Gamer se complace en anunciar
+                    su primer torneo presencial de League of Legends. Equipos de 5 jugadores competirán en la Grieta del
+                    Invocador por la gloria y fantásticos premios. Contaremos con estaciones de juego profesionales para
+                    todos los participantes. ¡No te quedes fuera!</p>
 
-                        <div class="text-center mb-4">
-                            <i class="bi bi-key-fill category-icon mb-3"></i>
-                            <h2 class="mb-2">¿Olvidaste tu Contraseña?</h2>
-                            <p class="text-secondary">No te preocupes. Ingresa tu correo y te enviaremos un enlace para recuperarla.</p>
-                        </div>
+                <h3 class="mt-4">Formato del Torneo</h3>
+                <ul class="text-secondary">
+                    <li>Modo de Juego: Torneo de Reclutamiento 5v5 en la Grieta del Invocador.</li>
+                    <li>Formato: Eliminación simple al mejor de 1 (Bo1). La Gran Final será al mejor de 3 (Bo3).</li>
+                    <li>Plataforma: Servidor de Latinoamérica Sur (LAS).</li>
+                    <li>Equipos: Se requiere un mínimo de 5 jugadores por equipo.</li>
+                </ul>
 
-                        <form>
-                            <div class="mb-4">
-                                <label for="email" class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control form-control-lg" id="email" placeholder="tu.correo@ejemplo.com" required>
+                <h3 class="mt-4">Premios</h3>
+                <ul class="text-secondary">
+                    <li><strong>1er Lugar:</strong> $100.000 CLP en crédito de tienda + 5 Headsets HyperX Cloud II.</li>
+                    <li><strong>2do Lugar:</strong> $50.000 CLP en crédito de tienda + 5 Mousepads Razer.</li>
+                    <li><strong>3er Lugar:</strong> 5 Teclados Redragon Kumara K552.</li>
+                </ul>
+
+                <h3 class="mt-4">Horario del Evento</h3>
+                <ul class="list-unstyled text-secondary">
+                    <li><strong>10:00 AM:</strong> Check-in y preparación de equipos.</li>
+                    <li><strong>11:00 AM:</strong> Inicio de la Primera Ronda.</li>
+                    <li><strong>02:00 PM:</strong> Semifinales.</li>
+                    <li><strong>04:00 PM:</strong> Gran Final.</li>
+                    <li><strong>06:00 PM:</strong> Ceremonia de premiación.</li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="position-sticky" style="top: 180px;">
+                    <div class="card mb-4">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex align-items-center"><i
+                                    class="bi bi-calendar-event fs-4 me-3 text-accent"></i>
+                                <div><strong>Cuándo:</strong><br> Sábado, 28 de Septiembre, 2025 <br>10:00 AM</div>
+                            </li>
+                            <li class="list-group-item d-flex align-items-center"><i
+                                    class="bi bi-geo-alt-fill fs-4 me-3 text-accent"></i>
+                                <div><strong>Dónde:</strong><br> Tienda Level-Up Gamer <br>Av. O'Higgins 852, Concepción
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex align-items-center"><i
+                                    class="bi bi-cash-coin fs-4 me-3 text-accent"></i>
+                                <div><strong>Inscripción:</strong><br> $25.000 por equipo</div>
+                            </li>
+                        </ul>
+                        <div class="card-body text-center">
+                            <div class="d-grid">
+                                <a href="https://wa.me/56912345678" class="btn btn-neon btn-lg">¡Inscribe a tu Equipo!</a>
                             </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-neon btn-lg">Enviar Enlace de Recuperación</button>
-                            </div>
-                        </form>
-
-                        <div class="text-center mt-4">
-                            <a href="login.html" class="form-text">Volver a Iniciar Sesión</a>
                         </div>
                     </div>
-                </div>
 
+                    <h4 class="h5">Ubicación del Evento</h4>
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3194.967622543475!2d-73.06514772344163!3d-36.79532667652396!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9669b4503c9a1735%3A0x3fc32996839e6986!2sDuoc%20UC%3A%20Sede%20San%20Andr%C3%A9s%20De%20Concepci%C3%B3n!5e0!3m2!1ses!2scl!4v1757656521747!5m2!1ses!2scl"
+                        width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
             </div>
         </div>
     </main>
 
-
-
-
-        <footer class="container-fluid py-3 mt-5">
+    <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
             <div class="mb-3 mb-md-0">
-                <a href="index.html" class="navbar-brand"><img src="/img/logo2.png" alt="Logo Level-UP Gamer"></a>
+                <a href="index.html" class="navbar-brand"><img src="../../img/logo2.png" alt="Logo Level-UP Gamer"></a>
             </div>
             <div class="nav mb-3 mb-md-0">
                 <a class="nav-link" href="index.html">Inicio</a>
@@ -160,6 +215,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/script.js"></script>
 </body>
 
 </html>

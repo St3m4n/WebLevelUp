@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer</title>
+    <title>Guías de Juegos - Level-Up Gamer</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -12,8 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
         rel="stylesheet">
-
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
@@ -36,7 +35,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
-                    <img src="/img/logo2.png" alt="Logo Level-UP Gamer">
+                    <img src="../../img/logo2.png" alt="Logo Level-UP Gamer">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,112 +99,136 @@
         </nav>
     </header>
 
-    <div class="container my-5">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
-                <li class="breadcrumb-item"><a href="categorias.html">Productos</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Catan</li>
-            </ol>
-        </nav>
+    <main class="container my-5">
 
-        <div class="row g-5 mt-3">
-            <div class="col-lg-6">
-                <img src="/img/catan.webp" class="img-fluid rounded-3 mb-3" alt="Juego de mesa Catan">
-                <div class="d-flex gap-2">
-                    <img src="/img/catan.webp" class="img-thumbnail product-thumbnail active" alt="Thumbnail 1">
-                </div>
-            </div>
+        <div class="welcome-section text-center mb-5">
+            <h1><i class="bi bi-joystick me-3"></i>Guías de <span class="highlight">Juegos</span></h1>
+            <p class="lead text-secondary mt-3">Secretos, trofeos y estrategias para completar tus juegos favoritos al
+                100%</p>
+        </div>
 
-            <div class="col-lg-6">
-                <h1 class="product-title">Catan</h1>
-                <p class="text-secondary">Código: JM001</p>
-                <p class="display-5 fw-bold price-highlight">$29.990 CLP</p>
-                <p class="text-secondary">Un clásico juego de estrategia donde los jugadores compiten por colonizar y
-                    expandirse en la isla de Catan. [cite: 117] Ideal para 3-4 jugadores y perfecto para noches de juego
-                    en familia o con amigos. [cite: 118]</p>
-
-                <hr class="contact-hr my-4">
-
-                <div class="d-flex align-items-center mb-4">
-                    <span class="me-3">Cantidad:</span>
-                    <div class="quantity-selector">
-                        <button class="btn btn-sm btn-outline-secondary">-</button>
-                        <input type="number" class="form-control form-control-sm text-center" value="1">
-                        <button class="btn btn-sm btn-outline-secondary">+</button>
+        <div class="card card-body mb-5">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-6">
+                    <div class="input-group">
+                        <span class="btn btn-outline-light"><i class="bi bi-search"></i></span>
+                        <input type="search" class="form-control me-2" placeholder="Buscar una guía por nombre de juego...">
                     </div>
                 </div>
-
-                <button class="btn btn-neon w-100 mb-4 btn-add-cart"> <i class="bi bi-cart-plus-fill me-2"></i>Agregar
-                    al Carro
-                </button>
-
-                <div class="social-share">
-                    <span class="text-secondary me-2">Compartir:</span>
-                    <a href="#" class="btn-social"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="btn-social"><i class="bi bi-twitter-x"></i></a>
-                    <a href="#" class="btn-social"><i class="bi bi-whatsapp"></i></a>
+                <div class="col-lg-3">
+                    <select class="form-select">
+                        <option selected>Filtrar por Plataforma</option>
+                        <option value="1">PC</option>
+                        <option value="2">PlayStation 5</option>
+                        <option value="3">Xbox Series X|S</option>
+                        <option value="4">Nintendo Switch 2</option>
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <select class="form-select">
+                        <option selected>Filtrar por Género</option>
+                        <option value="1">RPG</option>
+                        <option value="2">Acción</option>
+                        <option value="3">Estrategia</option>
+                        <option value="4">Aventura</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <div class="container my-5">
-            <div class="card p-3">
-                <ul class="nav nav-tabs" id="productTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab"
-                            data-bs-target="#description" type="button" role="tab">Descripción</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs"
-                            type="button" role="tab">Origen y Especificaciones</button>
-                    </li>
-                </ul>
-                <div class="tab-content p-4" id="productTabContent">
-                    <div class="tab-pane fade show active" id="description" role="tabpanel">
-                        <p class="text-secondary">"Catan" es un juego de mesa para toda la familia que se ha convertido
-                            en un fenómeno mundial. Se trata de un juego que aúna la estrategia, la astucia y la
-                            capacidad para negociar y en el que los jugadores tratan de colonizar una isla, Catan, rica
-                            en recursos naturales. Construyendo pueblos, estableciendo rutas comerciales, etc.</p>
-                    </div>
-                    <div class="tab-pane fade" id="specs" role="tabpanel">
-                        <ul class="list-unstyled text-secondary">
-                            <li><strong>Fabricante:</strong> Devir (Placeholder)</li>
-                            <li><strong>Jugadores:</strong> 3-4</li>
-                            <li><strong>Tiempo de Juego:</strong> 60-90 min aprox.</li>
-                            <li><strong>Edad Recomendada:</strong> 10+</li>
-                        </ul>
-                    </div>
-                    <div class="tab-pane fade" id="reviews" role="tabpanel">
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
-        <div class="container my-5">
-            <h2 class="mb-4">También te podría interesar</h2>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="/img/Carcassonne.png" class="card-img-top" alt="Carcassonne">
-                        <div class="card-body d-flex flex-column text-center">
-                            <h5 class="card-title">Carcassonne</h5>
-                            <p class="card-text">Juegos de Mesa</p>
-                            <div class="mt-auto">
-                                <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">$24.990</h4>
-                                <a href="producto_2.html" class="btn btn-view-product w-100">Ver Producto</a>
-                            </div>
-                        </div>
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="../../img/bald.avif" class="card-img-top" alt="Baldur's Gate 3">
+                    <div class="card-body">
+                        <h5 class="card-title">Baldur's Gate 3</h5>
+                        <p class="card-text text-secondary">Guía de Compañeros: cómo reclutarlos a todos y completar sus
+                            misiones personales.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a href="guia1_1.html" class="btn btn-view-product w-100">Ver Guía</a>
                     </div>
                 </div>
             </div>
+
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="../../img/gta.jpg" class="card-img-top" alt="Grand Theft Auto VI">
+                    <div class="card-body">
+                        <h5 class="card-title">Grand Theft Auto VI</h5>
+                        <p class="card-text text-secondary">Mapa interactivo con todos los coleccionables, saltos únicos
+                            y secretos de Vice City.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a href="guia1_1.html" class="btn btn-view-product w-100">Ver Guía</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="../../img/blog.webp" class="card-img-top" alt="Elden Ring">
+                    <div class="card-body">
+                        <h5 class="card-title">Elden Ring</h5>
+                        <p class="card-text text-secondary">Guía completa para encontrar y derrotar a todos los jefes
+                            secretos de las Tierras Intermedias.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a href="guia1_1.html" class="btn btn-view-product w-100">Ver Guía</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="../../img/blog.webp" class="card-img-top" alt="Cyberpunk 2077">
+                    <div class="card-body">
+                        <h5 class="card-title">Cyberpunk 2077</h5>
+                        <p class="card-text text-secondary">Las mejores builds de Netrunner para el parche 2.5: domina
+                            Night City con tus hackeos.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a href="guia1_1.html" class="btn btn-view-product w-100">Ver Guía</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="../../img/blog.webp" class="card-img-top" alt="The Legend of Zelda: Tears of the Kingdom">
+                    <div class="card-body">
+                        <h5 class="card-title">Zelda: Tears of the Kingdom</h5>
+                        <p class="card-text text-secondary">Localización de todos los Santuarios y cómo resolver sus
+                            puzzles más complicados.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a href="guia1_1.html" class="btn btn-view-product w-100">Ver Guía</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 blog-card">
+                    <img src="../../img/blog.webp" class="card-img-top" alt="Starfield">
+                    <div class="card-body">
+                        <h5 class="card-title">Starfield</h5>
+                        <p class="card-text text-secondary">Guía avanzada de construcción de naves: los mejores módulos
+                            y cómo crear una nave de Clase C.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a href="guia1_1.html" class="btn btn-view-product w-100">Ver Guía</a>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
             <div class="mb-3 mb-md-0">
-                <a href="index.html" class="navbar-brand"><img src="/img/logo2.png" alt="Logo Level-UP Gamer"></a>
+                <a href="index.html" class="navbar-brand"><img src="../../img/logo2.png" alt="Logo Level-UP Gamer"></a>
             </div>
             <div class="nav mb-3 mb-md-0">
                 <a class="nav-link" href="index.html">Inicio</a>
@@ -222,23 +245,8 @@
         </div>
     </footer>
 
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="notificationToast" class="toast toast-custom" role="alert" aria-live="assertive" aria-atomic="true"
-            data-bs-theme="dark">
-            <div class="toast-header">
-                <i id="toast-icon" class="bi bi-check-circle-fill text-success me-2"></i>
-                <strong class="me-auto">Level-Up Gamer</strong>
-                <small>Ahora</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div id="toast-body" class="toast-body">
-                ¡Producto añadido al carrito exitosamente!
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/script.js"></script>
+    <script src="../../js/script.js"></script>
 
 </body>
 

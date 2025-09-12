@@ -13,12 +13,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
 
-<header class="fixed-top">
+    <header class="fixed-top">
         <nav class="navbar navbar-expand-lg top-nav d-none d-lg-block">
             <div class="container">
                 <div class="collapse navbar-collapse">
@@ -36,7 +36,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark py-3 primary-nav">
             <div class="container">
                 <a class="navbar-brand" href="index.html">
-                    <img src="/img/logo2.png" alt="Logo Level-UP Gamer">
+                    <img src="../../img/logo2.png" alt="Logo Level-UP Gamer">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +91,8 @@
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Sillas Gamers</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mouse</a></li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Mousepad</a></li>
-                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="categorias_1.html">Poleras Personalizadas</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="categorias_1.html">Polerones Gamers</a></li>
                     </ul>
                 </div>
@@ -99,83 +100,112 @@
         </nav>
     </header>
 
-
-    <div class="text-center welcome-section mt-5">
-        <h1>Carrito de Compras</h1>
-        <p>Revisa tus productos y prepárate para el siguiente nivel</p>
-    </div>
-
     <div class="container my-5">
-        <div class="row g-5">
-            <div class="col-lg-8">
-                <div class="card p-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="categorias.html">Productos</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Catan</li>
+            </ol>
+        </nav>
 
-                    <div class="cart-item-row">
-                        <img src="/img/play5.webp" alt="PlayStation 5" class="cart-item-img">
-                        <div class="cart-item-details">
-                            <h5 class="card-title mb-1">PlayStation 5</h5>
-                            <p class="card-text text-secondary mb-2">Consola</p>
-                            <div class="quantity-selector">
-                                <button class="btn btn-sm btn-outline-secondary">-</button>
-                                <input type="number" class="form-control form-control-sm text-center" value="1">
-                                <button class="btn btn-sm btn-outline-secondary">+</button>
-                            </div>
-                        </div>
-                        <div class="cart-item-price">
-                            <p class="mb-0">$549.990</p>
-                            <button class="btn btn-remove-item"><i class="bi bi-trash3-fill"></i></button>
-                        </div>
-                    </div>
-
-                    <hr class="cart-hr">
-
-                    <div class="cart-item-row">
-                        <img src="/img/audifonos.jpg" alt="HyperX Cloud II" class="cart-item-img">
-                        <div class="cart-item-details">
-                            <h5 class="card-title mb-1">Auriculares Gamer HyperX Cloud II</h5>
-                            <p class="card-text text-secondary mb-2">Accesorios</p>
-                            <div class="quantity-selector">
-                                <button class="btn btn-sm btn-outline-secondary">-</button>
-                                <input type="number" class="form-control form-control-sm text-center" value="2">
-                                <button class="btn btn-sm btn-outline-secondary">+</button>
-                            </div>
-                        </div>
-                        <div class="cart-item-price">
-                            <p class="mb-0">$79.990</p>
-                            <button class="btn btn-remove-item"><i class="bi bi-trash3-fill"></i></button>
-                        </div>
-                    </div>
-
+        <div class="row g-5 mt-3">
+            <div class="col-lg-6">
+                <img src="../../img/catan.webp" class="img-fluid rounded-3 mb-3" alt="Juego de mesa Catan">
+                <div class="d-flex gap-2">
+                    <img src="../../img/catan.webp" class="img-thumbnail product-thumbnail active" alt="Thumbnail 1">
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="card p-4">
-                    <h2 class="mb-4">Resumen del Pedido</h2>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-secondary">Subtotal</span>
-                        <span>$709.970</span>
+            <div class="col-lg-6">
+                <h1 class="product-title">Catan</h1>
+                <p class="text-secondary">Código: JM001</p>
+                <p class="display-5 fw-bold price-highlight">$29.990 CLP</p>
+                <p class="text-secondary">Un clásico juego de estrategia donde los jugadores compiten por colonizar y
+                    expandirse en la isla de Catan. [cite: 117] Ideal para 3-4 jugadores y perfecto para noches de juego
+                    en familia o con amigos. [cite: 118]</p>
+
+                <hr class="contact-hr my-4">
+
+                <div class="d-flex align-items-center mb-4">
+                    <span class="me-3">Cantidad:</span>
+                    <div class="quantity-selector">
+                        <button class="btn btn-sm btn-outline-secondary">-</button>
+                        <input type="number" class="form-control form-control-sm text-center" value="1">
+                        <button class="btn btn-sm btn-outline-secondary">+</button>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="text-secondary">Despacho</span>
-                        <span>$4.990</span>
-                    </div>
-                    <hr class="cart-hr">
-                    <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
-                        <span>Total</span>
-                        <span>$714.960</span>
-                    </div>
-                    <button class="btn btn-neon w-100">Proceder al Pago</button>
+                </div>
+
+                <button class="btn btn-neon w-100 mb-4 btn-add-cart"> <i class="bi bi-cart-plus-fill me-2"></i>Agregar
+                    al Carro
+                </button>
+
+                <div class="social-share">
+                    <span class="text-secondary me-2">Compartir:</span>
+                    <a href="#" class="btn-social"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="btn-social"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="btn-social"><i class="bi bi-whatsapp"></i></a>
                 </div>
             </div>
         </div>
 
+        <div class="container my-5">
+            <div class="card p-3">
+                <ul class="nav nav-tabs" id="productTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab"
+                            data-bs-target="#description" type="button" role="tab">Descripción</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs"
+                            type="button" role="tab">Origen y Especificaciones</button>
+                    </li>
+                </ul>
+                <div class="tab-content p-4" id="productTabContent">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <p class="text-secondary">"Catan" es un juego de mesa para toda la familia que se ha convertido
+                            en un fenómeno mundial. Se trata de un juego que aúna la estrategia, la astucia y la
+                            capacidad para negociar y en el que los jugadores tratan de colonizar una isla, Catan, rica
+                            en recursos naturales. Construyendo pueblos, estableciendo rutas comerciales, etc.</p>
+                    </div>
+                    <div class="tab-pane fade" id="specs" role="tabpanel">
+                        <ul class="list-unstyled text-secondary">
+                            <li><strong>Fabricante:</strong> Devir (Placeholder)</li>
+                            <li><strong>Jugadores:</strong> 3-4</li>
+                            <li><strong>Tiempo de Juego:</strong> 60-90 min aprox.</li>
+                            <li><strong>Edad Recomendada:</strong> 10+</li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container my-5">
+            <h2 class="mb-4">También te podría interesar</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="../../img/Carcassonne.png" class="card-img-top" alt="Carcassonne">
+                        <div class="card-body d-flex flex-column text-center">
+                            <h5 class="card-title">Carcassonne</h5>
+                            <p class="card-text">Juegos de Mesa</p>
+                            <div class="mt-auto">
+                                <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">$24.990</h4>
+                                <a href="producto_2.html" class="btn btn-view-product w-100">Ver Producto</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
             <div class="mb-3 mb-md-0">
-                <a href="index.html" class="navbar-brand"><img src="/img/logo2.png" alt="Logo Level-UP Gamer"></a>
+                <a href="index.html" class="navbar-brand"><img src="../../img/logo2.png" alt="Logo Level-UP Gamer"></a>
             </div>
             <div class="nav mb-3 mb-md-0">
                 <a class="nav-link" href="index.html">Inicio</a>
@@ -192,8 +222,24 @@
         </div>
     </footer>
 
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="notificationToast" class="toast toast-custom" role="alert" aria-live="assertive" aria-atomic="true"
+            data-bs-theme="dark">
+            <div class="toast-header">
+                <i id="toast-icon" class="bi bi-check-circle-fill text-success me-2"></i>
+                <strong class="me-auto">Level-Up Gamer</strong>
+                <small>Ahora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toast-body" class="toast-body">
+                ¡Producto añadido al carrito exitosamente!
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/script.js"></script>
+    <script src="../../js/script.js"></script>
+
 </body>
 
 </html>

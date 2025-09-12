@@ -157,8 +157,6 @@ git clone https://github.com/usuario/proyecto-levelup.git
 Convenciones de commits:
 - `feat(admin): persistencia de productos`
 - `fix(admin): validar RUN en edición`
-- `chore(ui): sidebar + menu-active.js`
-
 ---
 
 ## 🧪 Troubleshooting
