@@ -75,6 +75,26 @@ document.addEventListener("DOMContentLoaded", () => {
     titulo.textContent = "Nuevo producto";
   }
 
+  // --- Poblar categorías dinámicamente (desde LS 'categorias' si existe) ---
+  (function populateCategorias() {
+    try {
+      const raw = localStorage.getItem('categorias');
+      if (!raw) return;
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr) || arr.length === 0) return;
+      // Mantener la opción por defecto
+      iCategoria.innerHTML = '<option value="">Selecciona…</option>' + arr
+        .slice()
+        .sort((a,b) => String(a).localeCompare(String(b)))
+        .map(c => `<option>${String(c)}</option>`)  
+        .join('');
+      // Si estamos editando, intenta re-seleccionar
+      if (editing) {
+        try { iCategoria.value = (data.find(p => p.codigo === originalCode)?.categoria) || ''; } catch {}
+      }
+    } catch {}
+  })();
+
   // --- Reglas de validación (JS puras, sin plugins) ---
   function validar() {
     let ok = true;

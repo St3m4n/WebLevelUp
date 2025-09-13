@@ -117,7 +117,15 @@
     const selCat = $('[data-ref="categoria"]');
     if (selCat) {
       const base = (productosData.length ? productosData : (Array.isArray(window.productos) ? window.productos : []));
-      const cats = [...new Set(base.map(p => p.categoria).filter(Boolean))].sort();
+      const fromProds = new Set(base.map(p => p.categoria).filter(Boolean));
+      try {
+        const raw = localStorage.getItem('categorias');
+        if (raw) {
+          const extra = JSON.parse(raw);
+          if (Array.isArray(extra)) extra.forEach(c => fromProds.add(String(c)));
+        }
+      } catch {}
+      const cats = [...fromProds].sort();
       selCat.innerHTML = ['<option value="">Todas las categorías</option>', ...cats.map(c => `<option>${c}</option>`)].join('');
     }
 
