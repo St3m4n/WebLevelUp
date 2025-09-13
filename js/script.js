@@ -250,19 +250,22 @@ document.addEventListener('DOMContentLoaded', () => {
     (function setupRunFormatting() {
         const runInput = document.getElementById('run');
         if (!runInput) return;
-        // Sanitiza caracteres al teclear (solo dígitos y K/k)
-        runInput.addEventListener('input', () => {
-            const before = runInput.value;
-            const clean = normalizeRun(before);
-            // No formateamos aquí para no mover el cursor; solo limpiamos K mayúscula si aplica
-            // Permitimos que el usuario vea lo que escribe; formateamos al salir del campo.
-            // Reinsertamos posibles guiones/puntos solo al blur.
-            // Si el usuario pegó texto con símbolos, mostramos versión limpia sin símbolos.
-            // Para minimizar saltos de cursor, solo reemplazamos si cambió sustancialmente.
-            const justChars = before.replace(/[^0-9kK]/g, '').toUpperCase();
-            if (justChars !== clean) {
-                runInput.value = clean;
+        // Sanitiza en cada input: solo dígitos y K, toUpperCase, máx 9, preservando caret
+        runInput.addEventListener('input', (e) => {
+            const el = e.target;
+            const original = String(el.value || '');
+            const selStart = el.selectionStart ?? original.length;
+            const beforeCaret = original.slice(0, selStart);
+            // saneamos por separado lo previo al caret para calcular posición
+            const sanitizedBefore = beforeCaret.replace(/[^0-9kK]/g, '').toUpperCase().slice(0, 9);
+            // saneamos todo el valor y lo acotamos a 9
+            const cleanedAll = original.replace(/[^0-9kK]/g, '').toUpperCase();
+            const trimmedAll = cleanedAll.slice(0, 9);
+            const newCaret = Math.min(sanitizedBefore.length, trimmedAll.length);
+            if (el.value !== trimmedAll) {
+                el.value = trimmedAll;
             }
+            try { el.setSelectionRange(newCaret, newCaret); } catch {}
         });
         runInput.addEventListener('blur', () => {
             const clean = normalizeRun(runInput.value);
@@ -386,9 +389,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const refCode = String(refInput?.value || '').trim();
 
             let valid = true;
-            // RUN: largo 7-9 (cuerpo+DV) y DV correcto
+            // RUN: largo 8-9 (cuerpo+DV) y DV correcto
             const lenBody = normalizeRun(runInput?.value).length;
-            if (lenBody < 7 || lenBody > 9) { valid = false; setInvalid(runInput, true, 'e-run', 'El RUN debe tener entre 7 y 9 caracteres.'); }
+            if (lenBody < 8 || lenBody > 9) { valid = false; setInvalid(runInput, true, 'e-run', 'El RUN debe tener 8 o 9 caracteres (incluye DV).'); }
             else if (!isValidRUN(runInput?.value)) { valid = false; setInvalid(runInput, true, 'e-run', 'El dígito verificador (DV) no es válido.'); }
             // Email: requerido, max 100, dominios permitidos
             const allowedDomains = ['duoc.cl','profesor.duoc.cl','gmail.com'];
@@ -482,8 +485,123 @@ document.addEventListener('DOMContentLoaded', () => {
             try { window.usuarios = mergeUsuarios(window.usuarios || [], [nuevo]); } catch {}
 
             showToastOrAlert('Cuenta creada con éxito. Ahora puedes iniciar sesión.', 'bi-check-circle-fill', 'text-success');
+            // Señal para mostrar notificación en la página de login tras el redirect
+            try { sessionStorage.setItem('registrationSuccess', JSON.stringify({ t: Date.now(), email })); } catch {}
             setTimeout(() => { window.location.href = 'login.html'; }, 800);
         });
+
+        // --------------------------------------------------------------
+        // 7b. Validación por campo (on-blur / on-change / on-input)
+        // --------------------------------------------------------------
+        const runEl = document.getElementById('run');
+        const nombresEl = document.getElementById('nombres');
+        const apellidosEl = document.getElementById('apellidos');
+        const passwordEl = document.getElementById('password');
+        const confirmEl = document.getElementById('confirmPassword');
+        const fechaEl = document.getElementById('fechaNacimiento');
+        const regionEl = document.getElementById('region');
+        const comunaEl = document.getElementById('comuna');
+        const direccionEl = document.getElementById('direccion');
+        const terminosEl = document.getElementById('terminos');
+
+        function setValidity(el, ok, feedbackId, msg){
+            if (!el) return false;
+            el.classList.toggle('is-invalid', !ok);
+            el.classList.toggle('is-valid', !!ok);
+            if (!ok && feedbackId && msg){
+                const fb = document.getElementById(feedbackId);
+                if (fb) fb.textContent = msg;
+            }
+            return !!ok;
+        }
+
+        function validateRunField(){
+            const v = String(runEl?.value || '');
+            const len = normalizeRun(v).length;
+            if (len < 8 || len > 9) return setValidity(runEl, false, 'e-run', 'El RUN debe tener 8 o 9 caracteres (incluye DV).');
+            if (!isValidRUN(v)) return setValidity(runEl, false, 'e-run', 'El dígito verificador (DV) no es válido.');
+            // unicidad si ya existe lista
+            try {
+                const merged = getMergedUsuariosCurrent();
+                const runNorm = normalizeRun(v);
+                const exists = merged.some(u => normalizeRun(u.run) === runNorm);
+                if (exists) return setValidity(runEl, false, 'e-run', 'Este RUN ya está registrado.');
+            } catch {}
+            return setValidity(runEl, true);
+        }
+        function validateEmailField(){
+            const email = String(emailInput?.value || '').trim().toLowerCase();
+            if (!email || email.length>100) return setValidity(emailInput, false, 'e-email', 'Correo requerido y máximo 100 caracteres.');
+            const m = email.match(/^[^@\s]+@([^@\s]+)$/);
+            const domain = m ? m[1].toLowerCase() : '';
+            const allowed = ['duoc.cl','profesor.duoc.cl','gmail.com'];
+            if (!allowed.includes(domain)) return setValidity(emailInput, false, 'e-email', 'Dominio no permitido. Usa duoc.cl, profesor.duoc.cl o gmail.com.');
+            // unicidad por correo
+            try {
+                const merged = getMergedUsuariosCurrent();
+                const exists = merged.some(u => String(u.correo||'').toLowerCase() === email);
+                if (exists) return setValidity(emailInput, false, 'e-email', 'Este correo ya está registrado.');
+            } catch {}
+            return setValidity(emailInput, true);
+        }
+        function validateNombreField(){
+            const v = String(nombresEl?.value || '').trim();
+            if (!v || v.length>50) return setValidity(nombresEl, false, 'e-nombres', 'Nombre requerido (máx. 50).');
+            return setValidity(nombresEl, true);
+        }
+        function validateApellidosField(){
+            const v = String(apellidosEl?.value || '').trim();
+            if (!v || v.length>100) return setValidity(apellidosEl, false, 'e-apellidos', 'Apellidos requeridos (máx. 100).');
+            return setValidity(apellidosEl, true);
+        }
+        function validatePasswordField(){
+            const v = String(passwordEl?.value || '');
+            if (v.length < 8) return setValidity(passwordEl, false, 'e-password', 'La contraseña debe tener al menos 8 caracteres.');
+            return setValidity(passwordEl, true);
+        }
+        function validateConfirmField(){
+            const p = String(passwordEl?.value || '');
+            const c = String(confirmEl?.value || '');
+            if (c.length === 0) return setValidity(confirmEl, false, 'e-confirm', 'Confirma tu contraseña.');
+            if (p !== c) return setValidity(confirmEl, false, 'e-confirm', 'Las contraseñas no coinciden.');
+            return setValidity(confirmEl, true);
+        }
+        function validateFechaField(){
+            const v = String(fechaEl?.value || '');
+            if (!v || calcAge(v) < 18) return setValidity(fechaEl, false, 'e-fecha', 'Debes tener 18 años o más.');
+            return setValidity(fechaEl, true);
+        }
+        function validateRegionField(){
+            const v = String(regionEl?.value || '');
+            if (!v) return setValidity(regionEl, false, 'e-region', 'Selecciona una región.');
+            return setValidity(regionEl, true);
+        }
+        function validateComunaField(){
+            const v = String(comunaEl?.value || '');
+            if (!v) return setValidity(comunaEl, false, 'e-comuna', 'Selecciona una comuna.');
+            return setValidity(comunaEl, true);
+        }
+        function validateDireccionField(){
+            const v = String(direccionEl?.value || '').trim();
+            if (!v || v.length>300) return setValidity(direccionEl, false, 'e-direccion', 'Dirección requerida (máx. 300).');
+            return setValidity(direccionEl, true);
+        }
+        function validateTerminosField(){
+            const ok = !!terminosEl?.checked;
+            return setValidity(terminosEl, ok, 'e-terminos', 'Debes aceptar los Términos y Condiciones.');
+        }
+
+        runEl?.addEventListener('blur', validateRunField);
+        emailInput?.addEventListener('blur', validateEmailField);
+        nombresEl?.addEventListener('blur', validateNombreField);
+        apellidosEl?.addEventListener('blur', validateApellidosField);
+        passwordEl?.addEventListener('input', () => { validatePasswordField(); validateConfirmField(); });
+        confirmEl?.addEventListener('input', validateConfirmField);
+        fechaEl?.addEventListener('change', validateFechaField);
+        regionEl?.addEventListener('change', () => { validateRegionField(); validateComunaField(); });
+        comunaEl?.addEventListener('change', validateComunaField);
+        direccionEl?.addEventListener('blur', validateDireccionField);
+        terminosEl?.addEventListener('change', validateTerminosField);
     }
 
     // =========================================================================

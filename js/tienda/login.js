@@ -61,6 +61,17 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Mostrar notificación si viene de un registro exitoso
+    try {
+      const raw = sessionStorage.getItem('registrationSuccess');
+      if (raw) {
+        const data = JSON.parse(raw);
+        const correo = data && data.email ? String(data.email) : '';
+        const msg = correo ? `Tu cuenta (${correo}) fue creada con éxito. Inicia sesión.` : 'Tu cuenta fue creada con éxito. Inicia sesión.';
+        showToastOrAlert(msg, 'bi-check-circle-fill', 'text-success');
+        sessionStorage.removeItem('registrationSuccess');
+      }
+    } catch {}
     const form = document.getElementById('clientLoginForm');
     if (!form) return;
 
