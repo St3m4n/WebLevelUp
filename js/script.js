@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const toastIcon = document.getElementById('toast-icon');
     const notificationToast = toastElement ? new bootstrap.Toast(toastElement) : null;
 
-    // Función REUTILIZABLE para mostrar todas las notificaciones del sitio
-    function showNotification(message, iconClass, colorClass) {
+    // Función REUTILIZABLE para mostrar todas las notificaciones del sitio (expuesta globalmente)
+    window.showNotification = function(message, iconClass, colorClass) {
         if (!notificationToast) {
             console.error("El elemento del Toast no se encontró en la página.");
             return; 
@@ -17,18 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
         toastBody.textContent = message;
         toastIcon.className = `bi ${iconClass} ${colorClass} me-2`; // Reemplaza clases anteriores
         notificationToast.show();
-    }
+    };
 
     // =========================================================================
-    // --- 2. LÓGICA PARA AÑADIR PRODUCTOS AL CARRITO ---
+    // --- 2. NOTIFICACIÓN DE CARRITO ---
     // =========================================================================
-    const addToCartButtons = document.querySelectorAll('.btn-add-cart');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            showNotification('¡Producto añadido al carrito exitosamente!', 'bi-check-circle-fill', 'text-success');
-        });
-    });
+    // La notificación se dispara desde el manejador global en js/tienda/carrito.js,
+    // que invoca window.showNotification tras añadir al carrito. Aquí no se agregan
+    // listeners por botón para evitar duplicidad.
 
     // =========================================================================
     // --- 3. LÓGICA PARA LA PÁGINA DE PERFIL ---

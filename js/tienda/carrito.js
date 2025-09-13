@@ -245,7 +245,24 @@
 
     const res = addToCarrito({codigo, nombre, precio, cantidad});
     if (res.ok){
-      try { if (typeof showNotification==='function') showNotification('¡Producto añadido al carrito!', 'bi-check-circle-fill', 'text-success'); } catch {}
+      // Notificación universal (fallback si no está script.js)
+      try {
+        if (typeof window.showNotification === 'function') {
+          window.showNotification('¡Producto añadido al carrito!', 'bi-check-circle-fill', 'text-success');
+        } else {
+          const toastEl = document.getElementById('notificationToast');
+          if (toastEl && window.bootstrap && typeof window.bootstrap.Toast === 'function'){
+            const toastBody = document.getElementById('toast-body');
+            const toastIcon = document.getElementById('toast-icon');
+            if (toastBody) toastBody.textContent = '¡Producto añadido al carrito!';
+            if (toastIcon) toastIcon.className = 'bi bi-check-circle-fill text-success me-2';
+            const instance = window.bootstrap.Toast.getOrCreateInstance(toastEl);
+            instance.show();
+          } else {
+            alert('¡Producto añadido al carrito!');
+          }
+        }
+      } catch {}
       renderBadge();
     } else {
       alert(res.error || 'No se pudo añadir al carrito');
