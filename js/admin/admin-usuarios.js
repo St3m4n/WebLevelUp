@@ -47,10 +47,28 @@ function formatRunDisplay(runRaw){
 
 let dataUsuarios = loadUsuarios();
 
+function addrKey(correo){ return `user:addresses:${String(correo||'').toLowerCase()}`; }
+function loadAddressesByCorreo(correo){
+  try {
+    const raw = localStorage.getItem(addrKey(correo));
+    const arr = JSON.parse(raw || '[]');
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function getPrimaryAddressFor(correo){
+  const list = loadAddressesByCorreo(correo);
+  if (!list.length) return null;
+  const pri = list.find(a => a && a.isPrimary) || list[0];
+  return pri || null;
+}
+
 function renderTabla(list){
   const tbody = el("table tbody");
   if (!tbody) return;
   tbody.innerHTML = list.map(u=>{
+    const pri = getPrimaryAddressFor(u.correo);
+    const region = pri?.region || u.region || '';
+    const comuna = pri?.city || u.comuna || '';
     const domain = String(u.correo||'').toLowerCase().split('@')[1] || '';
     const hasDiscount = !!u.descuentoVitalicio || (u.perfil === 'Cliente' && domain === 'duoc.cl');
     const badge = hasDiscount ? '<span class="badge bg-success">20% DUOC</span>' : '';
@@ -61,8 +79,8 @@ function renderTabla(list){
       <td>${u.apellidos}</td>
       <td>${u.correo}</td>
       <td>${u.perfil}</td>
-      <td>${u.region}</td>
-      <td>${u.comuna}</td>
+      <td>${region}</td>
+      <td>${comuna}</td>
       <td>${badge}</td>
       <td class="text-end">
         <a class="btn btn-sm btn-outline-primary" href="./usuario-form.html?id=${encodeURIComponent(u.run)}">Editar</a>

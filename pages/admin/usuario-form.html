@@ -118,6 +118,33 @@
             </div>
           </div>
         </form>
+
+        <!-- Direcciones del usuario -->
+        <div class="card lup-card mt-4" data-ref="card-direcciones">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <span>Direcciones del usuario</span>
+            <button class="btn btn-outline-light btn-sm" type="button" data-ref="btn-add-dir">Añadir dirección</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Ciudad</th>
+                    <th>Región</th>
+                    <th>Principal</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody data-ref="tbody-dir">
+                  <tr class="text-secondary" data-ref="row-empty"><td colspan="6" class="text-center">Sin direcciones aún.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -130,5 +157,6 @@
   <script src="../../data/regiones-comunas.js"></script>
   <script src="../../js/admin/auth.js"></script>
   <script src="../../js/admin/admin-usuario-form.js"></script>
+  <script src="../../js/admin/admin-usuario-direcciones.js"></script>
 </body>
 </html>

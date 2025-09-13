@@ -114,11 +114,8 @@
       login.innerHTML = '<a class="dropdown-item" href="login.html">Iniciar sesión</a>';
       const registro = document.createElement('li');
       registro.innerHTML = '<a class="dropdown-item" href="registro.html">Registrarse</a>';
-      const perfil = document.createElement('li');
-      perfil.innerHTML = '<a class="dropdown-item" href="perfil.html">Perfil</a>';
       menu.appendChild(login);
       menu.appendChild(registro);
-      menu.appendChild(perfil);
     }
   }
 

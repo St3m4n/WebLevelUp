@@ -63,54 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Lógica para Direcciones (Añadir, Editar, Eliminar) ---
-    function validateAddressForm(formId) {
-        const inputs = document.querySelectorAll(`#${formId} input`);
-        let isValid = true;
-        inputs.forEach(input => {
-            input.classList.remove('is-invalid', 'is-valid');
-            if (input.value.trim() === '') {
-                input.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                input.classList.add('is-valid');
-            }
-        });
-        return isValid;
-    }
-
-    const saveAddressButton = document.getElementById('saveAddressButton');
-    if (saveAddressButton) {
-        saveAddressButton.addEventListener('click', () => {
-            if (validateAddressForm('addAddressForm')) {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('addAddressModal'));
-                if (modal) modal.hide();
-                showNotification('Nueva dirección guardada.', 'bi-check-circle-fill', 'text-success');
-                document.getElementById('addAddressForm').reset();
-                document.querySelectorAll('#addAddressForm input').forEach(input => input.classList.remove('is-valid'));
-            }
-        });
-    }
-
-    const updateAddressButton = document.getElementById('updateAddressButton');
-    if (updateAddressButton) {
-        updateAddressButton.addEventListener('click', () => {
-            if (validateAddressForm('editAddressForm')) {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editAddressModal'));
-                if (modal) modal.hide();
-                showNotification('Dirección actualizada correctamente.', 'bi-check-circle-fill', 'text-success');
-            }
-        });
-    }
-
-    const confirmDeleteAddressButton = document.getElementById('confirmDeleteAddressButton');
-    if (confirmDeleteAddressButton) {
-        confirmDeleteAddressButton.addEventListener('click', () => {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAddressModal'));
-            if (modal) modal.hide();
-            showNotification('Dirección eliminada correctamente.', 'bi-trash-fill', 'text-danger');
-        });
-    }
+    // --- Lógica para Direcciones ---
+    // La lógica completa y persistente de direcciones vive en `js/tienda/perfil.js`.
+    // Se eliminan handlers genéricos aquí para evitar conflictos y duplicación.
 
     // --- Lógica para Cambiar Contraseña ---
     function setupPasswordToggle(inputId, buttonId) {
