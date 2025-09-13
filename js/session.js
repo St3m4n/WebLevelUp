@@ -107,6 +107,8 @@
           window.location.reload();
         });
       }
+      // Actualizar badge de puntos si el módulo está disponible
+      try { if (window.LevelUpPoints && typeof window.LevelUpPoints.updateNavPointsBadge==='function') window.LevelUpPoints.updateNavPointsBadge(); } catch {}
     } else {
       // Estado no autenticado
       menu.innerHTML = '';

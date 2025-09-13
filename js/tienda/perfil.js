@@ -211,6 +211,37 @@
     }
 
     // ==============================================
+    // Mi progreso Level-Up (puntos/exp/código referido)
+    // ==============================================
+    (function setupLevelUpProgress(){
+      try {
+        if (!window.LevelUpPoints) return;
+        const stats = window.LevelUpPoints.getUserStats(user.run);
+        const code = window.LevelUpPoints.ensureReferralCode(user.run);
+        const p = document.getElementById('lugPointsTotal');
+        const lvlEl = document.getElementById('lugLevelValue');
+        const bar = document.getElementById('lugLevelProgressBar');
+        const expText = document.getElementById('lugLevelExpText');
+        const rc = document.getElementById('lugReferralCode');
+        const totalExp = Number(stats.exp?.torneos||0) + Number(stats.exp?.compras||0) + Number(stats.exp?.referidos||0);
+        const prog = (typeof LevelUpPoints.computeLevelProgressFromExp==='function') ? LevelUpPoints.computeLevelProgressFromExp(totalExp) : { level: 1, into: totalExp, nextReq: 1000, pct: Math.min(100, Math.floor((totalExp%1000)/10)) };
+        if (lvlEl) lvlEl.textContent = String(prog.level);
+        if (bar) bar.style.width = prog.pct + '%';
+        if (expText) expText.textContent = `${prog.into} / ${prog.nextReq} EXP`;
+        // Mostrar experiencia acumulada como "Puntos totales"
+        if (p) p.textContent = String(totalExp);
+        if (rc) rc.value = code || stats.referralCode || '';
+        const copyBtn = document.getElementById('lugCopyRefCode');
+        if (copyBtn && rc){
+          copyBtn.addEventListener('click', async (e)=>{
+            e.preventDefault();
+            try { await navigator.clipboard.writeText(rc.value || ''); if (typeof showNotification==='function') showNotification('Código copiado.', 'bi-clipboard-check', 'text-success'); } catch { alert('Copiar: ' + (rc.value||'')); }
+          });
+        }
+      } catch {}
+    })();
+
+    // ==============================================
     // Referidos: generar y compartir código + conteo
     // ==============================================
     const refCodeInput = document.getElementById('refCodeValue');
@@ -226,23 +257,26 @@
     function ensureRefCode(){
       const extras = getExtras();
       const idx = extras.findIndex(e => String((e?.correo)||'').toLowerCase()===correoKey);
-      const make = () => `LU-${Math.random().toString(36).slice(2,7).toUpperCase()}-${Date.now().toString(36).slice(-3).toUpperCase()}`;
+      const make = () => `LUG-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
       if (idx>=0) {
-        if (!extras[idx].refCode) {
-          extras[idx].refCode = make();
+        // Preferir nueva clave referralCode; mantener refCode por compatibilidad
+        if (!extras[idx].referralCode && !extras[idx].refCode) {
+          const code = make();
+          extras[idx].referralCode = code;
+          extras[idx].refCode = code;
           setExtras(extras);
         }
-        return extras[idx].refCode;
+        return extras[idx].referralCode || extras[idx].refCode;
       } else {
-        const refCode = make();
-        extras.push({ correo: correoKey, refCode, referidos: { count: 0, users: [] } });
+        const code = make();
+        extras.push({ correo: correoKey, referralCode: code, refCode: code, referidos: { count: 0, users: [] } });
         setExtras(extras);
-        return refCode;
+        return code;
       }
     }
     function getMyRefData(){
       const extras = getExtras();
-      const me = extras.find(e => String((e?.correo)||'').toLowerCase()===correoKey) || {};
+  const me = extras.find(e => String((e?.correo)||'').toLowerCase()===correoKey) || {};
       // Estructura nueva: users es array de objetos { email, date }
       let users = [];
       if (Array.isArray(me?.referidos?.users)) {
@@ -254,7 +288,7 @@
         });
       }
       const count = me?.referidos?.count || users.length || 0;
-      const code = me?.refCode || '';
+      const code = me?.referralCode || me?.refCode || '';
       return { count, users, code };
     }
     function updateRefUI(){

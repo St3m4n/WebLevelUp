@@ -123,6 +123,17 @@
     const qtyInput = document.getElementById('qty');
     const btnAdd = document.getElementById('btn-add');
     const qtyBox = document.getElementById('qty-box');
+    const earnEl = document.getElementById('lug-earn-points');
+    function updateEarn(){
+      try {
+  if (maxStock <= 0) { if (earnEl) earnEl.textContent = `+0 EXP`; return; }
+        const qty = Math.max(1, Number(qtyInput?.value||1)||1);
+        const unit = Number(discounted)||0;
+        const total = unit * qty;
+        const pts = Math.floor(total / 1000) * ((window.LevelUpPoints && LevelUpPoints.CONFIG && Number.isFinite(LevelUpPoints.CONFIG.COMPRA_POR_1000)) ? LevelUpPoints.CONFIG.COMPRA_POR_1000 : 1);
+  if (earnEl) earnEl.textContent = `+${pts} EXP`;
+  } catch { if (earnEl) earnEl.textContent = '+0 EXP'; }
+    }
     // Límite por stock
     const maxStock = Number(p.stock)||0;
     if (qtyInput){
@@ -138,20 +149,20 @@
           let v = Number(qtyInput.value||1);
           v = Math.max(1, v-1);
           if (maxStock > 0) v = Math.min(v, maxStock);
-          qtyInput.value = v; btnAdd.setAttribute('data-cantidad', String(v));
+          qtyInput.value = v; btnAdd.setAttribute('data-cantidad', String(v)); updateEarn();
         }
         if (e.target.closest('[data-action="inc"]')){
           let v = Number(qtyInput.value||1);
           v = v+1;
           if (maxStock > 0) v = Math.min(v, maxStock);
-          qtyInput.value = v; btnAdd.setAttribute('data-cantidad', String(v));
+          qtyInput.value = v; btnAdd.setAttribute('data-cantidad', String(v)); updateEarn();
         }
       });
       qtyInput.addEventListener('input', ()=>{
         let v = Number(qtyInput.value||1);
         if (!Number.isFinite(v) || v<1) v = 1;
         if (maxStock > 0) v = Math.min(v, maxStock);
-        qtyInput.value = v; btnAdd.setAttribute('data-cantidad', String(v));
+        qtyInput.value = v; btnAdd.setAttribute('data-cantidad', String(v)); updateEarn();
       });
     }
     if (btnAdd){
@@ -160,6 +171,9 @@
       btnAdd.setAttribute('data-precio', String(discounted));
       btnAdd.setAttribute('data-cantidad', String(Number(qtyInput?.value||1)||1));
     }
+
+    // Inicializar vista de puntos que acumulas
+    updateEarn();
 
     // Productos relacionados
     renderRelated(p);

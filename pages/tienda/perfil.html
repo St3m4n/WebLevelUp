@@ -94,6 +94,33 @@
                     <h2 class="h4" id="profileName">—</h2>
                     <p class="text-secondary mb-1" id="profileEmailText">—</p>
                     <p class="text-secondary mb-1" id="memberSinceText" style="display:none;"><small>Miembro desde: —</small></p>
+
+                    <!-- Level-Up resumen movido aquí -->
+                    <hr class="contact-hr my-3">
+                    <div class="text-start">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small text-secondary">Mi progreso Level-Up</span>
+                            <span class="badge bg-info text-dark">Nivel <span id="lugLevelValue">1</span></span>
+                        </div>
+                        <div class="mb-2">
+                            <div class="progress" style="height: 8px;">
+                                <div id="lugLevelProgressBar" class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="small text-secondary mt-1" id="lugLevelExpText">0 / 1000 EXP</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="small text-secondary">Experiencia acumulada</div>
+                            <div class="h3 text-info mb-0" id="lugPointsTotal">0</div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="small text-secondary mb-1">Código de referido</div>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="lugReferralCode" class="form-control" readonly placeholder="—">
+                                <button class="btn btn-outline-light" id="lugCopyRefCode" title="Copiar código"><i class="bi bi-clipboard"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
                     <hr class="contact-hr my-3">
                     <div class="d-grid gap-2 mt-2">
                         <a href="#" id="logoutBtn" class="btn btn-outline-danger"><i
@@ -115,6 +142,7 @@
                                 type="button" role="tab"><i class="bi bi-person-vcard me-2"></i>Detalles de la
                                 Cuenta</button>
                         </li>
+                        
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="address-tab" data-bs-toggle="tab" data-bs-target="#address"
                                 type="button" role="tab"><i class="bi bi-geo-alt-fill me-2"></i>Direcciones</button>
@@ -216,6 +244,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        
 
                         <div class="tab-pane fade" id="referrals" role="tabpanel">
                             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -331,7 +361,6 @@
             </div>
         </div>
     </main>
-
     <footer class="container-fluid py-3 mt-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
             <div class="mb-3 mb-md-0">
@@ -553,6 +582,7 @@
     <script src="../../data/regiones-comunas.js"></script>
     <script src="../../data/usuarios.js"></script>
     <script src="../../js/session.js"></script>
+    <script src="../../js/tienda/levelup-points.js"></script>
     <script src="../../js/script.js"></script>
     <script src="../../js/tienda/perfil.js"></script>
 

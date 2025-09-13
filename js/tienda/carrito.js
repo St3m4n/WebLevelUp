@@ -181,7 +181,34 @@
         renderCarrito(opts);
       }
       if (e.target.closest('[data-action="pagar"]')){
-        alert('Flujo de pago no implementado');
+        try {
+          // Simular confirmación de compra: otorgar puntos al usuario actual
+          const ses = (window.Session && typeof window.Session.get==='function') ? window.Session.get() : null;
+          if (!ses || !ses.correo) {
+            try { if (typeof window.showNotification==='function') window.showNotification('Inicia sesión para completar la compra.', 'bi-person-exclamation', 'text-warning'); } catch {}
+            return;
+          }
+          const user = (function(){
+            const lista = Array.isArray(window.usuarios) ? window.usuarios : [];
+            const c = String(ses.correo||'').toLowerCase();
+            return lista.find(u => String(u.correo||'').toLowerCase()===c) || null;
+          })();
+          if (!user) { alert('No se encontró el usuario de la sesión.'); return; }
+
+          const carrito = loadCarrito();
+          const total = carrito.reduce((acc,i)=>acc + (i.precio*i.cantidad), 0) + 4990; // incluye despacho mostrado
+          if (window.LevelUpPoints && typeof window.LevelUpPoints.addPurchasePoints==='function'){
+            const res = window.LevelUpPoints.addPurchasePoints({ run: user.run, totalCLP: total });
+            const pts = res && res.ok ? res.pointsAdded : 0;
+            try { if (typeof window.showNotification==='function') window.showNotification(`Compra registrada: +${pts} EXP.`, 'bi-gem', 'text-info'); } catch {}
+            try { if (typeof window.LevelUpPoints.updateNavPointsBadge==='function') window.LevelUpPoints.updateNavPointsBadge(); } catch {}
+          }
+          // limpiar carrito y refrescar UI
+          vaciarCarrito();
+          renderCarrito(opts);
+        } catch {
+          alert('Ocurrió un error al procesar el pago.');
+        }
       }
     };
     if (res){
