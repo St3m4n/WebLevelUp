@@ -32,12 +32,33 @@
     return seed;
   }
 
+  // Lee sesion unificada desde sessionStorage/localStorage
+  function readSesActual(){
+    try { const s = sessionStorage.getItem('sesionActual'); if (s) return JSON.parse(s); } catch {}
+    try { const l = localStorage.getItem('sesionActual'); if (l) return JSON.parse(l); } catch {}
+    return null;
+  }
+
   function getCurrentAdmin(usuarios){
-    const run = localStorage.getItem(LS_CUR);
     let u = null;
-    if (run) u = usuarios.find(x => String(x.run).toUpperCase() === String(run).toUpperCase());
-    if (!u) u = usuarios.find(x => String(x.perfil).toLowerCase() === "administrador") || usuarios[0];
-    return u || null;
+    const ses = readSesActual();
+    // 1) Preferir coincidencia por correo de la sesión actual
+    if (ses && ses.correo){
+      const correo = String(ses.correo).toLowerCase();
+      u = usuarios.find(x => String(x.correo || '').toLowerCase() === correo) || null;
+    }
+    // 2) Fallback legado por RUN guardado
+    if (!u){
+      const run = localStorage.getItem(LS_CUR);
+      if (run){
+        u = usuarios.find(x => String(x.run).toUpperCase() === String(run).toUpperCase()) || null;
+      }
+    }
+    // 3) Fallback: primer administrador, o primero de la lista
+    if (!u){
+      u = usuarios.find(x => String(x.perfil).toLowerCase() === 'administrador') || usuarios[0] || null;
+    }
+    return u;
   }
 
   // regiones y comunas
