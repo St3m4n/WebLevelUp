@@ -168,6 +168,173 @@
       });
     }
 
+    // ================================================================
+    // Preferencias: medio de pago predeterminado (persistencia local)
+    // ================================================================
+    const prefSelect = document.getElementById('defaultPayment');
+    const savePrefBtn = document.getElementById('savePreferencesButton');
+    function getExtras(){
+      const raw = (()=>{ try { return localStorage.getItem('usuariosExtra'); } catch { return '[]'; } })();
+      const arr = safeParseJSON(raw||'[]', []);
+      return Array.isArray(arr) ? arr : [];
+    }
+    function setExtras(arr){ try { localStorage.setItem('usuariosExtra', JSON.stringify(Array.isArray(arr)?arr:[])); } catch {} }
+    function upsertExtraPatch(correoKey, patch){
+      const extras = getExtras();
+      const idx = extras.findIndex(u => String((u?.correo)||'').toLowerCase()===correoKey);
+      if (idx>=0) {
+        const prev = extras[idx]||{};
+        const prevPrefs = prev.preferencias || {};
+        extras[idx] = { ...prev, preferencias: { ...prevPrefs, ...((patch && patch.preferencias)||{}) }, ...patch };
+      } else {
+        extras.push({ correo: correoKey, ...patch });
+      }
+      setExtras(extras);
+      return extras;
+    }
+    const correoKey = String(user.correo || ses.correo || '').toLowerCase();
+    // Cargar valor inicial de preferencias
+    if (prefSelect) {
+      try {
+        const extras = getExtras();
+        const me = extras.find(e => String((e?.correo)||'').toLowerCase()===correoKey) || {};
+        const pago = me?.preferencias?.pagoPredeterminado || '';
+        prefSelect.value = pago || '';
+      } catch {}
+    }
+    if (savePrefBtn && prefSelect) {
+      savePrefBtn.addEventListener('click', () => {
+        const val = String(prefSelect.value || '').trim();
+        upsertExtraPatch(correoKey, { preferencias: { pagoPredeterminado: val } });
+        try { if (typeof showNotification==='function') showNotification('Preferencias guardadas.', 'bi-check-circle-fill', 'text-success'); } catch {}
+      });
+    }
+
+    // ==============================================
+    // Referidos: generar y compartir código + conteo
+    // ==============================================
+    const refCodeInput = document.getElementById('refCodeValue');
+    const genRefBtn = document.getElementById('generateRefCodeButton');
+    const copyRefBtn = document.getElementById('copyRefLinkButton');
+    const shareRefBtn = document.getElementById('shareRefButton');
+    const mailRefBtn = document.getElementById('mailRefButton');
+    const tweetRefBtn = document.getElementById('tweetRefButton');
+    const refCountEl = document.getElementById('refCountValue');
+  const refListBody = document.getElementById('refListBody');
+  const refListEmpty = document.getElementById('refListEmpty');
+
+    function ensureRefCode(){
+      const extras = getExtras();
+      const idx = extras.findIndex(e => String((e?.correo)||'').toLowerCase()===correoKey);
+      const make = () => `LU-${Math.random().toString(36).slice(2,7).toUpperCase()}-${Date.now().toString(36).slice(-3).toUpperCase()}`;
+      if (idx>=0) {
+        if (!extras[idx].refCode) {
+          extras[idx].refCode = make();
+          setExtras(extras);
+        }
+        return extras[idx].refCode;
+      } else {
+        const refCode = make();
+        extras.push({ correo: correoKey, refCode, referidos: { count: 0, users: [] } });
+        setExtras(extras);
+        return refCode;
+      }
+    }
+    function getMyRefData(){
+      const extras = getExtras();
+      const me = extras.find(e => String((e?.correo)||'').toLowerCase()===correoKey) || {};
+      // Estructura nueva: users es array de objetos { email, date }
+      let users = [];
+      if (Array.isArray(me?.referidos?.users)) {
+        users = me.referidos.users.map(u => {
+          if (typeof u === 'string') return { email: u, date: '' };
+          const email = String(u?.email || '').trim();
+          const date = String(u?.date || '');
+          return { email, date };
+        });
+      }
+      const count = me?.referidos?.count || users.length || 0;
+      const code = me?.refCode || '';
+      return { count, users, code };
+    }
+    function updateRefUI(){
+      const { count, code } = getMyRefData();
+      if (refCountEl) refCountEl.textContent = String(count);
+      if (refCodeInput) refCodeInput.value = code || '';
+  const base = 'registro.html';
+  const link = code ? `${base}?ref=${encodeURIComponent(code)}` : base;
+      if (mailRefBtn) mailRefBtn.href = `mailto:?subject=${encodeURIComponent('Únete a Level-Up Gamer')}&body=${encodeURIComponent('Regístrate con mi código y gana beneficios: ' + link)}`;
+      if (tweetRefBtn) tweetRefBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Únete a Level-Up Gamer con mi código: ' + link)}`;
+      // Guardar para copy/share
+      updateRefUI.currentLink = link;
+      // Render listado
+      renderRefList();
+    }
+    function maskEmail(email){
+      const e = String(email||'');
+      const [user, domain] = e.split('@');
+      if (!user || !domain) return '***';
+      const head = user.slice(0,2);
+      const tail = user.length>2 ? user.slice(-1) : '';
+      const maskedUser = `${head}${'*'.repeat(Math.max(1, user.length-3))}${tail}`;
+      const domParts = domain.split('.');
+      const domHead = domParts[0] || '';
+      const maskedDomHead = domHead.length>2 ? `${domHead[0]}${'*'.repeat(domHead.length-2)}${domHead.slice(-1)}` : `${domHead[0]||''}*`;
+      const rest = domParts.slice(1).join('.') || '';
+      return `${maskedUser}@${maskedDomHead}${rest?'.'+rest:''}`;
+    }
+    function formatDate(d){ try { const dt = d? new Date(d) : null; if (!dt || isNaN(dt)) return ''; return dt.toLocaleDateString('es-CL'); } catch { return ''; } }
+    function renderRefList(){
+      if (!refListBody) return;
+      const { users } = getMyRefData();
+      const list = Array.isArray(users) ? users.slice() : [];
+      // ordenar por fecha descendente si hay
+      list.sort((a,b)=> new Date(b.date||0) - new Date(a.date||0));
+      refListBody.innerHTML = '';
+      if (refListEmpty) refListEmpty.classList.toggle('d-none', list.length>0);
+      if (list.length === 0){
+        if (refListEmpty && !refListEmpty.parentElement){
+          const tr = document.createElement('tr');
+          tr.id='refListEmpty';
+          tr.innerHTML = `<td colspan="2" class="text-secondary text-center">Aún no tienes referidos.</td>`;
+          refListBody.appendChild(tr);
+        }
+        return;
+      }
+      list.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${maskEmail(item.email)}</td><td class="text-end">${formatDate(item.date)}</td>`;
+        refListBody.appendChild(tr);
+      });
+    }
+    updateRefUI();
+    if (genRefBtn) {
+      genRefBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const code = ensureRefCode();
+        updateRefUI();
+        try { if (typeof showNotification==='function') showNotification('Código de referido generado.', 'bi-stars', 'text-info'); } catch {}
+      });
+    }
+    if (copyRefBtn) {
+      copyRefBtn.addEventListener('click', async (e)=>{
+        e.preventDefault();
+        const link = updateRefUI.currentLink || '';
+        try { await navigator.clipboard.writeText(link); if (typeof showNotification==='function') showNotification('Enlace copiado al portapapeles.', 'bi-clipboard-check', 'text-success'); } catch { alert('Copia: '+link); }
+      });
+    }
+    if (shareRefBtn) {
+      shareRefBtn.addEventListener('click', async (e)=>{
+        e.preventDefault();
+        const link = updateRefUI.currentLink || '';
+        if (navigator.share) {
+          try { await navigator.share({ title:'Level-Up Gamer', text:'Regístrate con mi código y gana beneficios', url: link }); } catch {}
+        } else {
+          try { await navigator.clipboard.writeText(link); if (typeof showNotification==='function') showNotification('Compartir no soportado: enlace copiado.', 'bi-clipboard', 'text-secondary'); } catch {}
+        }
+      });
+    }
+
   // =====================================================================
     // Direcciones: Persistencia local (CRUD) por usuario
     // =====================================================================

@@ -330,6 +330,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
+        // Pre-cargar código de referido desde la URL si viene (?ref=)
+        (function preloadRefFromURL(){
+            try {
+                const url = new URL(window.location.href);
+                const ref = url.searchParams.get('ref');
+                if (ref) {
+                    const refInput = document.getElementById('referido');
+                    if (refInput && !refInput.value) refInput.value = ref;
+                }
+            } catch {}
+        })();
         // Hint dinámico para correo @duoc.cl
         const emailInput = document.getElementById('email');
         const duocHint = document.getElementById('duoc-hint');
@@ -371,6 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const comuna = String(comunaSelect?.value || '');
             const direccion = String(direccionInput?.value || '').trim();
             const terminos = !!terminosCheck?.checked;
+            const refInput = document.getElementById('referido');
+            const refCode = String(refInput?.value || '').trim();
 
             let valid = true;
             // RUN: largo 7-9 (cuerpo+DV) y DV correcto
@@ -442,6 +455,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const extras = getUsuariosExtra();
             extras.push(nuevo);
             try { localStorage.setItem('usuariosExtra', JSON.stringify(extras)); } catch {}
+
+            // Registrar referido si corresponde
+            if (refCode) {
+                try {
+                    const idx = extras.findIndex(e => String(e?.refCode || '') === refCode);
+                    if (idx !== -1) {
+                        const list = extras[idx].referidos && Array.isArray(extras[idx].referidos.users) ? extras[idx].referidos.users : [];
+                        // Migrar strings a objetos { email, date }
+                        const normalized = list.map(x => typeof x === 'string' ? { email: x, date: '' } : { email: String(x?.email||''), date: String(x?.date||'') });
+                        const already = normalized.some(x => String(x.email || '').toLowerCase() === email);
+                        if (!already) {
+                            normalized.push({ email, date: new Date().toISOString() });
+                            const cnt = (extras[idx].referidos && Number.isFinite(extras[idx].referidos.count)) ? (extras[idx].referidos.count + 1) : (normalized.length);
+                            extras[idx].referidos = { count: cnt, users: normalized };
+                            try { localStorage.setItem('usuariosExtra', JSON.stringify(extras)); } catch {}
+                        }
+                    } else {
+                        // Código desconocido: opcionalmente mostrar aviso suave
+                        showToastOrAlert('Código de referido no válido o expirado.', 'bi-info-circle', 'text-secondary');
+                    }
+                } catch {}
+            }
 
             // Actualizar vista fusionada en memoria
             try { window.usuarios = mergeUsuarios(window.usuarios || [], [nuevo]); } catch {}
