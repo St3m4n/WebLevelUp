@@ -29,35 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
     // --- 3. LÓGICA PARA LA PÁGINA DE PERFIL ---
     // =========================================================================
-
-    // --- Lógica para editar Información Personal ---
-    const saveProfileButton = document.getElementById('saveProfileButton');
-    if (saveProfileButton) {
-        saveProfileButton.addEventListener('click', () => {
-            const firstName = document.getElementById('profileFirstName');
-            const lastName = document.getElementById('profileLastName');
-            let isValid = true;
-            [firstName, lastName].forEach(input => input.classList.remove('is-invalid', 'is-valid'));
-            if (firstName.value.trim() === '') {
-                firstName.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                firstName.classList.add('is-valid');
-            }
-            if (lastName.value.trim() === '') {
-                lastName.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                lastName.classList.add('is-valid');
-            }
-            if (isValid) {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
-                if (modal) modal.hide();
-                showNotification('Perfil actualizado con éxito.', 'bi-check-circle-fill', 'text-success');
-                [firstName, lastName].forEach(input => input.classList.remove('is-valid'));
-            }
-        });
-    }
+    // Nota: la lógica de guardado de nombre/apellido y direcciones vive en js/tienda/perfil.js
 
     // --- Lógica para Direcciones ---
     // La lógica completa y persistente de direcciones vive en `js/tienda/perfil.js`.
@@ -226,12 +198,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 out.push(u);
             }
         };
-        (Array.isArray(seed) ? seed : []).forEach(pushUser);
-        // No exponer hashes en window.usuarios
+        // Preferir overrides del localStorage primero
         (Array.isArray(extras) ? extras : []).forEach(e => {
             const { passwordHash, passwordSalt, ...safe } = e || {};
             pushUser(safe);
         });
+        // Luego semilla estática, evitando duplicados
+        (Array.isArray(seed) ? seed : []).forEach(pushUser);
         return out;
     }
     // Exponer lista fusionada

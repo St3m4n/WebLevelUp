@@ -79,6 +79,95 @@
     if (iLast)  iLast.value = user.apellidos || '';
     if (iEmail) iEmail.value = user.correo || ses.correo || '';
 
+    // Guardar cambios de nombre/apellido
+    const saveBtn = document.getElementById('saveProfileButton');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const first = document.getElementById('profileFirstName');
+        const last  = document.getElementById('profileLastName');
+        const inputs = [first, last];
+        let ok = true;
+        inputs.forEach(inp => { if (!inp) return; inp.classList.remove('is-invalid','is-valid'); if (String(inp.value||'').trim()===''){ inp.classList.add('is-invalid'); ok=false; } else { inp.classList.add('is-valid'); }});
+        if (!ok) return;
+
+        // Persistir en usuariosExtra (por correo)
+        const correoKey = String(user.correo || ses.correo || '').toLowerCase();
+        const safeParse = (t,fb)=>{ try { return JSON.parse(t); } catch { return fb; } };
+        const extrasRaw = (()=>{ try { return localStorage.getItem('usuariosExtra'); } catch { return '[]'; } })();
+        const extras = Array.isArray(safeParse(extrasRaw,'[]')) ? safeParse(extrasRaw,'[]') : [];
+        const idx = extras.findIndex(u => String((u?.correo)||'').toLowerCase() === correoKey);
+        if (idx >= 0) {
+          extras[idx] = { ...extras[idx], nombre: String(first.value).trim(), apellidos: String(last.value).trim() };
+        } else {
+          // Si no existe en extras, crear override mínimo para este correo
+          extras.push({
+            run: user.run || '',
+            nombre: String(first.value).trim(),
+            apellidos: String(last.value).trim(),
+            correo: correoKey,
+            perfil: user.perfil || 'Cliente',
+            fechaNacimiento: user.fechaNacimiento || '',
+            region: user.region || '',
+            comuna: user.comuna || '',
+            direccion: user.direccion || ''
+          });
+        }
+        try { localStorage.setItem('usuariosExtra', JSON.stringify(extras)); } catch {}
+
+        // Refrescar window.usuarios usando merge definido en js/script.js
+        try {
+          const merged = (function(){
+            // Reutiliza helpers de script.js si existen
+            const normalizeRun = (v)=> String(v || '').replace(/[^0-9kK]/g, '').toUpperCase();
+            function mergeUsuarios(seed, extras){
+              const byCorreo = new Map();
+              const byRun = new Map();
+              const out = [];
+              const pushUser = (u) => {
+                const correo = String(u.correo || '').toLowerCase();
+                const runNorm = normalizeRun(u.run);
+                if (correo && !byCorreo.has(correo) && runNorm && !byRun.has(runNorm)) {
+                  byCorreo.set(correo, true);
+                  byRun.set(runNorm, true);
+                  out.push(u);
+                }
+              };
+              (Array.isArray(extras)?extras:[]).forEach(e=>{ const {passwordHash,passwordSalt,...safe}=e||{}; pushUser(safe); });
+              (Array.isArray(seed)?seed:[]).forEach(pushUser);
+              return out;
+            }
+            const seed = Array.isArray(window.usuarios) ? window.usuarios.filter(u=>!(extras.find(e=>String(e.correo||'').toLowerCase()===String(u.correo||'').toLowerCase()))) : (window.usuarios||[]);
+            return mergeUsuarios(seed, extras);
+          })();
+          if (Array.isArray(merged) && merged.length) window.usuarios = merged;
+        } catch {}
+
+        // Actualizar UI inmediata
+        const fullName = `${String(first.value).trim()} ${String(last.value).trim()}`.trim();
+        if (nameEl) nameEl.textContent = fullName || nameEl.textContent;
+        if (dNom) dNom.textContent = String(first.value).trim();
+        if (dApe) dApe.textContent = String(last.value).trim();
+
+        // Actualizar nombre visible de la sesión para navbar
+        try {
+          if (window.Session && typeof window.Session.get==='function' && typeof window.Session.set==='function'){
+            const current = window.Session.get() || {};
+            const updated = { ...current, nombre: fullName || current.nombre };
+            // Mantener el flag remember si existía
+            if (current.remember) updated.remember = true;
+            window.Session.set(updated);
+            // refrescar menú
+            if (typeof window.Session.updateNavbar==='function') window.Session.updateNavbar();
+          }
+        } catch {}
+
+        // Cerrar modal y feedback
+        try { const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal')); if (modal) modal.hide(); } catch {}
+        try { if (typeof showNotification==='function') showNotification('Perfil actualizado con éxito.', 'bi-check-circle-fill', 'text-success'); } catch {}
+        try { inputs.forEach(i=>i && i.classList.remove('is-valid')); } catch {}
+      });
+    }
+
   // =====================================================================
     // Direcciones: Persistencia local (CRUD) por usuario
     // =====================================================================
