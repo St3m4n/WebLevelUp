@@ -382,8 +382,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const regionSelect = document.getElementById('region');
             const comunaSelect = document.getElementById('comuna');
             const direccionInput = document.getElementById('direccion');
+            const terminosCheck = document.getElementById('terminos');
 
-            [runInput, emailInput, nombresInput, apellidosInput, passwordInput, confirmInput, fechaInput, regionSelect, comunaSelect, direccionInput]
+            [runInput, emailInput, nombresInput, apellidosInput, passwordInput, confirmInput, fechaInput, regionSelect, comunaSelect, direccionInput, terminosCheck]
                 .forEach(i => i && i.classList.remove('is-invalid'));
 
             const runNorm = normalizeRun(runInput?.value);
@@ -396,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const region = String(regionSelect?.value || '');
             const comuna = String(comunaSelect?.value || '');
             const direccion = String(direccionInput?.value || '').trim();
+            const terminos = !!terminosCheck?.checked;
 
             let valid = true;
             // RUN: largo 7-9 (cuerpo+DV) y DV correcto
@@ -422,6 +424,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!region) { valid = false; setInvalid(regionSelect, true, 'e-region', 'Selecciona una región.'); }
             if (!comuna) { valid = false; setInvalid(comunaSelect, true, 'e-comuna', 'Selecciona una comuna.'); }
             if (!direccion || direccion.length>300) { valid = false; setInvalid(direccionInput, true, 'e-direccion', 'Dirección requerida (máx. 300).'); }
+            // Términos y Condiciones obligatorios
+            if (!terminos) { valid = false; setInvalid(terminosCheck, true, 'e-terminos', 'Debes aceptar los Términos y Condiciones.'); }
 
             const usuariosMerged = getMergedUsuariosCurrent();
             // Unicidad por correo y RUN
