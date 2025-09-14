@@ -9,7 +9,7 @@ window.productos = [
     precio: 29990,
     stock: 12,
     stockCritico: 3,
-    url: null
+    url: "../assets/JM001.webp"
   },
   {
     codigo: "JM002",
@@ -18,7 +18,7 @@ window.productos = [
     precio: 24990,
     stock: 7,
     stockCritico: 2,
-    url: null
+    url: "../assets/JM002.png"
   },
   {
     codigo: "JM003",
@@ -27,7 +27,7 @@ window.productos = [
     precio: 21990,
     stock: 10,
     stockCritico: 3,
-    url: null
+    url: "../assets/JM003.webp"
   },
 
   // --- Accesorios ---
@@ -38,7 +38,7 @@ window.productos = [
     precio: 59990,
     stock: 5,
     stockCritico: 2,
-    url: null
+    url: "../assets/AC001.jpg"
   },
   {
     codigo: "AC002",
@@ -47,7 +47,7 @@ window.productos = [
     precio: 79990,
     stock: 8,
     stockCritico: 2,
-    url: null
+    url: "../assets/AC002.webp"
   },
   {
     codigo: "AC003",
@@ -56,7 +56,7 @@ window.productos = [
     precio: 39990,
     stock: 15,
     stockCritico: 4,
-    url: null
+    url: "../assets/AC003.png"
   },
 
   // --- Consolas ---
@@ -67,7 +67,7 @@ window.productos = [
     precio: 549990,
     stock: 2,
     stockCritico: 1,
-    url: null
+    url: "../assets/CO001.webp"
   },
   {
     codigo: "CO002",
@@ -76,7 +76,7 @@ window.productos = [
     precio: 349990,
     stock: 4,
     stockCritico: 1,
-    url: null
+    url: "../assets/CO002.webp"
   },
 
   // --- Computadores Gamers ---
@@ -87,7 +87,7 @@ window.productos = [
     precio: 1299990,
     stock: 3,
     stockCritico: 1,
-    url: null
+    url: "../assets/CG001.png"
   },
   {
     codigo: "CG002",
@@ -96,7 +96,7 @@ window.productos = [
     precio: 999990,
     stock: 5,
     stockCritico: 1,
-    url: null
+    url: "../assets/CG002.jpg"
   },
 
   // --- Sillas Gamers ---
@@ -107,7 +107,7 @@ window.productos = [
     precio: 349990,
     stock: 4,
     stockCritico: 1,
-    url: null
+    url: "../assets/SG001.jpg"
   },
   {
     codigo: "SG002",
@@ -116,7 +116,7 @@ window.productos = [
     precio: 199990,
     stock: 6,
     stockCritico: 2,
-    url: null
+    url: "../assets/SG002.png"
   },
 
   // --- Mouse ---
@@ -127,7 +127,7 @@ window.productos = [
     precio: 49990,
     stock: 18,
     stockCritico: 4,
-    url: null
+    url: "../assets/MS001.webp"
   },
   {
     codigo: "MS002",
@@ -136,7 +136,7 @@ window.productos = [
     precio: 39990,
     stock: 12,
     stockCritico: 3,
-    url: null
+    url: "../assets/MS002.webp"
   },
 
   // --- Mousepad ---
@@ -147,7 +147,7 @@ window.productos = [
     precio: 29990,
     stock: 10,
     stockCritico: 2,
-    url: null
+    url: "../assets/MP001.jpg"
   },
   {
     codigo: "MP002",
@@ -156,7 +156,7 @@ window.productos = [
     precio: 99990,
     stock: 3,
     stockCritico: 1,
-    url: null
+    url: "../assets/MP002.jpg"
   },
 
   // --- Poleras Personalizadas ---
@@ -167,7 +167,7 @@ window.productos = [
     precio: 14990,
     stock: 20,
     stockCritico: 5,
-    url: null
+    url: "../assets/PP001.png"
   },
   {
     codigo: "PP002",
@@ -176,7 +176,7 @@ window.productos = [
     precio: 15990,
     stock: 15,
     stockCritico: 4,
-    url: null
+    url: "../assets/PP002.png"
   },
 
   // --- Polerones Gamers Personalizados ---
@@ -187,7 +187,7 @@ window.productos = [
     precio: 24990,
     stock: 12,
     stockCritico: 3,
-    url: null
+    url: "../assets/PG001.png"
   },
   {
     codigo: "PG002",
@@ -196,6 +196,6 @@ window.productos = [
     precio: 26990,
     stock: 10,
     stockCritico: 3,
-    url: null
+    url: "../assets/PG002.png"
   }
 ];
