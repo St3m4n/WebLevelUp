@@ -95,6 +95,52 @@
     saveCarrito([]);
   }
 
+  // Utilidad: mini confirm con estilo toast, reutilizando el contenedor global si existe
+  function confirmToast(message, { okText='Aceptar', cancelText='Cancelar' }={}){
+    return new Promise((resolve)=>{
+      try {
+        const toastEl = document.getElementById('notificationToast');
+        const toastBody = document.getElementById('toast-body');
+        const toastIcon = document.getElementById('toast-icon');
+        if (!toastEl || !window.bootstrap) throw new Error('no-toast');
+
+        // Construir contenido temporal con botones
+        const prev = { body: toastBody?.innerHTML || '', icon: toastIcon?.className || '' };
+        if (toastIcon) toastIcon.className = 'bi bi-question-circle-fill text-warning me-2';
+        if (toastBody){
+          toastBody.innerHTML = `
+            <div class="d-flex flex-column">
+              <span>${message}</span>
+              <div class="mt-2 d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-danger" id="toast-confirm-ok">${okText}</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="toast-confirm-cancel">${cancelText}</button>
+              </div>
+            </div>`;
+        }
+        const inst = window.bootstrap.Toast.getOrCreateInstance(toastEl);
+        const cleanup = (val)=>{
+          try {
+            if (toastBody) toastBody.innerHTML = prev.body;
+            if (toastIcon) toastIcon.className = prev.icon;
+          } catch {}
+          resolve(val);
+        };
+        // Listeners de botones
+        setTimeout(()=>{
+          const okBtn = document.getElementById('toast-confirm-ok');
+          const cancelBtn = document.getElementById('toast-confirm-cancel');
+          okBtn?.addEventListener('click', ()=>{ try { inst.hide(); } catch {}; cleanup(true); }, { once:true });
+          cancelBtn?.addEventListener('click', ()=>{ try { inst.hide(); } catch {}; cleanup(false); }, { once:true });
+        }, 0);
+        inst.show();
+      } catch {
+        // Fallback al confirm nativo si no hay toast
+        const ok = window.confirm(message);
+        resolve(ok);
+      }
+    });
+  }
+
   function renderBadge(){
     try {
       const carrito = loadCarrito();
@@ -200,7 +246,7 @@
     }
 
     // Delegación de eventos para +/-/del/vaciar (manejadores persistentes)
-    const onContClick = (e)=>{
+    const onContClick = async (e)=>{
       const row = e.target.closest('.cart-item-row');
       if (!row) return;
       const codigo = row.getAttribute('data-codigo');
@@ -217,6 +263,10 @@
         renderCarrito(opts);
       }
       if (e.target.closest('[data-action="del"]')){
+        // Confirmación visual tipo toast antes de eliminar
+        const nombre = row.querySelector('.card-title')?.textContent || 'este producto';
+        const ok = await confirmToast(`¿Eliminar "${nombre}" del carrito?`, { okText: 'Eliminar', cancelText: 'Cancelar' });
+        if (!ok) return;
         removeFromCarrito(codigo);
         renderCarrito(opts);
       }
@@ -255,7 +305,7 @@
           if (window.LevelUpPoints && typeof window.LevelUpPoints.addPurchasePoints==='function'){
             const res = window.LevelUpPoints.addPurchasePoints({ run: user.run, totalCLP: totalCompra });
             const pts = res && res.ok ? res.pointsAdded : 0;
-            try { if (typeof window.showNotification==='function') window.showNotification(`Compra registrada: +${pts} EXP.`, 'bi-gem', 'text-info'); } catch {}
+            try { if (typeof window.showNotification==='function') window.showNotification(`¡Compra exitosa! +${pts} EXP.`, 'bi-bag-check-fill', 'text-success'); } catch {}
             try { if (typeof window.LevelUpPoints.updateNavPointsBadge==='function') window.LevelUpPoints.updateNavPointsBadge(); } catch {}
           }
           // limpiar carrito y refrescar UI
@@ -291,6 +341,9 @@
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('.btn-add-cart');
     if (!btn) return;
+    // Evita que anclas con href="#" o botones dentro de enlaces provoquen scroll al tope
+    try { e.preventDefault(); } catch {}
+    try { e.stopPropagation(); } catch {}
     const card = btn.closest('[data-producto]');
     let codigo = btn.getAttribute('data-codigo') || card?.getAttribute('data-codigo');
     let nombre = btn.getAttribute('data-nombre') || card?.getAttribute('data-nombre');
