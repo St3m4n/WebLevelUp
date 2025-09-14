@@ -22,6 +22,13 @@
     return lista.find(u => String(u.correo||'').toLowerCase() === c) || null;
   }
 
+  // Orders storage helpers
+  const ORDERS_KEY = (correo) => `user:orders:${String(correo||'').toLowerCase()}`;
+  function loadOrders(correo){
+    try { const raw = localStorage.getItem(ORDERS_KEY(correo)); const arr = raw ? JSON.parse(raw) : []; return Array.isArray(arr) ? arr : []; } catch { return []; }
+  }
+  const CLP = new Intl.NumberFormat('es-CL', { style:'currency', currency:'CLP', maximumFractionDigits:0 });
+
   function formatMemberSince(dateStr){
     if (!dateStr) return '';
     try {
@@ -78,6 +85,87 @@
     if (iFirst) iFirst.value = user.nombre || (ses.nombre || '');
     if (iLast)  iLast.value = user.apellidos || '';
     if (iEmail) iEmail.value = user.correo || ses.correo || '';
+    // ==============================
+    // Historial de pedidos (órdenes)
+    // ==============================
+    (function renderOrders(){
+      try {
+        const correoKey = String(user.correo || ses.correo || '').toLowerCase();
+        const orders = loadOrders(correoKey);
+        const tbody = document.getElementById('orders-body');
+        const empty = document.getElementById('orders-empty');
+        if (!tbody) return;
+        // limpiar excepto fila vacía
+        tbody.querySelectorAll('tr').forEach(tr => { if (tr.id !== 'orders-empty') tr.remove(); });
+        if (!orders.length){ if (empty) empty.style.display=''; return; }
+        if (empty) empty.style.display='none';
+        orders.forEach(o => {
+          const tr = document.createElement('tr');
+          const idText = o.id || '';
+          const fecha = o.date ? new Date(o.date) : null;
+          const fechaTxt = fecha && !isNaN(fecha) ? fecha.toLocaleDateString('es-CL') : '';
+          const totalTxt = CLP.format(Number(o.total||0));
+          tr.innerHTML = `
+            <td>${idText}</td>
+            <td>${fechaTxt}</td>
+            <td>${totalTxt}</td>
+            <td><span class="badge bg-success">${o.estado || 'Pagado'}</span></td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-light" data-order-id="${idText}"><i class="bi bi-eye"></i></button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+        // detalles modal
+        tbody.addEventListener('click', (ev)=>{
+          const btn = ev.target.closest('button[data-order-id]');
+          if (!btn) return;
+          const oid = btn.getAttribute('data-order-id');
+          const ord = (orders||[]).find(x=>String(x.id)===String(oid));
+          if (!ord) return;
+          try {
+            document.getElementById('modalOrderId').textContent = String(ord.id||'');
+            document.getElementById('modalOrderDate').textContent = fechaTxtFrom(ord.date);
+            document.getElementById('modalOrderTotal').textContent = CLP.format(Number(ord.total||0));
+            document.getElementById('modalOrderStatus').textContent = String(ord.estado||'Pagado');
+            const addrSpan = document.getElementById('modalOrderAddress');
+            if (addrSpan) {
+              const ent = ord.entrega || {};
+              addrSpan.textContent = String(ent.display || `${ent.fullName||''}, ${ent.line1||''}${ent.city?`, ${ent.city}`:''}${ent.region?`, ${ent.region}`:''}${ent.country?`, ${ent.country}`:''}`);
+            }
+            const list = document.getElementById('modalOrderProducts');
+            if (list) {
+              list.innerHTML = '';
+              (Array.isArray(ord.items)?ord.items:[]).forEach(it => {
+                const li = document.createElement('li');
+                li.textContent = `${it.nombre} — x${it.cantidad} — ${CLP.format(Number(it.unit||0))} c/u`;
+                list.appendChild(li);
+              });
+            }
+            const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+            modal.show();
+          } catch {}
+        });
+      } catch {}
+    })();
+
+    function fechaTxtFrom(d){ try { const dt = d? new Date(d) : null; if (!dt || isNaN(dt)) return ''; return dt.toLocaleDateString('es-CL'); } catch { return ''; } }
+
+    // Si viene de una compra exitosa, activar pestaña de pedidos y mostrar toast
+    (function handlePostPurchase(){
+      try {
+        const raw = sessionStorage.getItem('orderSuccess');
+        if (!raw) return;
+        sessionStorage.removeItem('orderSuccess');
+        // Activar tab de pedidos
+        try {
+          const tabBtn = document.querySelector('button[data-bs-target="#orders"]');
+          if (tabBtn) new bootstrap.Tab(tabBtn).show();
+        } catch {}
+        // Toast informativo
+        const data = JSON.parse(raw);
+        const totalTxt = CLP.format(Number(data.total||0));
+        try { if (typeof showNotification==='function') showNotification(`¡Tu compra ${data.id} fue registrada! Total ${totalTxt}.`, 'bi-bag-check-fill', 'text-success'); } catch {}
+      } catch {}
+    })();
 
     // Guardar cambios de nombre/apellido
     const saveBtn = document.getElementById('saveProfileButton');

@@ -95,6 +95,19 @@
     saveCarrito([]);
   }
 
+  // Órdenes por usuario (correo)
+  const ORDERS_KEY = (correo) => `user:orders:${String(correo||'').toLowerCase()}`;
+  function loadOrders(correo){
+    try {
+      const raw = localStorage.getItem(ORDERS_KEY(correo));
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch { return []; }
+  }
+  function saveOrders(correo, list){
+    try { localStorage.setItem(ORDERS_KEY(correo), JSON.stringify(Array.isArray(list)?list:[])); } catch {}
+  }
+
   // Utilidad: mini confirm con estilo toast, reutilizando el contenedor global si existe
   function confirmToast(message, { okText='Aceptar', cancelText='Cancelar' }={}){
     return new Promise((resolve)=>{
@@ -296,21 +309,77 @@
           if (!user) { alert('No se encontró el usuario de la sesión.'); return; }
 
           const carrito = loadCarrito();
+          // Construir detalle de ítems con precio aplicado (descuento si corresponde)
+          const duoc = hasDuocDiscount();
+          const items = carrito.map(i=>{
+            const p = findProducto(i.codigo);
+            const baseUnit = Number(p?.precio)||Number(i.precio)||0;
+            const unit = duoc ? Math.round(baseUnit * 0.8) : baseUnit;
+            const cantidad = i.cantidad;
+            return {
+              codigo: i.codigo,
+              nombre: i.nombre,
+              cantidad,
+              unit,
+              subtotal: unit * cantidad
+            };
+          });
+          const subtotal = items.reduce((a,x)=>a+x.subtotal, 0);
+          const despacho = 4990;
           const totalCompra = carrito.reduce((acc,i)=>{
             const p = findProducto(i.codigo);
             const baseUnit = Number(p?.precio)||Number(i.precio)||0;
             const unit = hasDuocDiscount() ? Math.round(baseUnit * 0.8) : baseUnit;
             return acc + (unit * i.cantidad);
-          }, 0) + 4990; // incluye despacho mostrado
+          }, 0) + despacho; // incluye despacho mostrado
           if (window.LevelUpPoints && typeof window.LevelUpPoints.addPurchasePoints==='function'){
             const res = window.LevelUpPoints.addPurchasePoints({ run: user.run, totalCLP: totalCompra });
             const pts = res && res.ok ? res.pointsAdded : 0;
             try { if (typeof window.showNotification==='function') window.showNotification(`¡Compra exitosa! +${pts} EXP.`, 'bi-bag-check-fill', 'text-success'); } catch {}
             try { if (typeof window.LevelUpPoints.updateNavPointsBadge==='function') window.LevelUpPoints.updateNavPointsBadge(); } catch {}
           }
-          // limpiar carrito y refrescar UI
+          // Registrar pedido en LocalStorage del usuario y redirigir a perfil
+          const correoKey = String(user.correo || ses.correo || '').toLowerCase();
+          const orders = loadOrders(correoKey);
+          const orderId = `ORD-${Date.now().toString(36).toUpperCase()}`;
+          // Obtener dirección principal guardada en perfil
+          const ADDR_KEY = (correo) => `user:addresses:${String(correo||'').toLowerCase()}`;
+          function loadAddresses(correo){
+            try { const raw = localStorage.getItem(ADDR_KEY(correo)); const arr = raw ? JSON.parse(raw) : []; return Array.isArray(arr) ? arr : []; } catch { return []; }
+          }
+          function pickPrimaryAddress(list){
+            const arr = Array.isArray(list) ? list : [];
+            const primary = arr.find(a => a.isPrimary) || arr[0] || null;
+            if (!primary) return null;
+            const place = [primary.city, primary.region].filter(Boolean).join(', ');
+            return {
+              fullName: primary.fullName || '',
+              line1: primary.line1 || '',
+              city: primary.city || '',
+              region: primary.region || '',
+              country: primary.country || 'Chile',
+              display: `${primary.fullName || ''}, ${primary.line1 || ''}${place?`, ${place}`:''}${primary.country?`, ${primary.country}`:''}`
+            };
+          }
+          const addrList = loadAddresses(correoKey);
+          const entrega = pickPrimaryAddress(addrList);
+          const order = {
+            id: orderId,
+            date: new Date().toISOString(),
+            estado: 'Pagado',
+            items,
+            subtotal,
+            despacho,
+            total: totalCompra,
+            entrega
+          };
+          orders.unshift(order);
+          saveOrders(correoKey, orders);
+          // Señal para mostrar notificación y seleccionar la pestaña de pedidos en perfil
+          try { sessionStorage.setItem('orderSuccess', JSON.stringify({ id: orderId, total: totalCompra })); } catch {}
+          // limpiar carrito y redirigir
           vaciarCarrito();
-          renderCarrito(opts);
+          window.location.href = 'perfil.html#orders';
         } catch {
           alert('Ocurrió un error al procesar el pago.');
         }
