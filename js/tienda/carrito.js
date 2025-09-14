@@ -23,6 +23,20 @@
     return list.find(p => p.codigo === codigo);
   }
 
+  // Detecta si el usuario actual tiene beneficio DUOC (-20%)
+  function hasDuocDiscount(){
+    try {
+      const ses = window.Session && typeof window.Session.get==='function' ? window.Session.get() : null;
+      if (!ses) return false;
+      const correo = String(ses.correo||'').toLowerCase();
+      if (correo.endsWith('@duoc.cl')) return true;
+      // Buscar en usuarios fusionados si existe flag descuentoVitalicio
+      const lista = Array.isArray(window.usuarios) ? window.usuarios : [];
+      const u = lista.find(x => String(x.correo||'').toLowerCase() === correo);
+      return !!(u && u.descuentoVitalicio);
+    } catch { return false; }
+  }
+
   function resolveImg(p){
     try {
       const raw = p && p.url ? String(p.url) : '';
@@ -116,19 +130,25 @@
       return;
     }
 
+    const duoc = hasDuocDiscount();
     cont.innerHTML = carrito.map(i => {
       const subtotal = i.precio * i.cantidad;
       const p = findProducto(i.codigo);
       const stock = p ? p.stock : 0;
       const img = p ? resolveImg(p) : '../../assets/gamer.jpg';
+      const baseUnit = Number(p?.precio)||Number(i.precio)||0;
+      const unit = duoc ? Math.round(baseUnit * 0.8) : baseUnit;
+      const itemSubtotal = unit * i.cantidad;
       const mult = (window.LevelUpPoints && window.LevelUpPoints.CONFIG && Number.isFinite(window.LevelUpPoints.CONFIG.COMPRA_POR_1000)) ? window.LevelUpPoints.CONFIG.COMPRA_POR_1000 : 1;
-      const ptsItem = Math.floor(subtotal / 1000) * mult;
+      const ptsItem = Math.floor(itemSubtotal / 1000) * mult;
       return `
       <div class="cart-item-row" data-codigo="${i.codigo}">
         <img src="${img}" alt="${i.nombre}" class="cart-item-img">
         <div class="cart-item-details">
           <h5 class="card-title mb-1">${i.nombre}</h5>
-          <p class="card-text text-secondary mb-2">${CLP.format(i.precio)} c/u</p>
+          <p class="card-text text-secondary mb-2">
+            ${duoc ? `<span class="text-decoration-line-through text-secondary me-2">${CLP.format(baseUnit)}</span> ${CLP.format(unit)} <span class="badge bg-success ms-1">-20% DUOC</span>` : `${CLP.format(unit)} c/u`}
+          </p>
           <div class="quantity-selector">
             <button class="btn btn-sm btn-outline-secondary" data-action="dec">-</button>
             <input type="number" class="form-control form-control-sm text-center" value="${i.cantidad}" min="1" max="${stock}">
@@ -136,7 +156,7 @@
           </div>
         </div>
         <div class="cart-item-price">
-          <p class="mb-0">${CLP.format(subtotal)}</p>
+          <p class="mb-0">${CLP.format(itemSubtotal)}</p>
           <small class="text-info d-block">+${ptsItem} EXP</small>
           <button class="btn btn-remove-item" data-action="del"><i class="bi bi-trash3-fill"></i></button>
         </div>
@@ -145,7 +165,12 @@
       `;
     }).join('');
 
-    const total = carrito.reduce((acc,i)=>acc + (i.precio*i.cantidad), 0);
+    const total = carrito.reduce((acc,i)=>{
+      const p = findProducto(i.codigo);
+      const baseUnit = Number(p?.precio)||Number(i.precio)||0;
+      const unit = hasDuocDiscount() ? Math.round(baseUnit * 0.8) : baseUnit;
+      return acc + (unit * i.cantidad);
+    }, 0);
     const despacho = 4990;
     const mult = (window.LevelUpPoints && window.LevelUpPoints.CONFIG && Number.isFinite(window.LevelUpPoints.CONFIG.COMPRA_POR_1000)) ? window.LevelUpPoints.CONFIG.COMPRA_POR_1000 : 1;
     const ptsTotal = Math.floor((total + despacho) / 1000) * mult;
@@ -221,9 +246,14 @@
           if (!user) { alert('No se encontró el usuario de la sesión.'); return; }
 
           const carrito = loadCarrito();
-          const total = carrito.reduce((acc,i)=>acc + (i.precio*i.cantidad), 0) + 4990; // incluye despacho mostrado
+          const totalCompra = carrito.reduce((acc,i)=>{
+            const p = findProducto(i.codigo);
+            const baseUnit = Number(p?.precio)||Number(i.precio)||0;
+            const unit = hasDuocDiscount() ? Math.round(baseUnit * 0.8) : baseUnit;
+            return acc + (unit * i.cantidad);
+          }, 0) + 4990; // incluye despacho mostrado
           if (window.LevelUpPoints && typeof window.LevelUpPoints.addPurchasePoints==='function'){
-            const res = window.LevelUpPoints.addPurchasePoints({ run: user.run, totalCLP: total });
+            const res = window.LevelUpPoints.addPurchasePoints({ run: user.run, totalCLP: totalCompra });
             const pts = res && res.ok ? res.pointsAdded : 0;
             try { if (typeof window.showNotification==='function') window.showNotification(`Compra registrada: +${pts} EXP.`, 'bi-gem', 'text-info'); } catch {}
             try { if (typeof window.LevelUpPoints.updateNavPointsBadge==='function') window.LevelUpPoints.updateNavPointsBadge(); } catch {}

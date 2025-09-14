@@ -200,6 +200,10 @@ footer .bi:hover { transform: scale(1.2); }
     background-color: #1a1a1a; color: var(--color-text-primary); 
     border: 1px solid rgba(255, 255, 255, 0.1); 
 }
+.form-control::placeholder, .form-select::placeholder {
+    color: rgba(255,255,255,0.7);
+    opacity: 1; /* asegurar visibilidad en modo oscuro */
+}
 .form-control:focus, .form-select:focus { 
     background-color: #1a1a1a; color: var(--color-text-primary); 
     border-color: var(--color-accent-neon); 

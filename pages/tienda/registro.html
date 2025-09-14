@@ -95,12 +95,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="run" class="form-label">RUN</label>
-                                <input type="text" class="form-control" id="run" placeholder="Ej: 12345678-9" maxlength="9" required>
+                                <input type="text" class="form-control" id="run" placeholder="Ej: 12.345.678-5" maxlength="9" required>
                                 <div class="invalid-feedback" id="e-run">Ingresa un RUN válido.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control" id="email" maxlength="100" required>
+                                <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com" maxlength="100" required>
                                 <div class="invalid-feedback" id="e-email">Ingresa un correo válido.</div>
                                 <div class="form-text text-success d-none" id="duoc-hint"><i class="bi bi-award me-1"></i>Detectamos correo Duoc: tendrás 20% de descuento de por vida.</div>
                             </div>
@@ -108,12 +108,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" class="form-control" id="nombres" maxlength="50" required>
+                                <input type="text" class="form-control" id="nombres" placeholder="Ej: Juan Sebastián" maxlength="50" required>
                                 <div class="invalid-feedback" id="e-nombres">Ingresa tus nombres.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="apellidos" class="form-label">Apellidos</label>
-                                <input type="text" class="form-control" id="apellidos" maxlength="100" required>
+                                <input type="text" class="form-control" id="apellidos" placeholder="Ej: Pérez Soto" maxlength="100" required>
                                 <div class="invalid-feedback" id="e-apellidos">Ingresa tus apellidos.</div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="password" required>
+                                    <input type="password" class="form-control" id="password" placeholder="********" required>
                                     <button class="btn btn-outline-secondary" type="button" id="toggleRegPassword"><i class="bi bi-eye"></i></button>
                                 </div>
                                 <div class="form-text">Mínimo 8 caracteres.</div>
@@ -130,7 +130,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                    <input type="password" class="form-control" id="confirmPassword" placeholder="********" required>
                                     <button class="btn btn-outline-secondary" type="button" id="toggleRegConfirm"><i class="bi bi-eye"></i></button>
                                 </div>
                                 <div class="invalid-feedback" id="e-confirm">Las contraseñas no coinciden.</div>
@@ -159,13 +159,13 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="direccion" class="form-label">Dirección</label>
-                                <input type="text" class="form-control" id="direccion" maxlength="300" required>
+                                <input type="text" class="form-control" id="direccion" placeholder="Ej: Av. Siempre Viva 742, Dpto 12" maxlength="300" required>
                                 <div class="invalid-feedback" id="e-direccion">Ingresa tu dirección.</div>
                             </div>
                         </div>
                         <div class="mb-4">
                             <label for="referido" class="form-label">Código de Referido (Opcional)</label>
-                            <input type="text" class="form-control" id="referido">
+                            <input type="text" class="form-control" id="referido" placeholder="Ej: LUG-AB12CD">
                             <div class="form-text">Ingresa un código para ganar EXP LevelUp.</div>
                         </div>
                         <div class="form-check mb-4">
