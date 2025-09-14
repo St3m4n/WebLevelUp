@@ -121,6 +121,8 @@
       const p = findProducto(i.codigo);
       const stock = p ? p.stock : 0;
       const img = p ? resolveImg(p) : '../../assets/gamer.jpg';
+      const mult = (window.LevelUpPoints && window.LevelUpPoints.CONFIG && Number.isFinite(window.LevelUpPoints.CONFIG.COMPRA_POR_1000)) ? window.LevelUpPoints.CONFIG.COMPRA_POR_1000 : 1;
+      const ptsItem = Math.floor(subtotal / 1000) * mult;
       return `
       <div class="cart-item-row" data-codigo="${i.codigo}">
         <img src="${img}" alt="${i.nombre}" class="cart-item-img">
@@ -135,6 +137,7 @@
         </div>
         <div class="cart-item-price">
           <p class="mb-0">${CLP.format(subtotal)}</p>
+          <small class="text-info d-block">+${ptsItem} EXP</small>
           <button class="btn btn-remove-item" data-action="del"><i class="bi bi-trash3-fill"></i></button>
         </div>
       </div>
@@ -143,6 +146,9 @@
     }).join('');
 
     const total = carrito.reduce((acc,i)=>acc + (i.precio*i.cantidad), 0);
+    const despacho = 4990;
+    const mult = (window.LevelUpPoints && window.LevelUpPoints.CONFIG && Number.isFinite(window.LevelUpPoints.CONFIG.COMPRA_POR_1000)) ? window.LevelUpPoints.CONFIG.COMPRA_POR_1000 : 1;
+    const ptsTotal = Math.floor((total + despacho) / 1000) * mult;
     if (res){
       res.innerHTML = `
         <h2 class="mb-4">Resumen del Pedido</h2>
@@ -152,12 +158,16 @@
         </div>
         <div class="d-flex justify-content-between mb-3">
           <span class="text-secondary">Despacho</span>
-          <span>${CLP.format(4990)}</span>
+          <span>${CLP.format(despacho)}</span>
         </div>
         <hr class="cart-hr">
         <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
           <span>Total</span>
-          <span>${CLP.format(total + 4990)}</span>
+          <span>${CLP.format(total + despacho)}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-4 text-info">
+          <span>EXP estimado</span>
+          <span>+${ptsTotal} EXP</span>
         </div>
         <button class="btn btn-neon w-100" data-action="pagar">Proceder al Pago</button>
         <button class="btn btn-outline-secondary w-100 mt-2" data-action="vaciar">Vaciar carrito</button>
