@@ -14,6 +14,19 @@
     'Polerones Gamers Personalizados': '../../assets/gamer.jpg'
   };
 
+  function resolveImg(p){
+    try {
+      const raw = p && p.url ? String(p.url) : '';
+      if (raw){
+        if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
+          return raw.replace('../assets/', '../../assets/');
+        }
+        return raw;
+      }
+    } catch {}
+    return IMG_BY_CATEGORY[p?.categoria] || '../../assets/gamer.jpg';
+  }
+
   const norm = (s) => String(s||'')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -57,7 +70,7 @@
   }
 
   function card(p){
-    const img = IMG_BY_CATEGORY[p.categoria] || '../../assets/gamer.jpg';
+    const img = resolveImg(p);
     return `
       <div class="col">
         <div class="card h-100" data-producto data-codigo="${p.codigo}" data-nombre="${p.nombre}" data-precio="${p.precio}">

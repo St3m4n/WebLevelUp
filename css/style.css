@@ -629,6 +629,27 @@ footer .bi:hover { transform: scale(1.2); }
     box-shadow: 0 0 15px var(--color-accent-neon), 0 0 20px rgba(30, 144, 255, 0.4);
 }
 
+/* --- Ajuste de imágenes de productos (tamaño estándar) --- */
+/* Para todas las tarjetas de productos renderizadas dinámicamente (tienen data-producto) */
+.card[data-producto] .card-img-top {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* miniaturas cuadradas consistentes */
+    object-fit: cover;   /* recortar suavemente para llenar el cuadro */
+    display: block;
+}
+
+/* Imagen principal en detalle de producto (evitar que algunas se vean gigantes) */
+#product-image {
+    width: 100%;
+    max-height: 420px;   /* límite razonable en desktop */
+    object-fit: contain; /* no recortar la imagen principal, mantener proporción */
+    display: block;
+}
+
+@media (max-width: 576px) {
+    #product-image { max-height: 320px; }
+}
+
 
 /* --- ESTILOS MEJORADOS PARA LA PÁGINA DE PERFIL --- */
 

@@ -15,6 +15,20 @@
     'Polerones Gamers Personalizados': '../../assets/gamer.jpg'
   };
 
+  function resolveImg(p){
+    try {
+      const raw = p && p.url ? String(p.url) : '';
+      if (raw) {
+        // Ajustar ruta cuando la página está bajo /pages/tienda/
+        if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
+          return raw.replace('../assets/', '../../assets/');
+        }
+        return raw;
+      }
+    } catch {}
+    return IMG_BY_CATEGORY[p?.categoria] || '../../assets/gamer.jpg';
+  }
+
   function getQuery(){
     const usp = new URLSearchParams(window.location.search);
     return {
@@ -43,7 +57,7 @@
     if (!grid) return;
     const list = (window.productos||[]).filter(p => p.categoria === actual.categoria && p.codigo !== actual.codigo).slice(0,4);
     grid.innerHTML = list.map(p => {
-      const img = IMG_BY_CATEGORY[p.categoria] || '../../assets/gamer.jpg';
+      const img = resolveImg(p);
       return `
         <div class="col">
           <div class="card h-100" data-producto data-codigo="${p.codigo}" data-nombre="${p.nombre}" data-precio="${p.precio}">
@@ -68,7 +82,7 @@
       window.location.replace('categorias.html');
       return;
     }
-    const img = IMG_BY_CATEGORY[p.categoria] || '../../assets/gamer.jpg';
+  const img = resolveImg(p);
     // Breadcrumbs
     const bcCat = document.getElementById('bc-categoria');
     const bcProd = document.getElementById('bc-producto');
@@ -76,7 +90,7 @@
     if (bcProd) { bcProd.textContent = p.nombre; }
 
     // Header
-    document.getElementById('product-image').src = img;
+  document.getElementById('product-image').src = img;
     document.getElementById('product-image').alt = p.nombre;
     document.getElementById('product-title').textContent = p.nombre;
     document.getElementById('product-code').textContent = `Código: ${p.codigo}`;

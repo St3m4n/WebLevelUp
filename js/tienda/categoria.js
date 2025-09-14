@@ -15,6 +15,19 @@
     'Polerones Gamers Personalizados': '../../assets/gamer.jpg'
   };
 
+  function resolveImg(p){
+    try {
+      const raw = p && p.url ? String(p.url) : '';
+      if (raw){
+        if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
+          return raw.replace('../assets/', '../../assets/');
+        }
+        return raw;
+      }
+    } catch {}
+    return IMG_BY_CATEGORY[p?.categoria] || '../../assets/gamer.jpg';
+  }
+
   // Detecta si el usuario actual tiene beneficio DUOC (-20%)
   function hasDuocDiscount(){
     try {
@@ -69,7 +82,7 @@
   }
 
   function productCard(prod, categoria){
-    const img = IMG_BY_CATEGORY[categoria] || '../../assets/gamer.jpg';
+    const img = resolveImg(prod);
     const base = Number(prod.precio)||0;
     const duoc = hasDuocDiscount();
     const discounted = duoc ? Math.round(base * 0.8) : base;

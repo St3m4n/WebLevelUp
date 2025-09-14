@@ -23,6 +23,19 @@
     return list.find(p => p.codigo === codigo);
   }
 
+  function resolveImg(p){
+    try {
+      const raw = p && p.url ? String(p.url) : '';
+      if (raw){
+        if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
+          return raw.replace('../assets/', '../../assets/');
+        }
+        return raw;
+      }
+    } catch {}
+    return '../../assets/gamer.jpg';
+  }
+
   function addToCarrito({codigo, nombre, precio, cantidad=1}){
     const carrito = loadCarrito();
     const prod = findProducto(codigo);
@@ -107,8 +120,10 @@
       const subtotal = i.precio * i.cantidad;
       const p = findProducto(i.codigo);
       const stock = p ? p.stock : 0;
+      const img = p ? resolveImg(p) : '../../assets/gamer.jpg';
       return `
       <div class="cart-item-row" data-codigo="${i.codigo}">
+        <img src="${img}" alt="${i.nombre}" class="cart-item-img">
         <div class="cart-item-details">
           <h5 class="card-title mb-1">${i.nombre}</h5>
           <p class="card-text text-secondary mb-2">${CLP.format(i.precio)} c/u</p>

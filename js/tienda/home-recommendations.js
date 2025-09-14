@@ -15,6 +15,19 @@
     'Polerones Gamers Personalizados': '../../assets/gamer.jpg'
   };
 
+  function resolveImg(p){
+    try {
+      const raw = p && p.url ? String(p.url) : '';
+      if (raw){
+        if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
+          return raw.replace('../assets/', '../../assets/');
+        }
+        return raw;
+      }
+    } catch {}
+    return IMG_BY_CATEGORY[p?.categoria] || '../../assets/gamer.jpg';
+  }
+
   function pickRandom(list, n){
     const arr = [...list];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -25,7 +38,7 @@
   }
 
   function card(p){
-    const img = IMG_BY_CATEGORY[p.categoria] || '../../assets/gamer.jpg';
+    const img = resolveImg(p);
     const price = CLP.format(p.precio);
     return `
       <div class="col">
