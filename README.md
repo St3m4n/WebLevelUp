@@ -1,6 +1,6 @@
 # LEVEL-UP GAMER — Evaluación Parcial 1 (Fullstack 2)
 
-Tienda online + sistema de administración, desarrollados con **HTML, CSS (admin.css/tienda.css) y JavaScript**.  
+Tienda online + sistema de administración, desarrollados con **HTML, CSS (admin.css/style.css) y JavaScript**.  
 Esta entrega se centra en **estructura**, **diseño**, **validaciones en JS** y **colaboración en GitHub**.
 
 ---
@@ -22,13 +22,24 @@ Esta entrega se centra en **estructura**, **diseño**, **validaciones en JS** y 
 - **Perfil (admin)** `/pages/admin/perfil.html`
 
 ### Tienda
+- **Inicio** `/pages/tienda/index.html`
+- **Categorías** `/pages/tienda/categorias.html`
+- **Categoría** `/pages/tienda/categoria.html?categoria=...`
+- **Búsqueda** `/pages/tienda/busqueda.html?q=...`
+- **Producto** `/pages/tienda/producto.html?codigo=...`
+- **Carrito** `/pages/tienda/carrito.html`
+- **Perfil** `/pages/tienda/perfil.html`
+- **Login** `/pages/tienda/login.html`
+- **Registro** `/pages/tienda/registro.html`
+- **Contacto** `/pages/tienda/contacto.html`
+- **Olvidaste contraseña** `/pages/tienda/olvidaste.html`
 
 ---
 
 ## 🗂 Estructura de carpetas
 /css
   admin.css            # tema claro del panel admin (Orbitron/Roboto)
-  tienda.css           # estilos públicos de la tienda
+  style.css            # estilos públicos de la tienda
 
 /data
   productos.js         # seed catálogo (window.productos)
@@ -43,9 +54,15 @@ Esta entrega se centra en **estructura**, **diseño**, **validaciones en JS** y 
     admin-usuario-form.js
     index.js           # métricas dashboard + stock crítico
     perfil.js          # perfil del admin + validación y guardado
+    auth.js            # validación de sesión admin
     menu-active.js     # marca activo el item del sidebar (autodetect)
   /tienda
-    
+    producto.js        # render de detalle con descuento DUOC
+    carrito.js         # carrito + notificaciones
+    categorias.js, categoria.js, busqueda.js
+    contacto.js, login.js, perfil.js, registro.js, olvidaste.js
+  secondary-nav.js     # navegación secundaria (categorías)
+  script.js            # helpers globales (showNotification, RUN, etc.)
 
 /pages
   /admin
@@ -69,6 +86,8 @@ Esta entrega se centra en **estructura**, **diseño**, **validaciones en JS** y 
 
 ## 🧩 Sidebar
 - Sidebar estándar (idéntico) en todas las vistas admin.
+ - Branding unificado: logo (`assets/logo.png`) + texto "LevelUP- GAMER".
+ - Tamaños controlados exclusivamente por CSS (`.lup-logo`, `.lup-brand`).
 
 ---
 
@@ -131,10 +150,11 @@ localStorage.setItem("currentUserRun", "19011022K"); // RUN admin
 - Stock crítico opcional; alerta si stock ≤ crítico.
 - Categoría requerida.
 
-### Tienda (E1)
+### Tienda
 - Login: correo válido + contraseña 4–10.
 - Contacto: nombre ≤100, correo ≤100 (dominios válidos), comentario ≤500.
 - Carrito: añadir/quitar, no stock negativo, persistencia LS.
+- Olvidé contraseña: al enviar, muestra notificación de correo enviado.
 
 ---
 
@@ -146,13 +166,19 @@ git clone https://github.com/usuario/proyecto-levelup.git
 2. Abrir:
 - Admin → `/pages/admin/index.html`
 - Tienda → `/pages/tienda/index.html`
+
+Notas de navegación:
+- En escritorio, el link "Categorías" no despliega menú en top-nav (solo link).  
+  La navegación por categorías se ofrece en la barra secundaria (`secondary-nav`).
+- El badge "Lv. N" del sistema de puntos aparece junto al icono de usuario en la barra principal.
 ---
 
 ## 🌿 Flujo de ramas (Git)
 - `main` — integración
 - `adminPages` — admin
 - `frani` — tienda
-
+- `frani` — tienda
+- `puntosLevel` — sistema de puntos y mejoras tienda
 Convenciones de commits:
 - `feat(admin): persistencia de productos`
 - `fix(admin): validar RUN en edición`
@@ -161,3 +187,11 @@ Convenciones de commits:
 ## 🧪 Troubleshooting
 - **No cargan productos/usuarios**: limpia LS y revisa orden de scripts.
 - **Perfil vacío**: define `currentUserRun` o revisa que haya admin en seed.
+- **No aparece el toast**: asegúrate de incluir el contenedor del toast y `js/script.js` en la página.
+
+---
+
+## 🕹️ Extras de Tienda
+- Sistema de puntos "Level-Up": badge de nivel en navbar; cálculo de EXP en producto y carrito.
+- Descuento automático DUOC (-20%) para correos `@duoc.cl`.
+- Detalle de producto incluye "Fabricante" (en implementación) y "Distribuidor" (Level-Up Gamer).
