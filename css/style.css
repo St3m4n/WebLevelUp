@@ -281,7 +281,8 @@ footer .bi:hover { transform: scale(1.2); }
 .mission-vision-icon { 
     font-size: 3rem; 
     color: var(--color-accent-neon); 
-    text-shadow: 0 0 15px var(--color-accent-neon), 0 0 20px var(--color-accent-blue); 
+    /* Reducimos el blur para mayor claridad del ícono */
+    text-shadow: 0 0 6px var(--color-accent-neon), 0 0 10px var(--color-accent-blue); 
 }
 .blog-tag { 
     display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.75rem; 
