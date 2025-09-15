@@ -63,6 +63,10 @@ h1, h2 {
         margin-left: auto; /* empuja los íconos a la derecha alineados con el logo */
     }
     .primary-nav .d-flex.justify-content-end { margin-left: auto; }
+    /* Botón hamburguesa de categorías a la izquierda del logo */
+    .primary-nav .mobile-cat-toggler { 
+        margin-right: .5rem; 
+    }
 }
 
 .navbar-brand {
@@ -161,6 +165,37 @@ h1, h2 {
 }
 .secondary-nav .navbar-toggler .navbar-toggler-icon {
     filter: invert(1) grayscale(1);
+}
+
+/* --- BÚSQUEDA MÓVIL DEBAJO DEL HEADER --- */
+.mobile-search-wrapper { 
+    background: rgba(18, 18, 18, 0.7); 
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mobile-search.input-group { 
+    box-shadow: 0 0 0 2px rgba(199, 41, 242, 0.8); 
+    border-radius: 12px; 
+    overflow: hidden; 
+    background: #fff; 
+}
+.mobile-search-input { 
+    background: #fff; 
+    color: #333; 
+    border: none; 
+    padding: 0.8rem 1rem; 
+}
+.mobile-search-input::placeholder { color: #6c757d; }
+.mobile-search-btn { 
+    background: transparent; 
+    color: #6f42c1; 
+    border: none; 
+    padding: 0 0.9rem; 
+}
+.mobile-search-btn:hover { background: rgba(199,41,242,0.08); }
+
+@media (min-width: 992px) {
+    .mobile-search-wrapper { display: none !important; }
 }
 
 /* --- COMPONENTES GENERALES --- */

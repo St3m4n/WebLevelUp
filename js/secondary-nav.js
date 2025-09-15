@@ -15,26 +15,66 @@
     const usp = new URLSearchParams(window.location.search);
     const currentCat = (usp.get('categoria') || '').trim().toLowerCase();
 
+  // Insertar barra de búsqueda móvil fija bajo el header (una sola vez)
+    (function ensureMobileSearchBelowHeader(){
+      const hasWrapper = document.querySelector('.mobile-search-wrapper');
+      const header = document.querySelector('header');
+      const secNav = document.querySelector('nav.secondary-nav');
+      if (!hasWrapper && header && secNav) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mobile-search-wrapper d-lg-none';
+        wrapper.innerHTML = [
+          '<div class="container py-2">',
+          '  <form role="search" action="busqueda.html" method="get" aria-label="Buscar productos">',
+          '    <div class="mobile-search input-group">',
+          '      <input class="form-control mobile-search-input" type="search" placeholder="Buscar productos..." name="q" aria-label="Buscar">',
+          '      <button class="btn mobile-search-btn" type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button>',
+          '    </div>',
+          '  </form>',
+          '</div>'
+        ].join('\n');
+        header.insertBefore(wrapper, secNav);
+      }
+    })();
+
+    // Insertar botón hamburguesa en la barra principal para controlar el colapso de categorías (solo móvil)
+    (function ensurePrimaryHamburger(){
+      const primaryContainer = document.querySelector('.primary-nav .container');
+      const existing = primaryContainer && primaryContainer.querySelector('.mobile-cat-toggler');
+      if (!primaryContainer || existing) return;
+
+      // Usaremos un ID de colapso fijo en la barra secundaria
+      const collapseId = 'secNavCollapse';
+
+      const brand = primaryContainer.querySelector('.navbar-brand');
+      const btn = document.createElement('button');
+      btn.className = 'navbar-toggler d-lg-none me-2 mobile-cat-toggler';
+      btn.type = 'button';
+      btn.setAttribute('data-bs-toggle', 'collapse');
+      btn.setAttribute('data-bs-target', `#${collapseId}`);
+      btn.setAttribute('aria-controls', collapseId);
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Abrir categorías');
+      btn.innerHTML = '<span class="navbar-toggler-icon"></span>';
+
+      if (brand) {
+        primaryContainer.insertBefore(btn, brand);
+      } else {
+        primaryContainer.prepend(btn);
+      }
+    })();
+
     navs.forEach((nav, idx) => {
       // Asegurar estilo oscuro para el ícono del toggler
       if (!nav.classList.contains('navbar-dark')) {
         nav.classList.add('navbar-dark');
       }
-      const collapseId = `secNavCollapse-${idx}`;
+      // Usar un ID fijo para que el botón de la barra principal pueda controlarlo
+      const collapseId = 'secNavCollapse';
 
       const inner = [
         '<div class="container">',
-        `  <button class="navbar-toggler d-lg-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-controls="${collapseId}" aria-expanded="false" aria-label="Toggle categories">`,
-        '    <span class="navbar-toggler-icon"></span>',
-        '    <span class="ms-2">Categorías</span>',
-        '  </button>',
         `  <div class="collapse navbar-collapse" id="${collapseId}">`,
-        '    <form class="d-lg-none my-3" role="search" action="busqueda.html" method="get">',
-        '      <div class="input-group">',
-        '        <input class="form-control" type="search" placeholder="Buscar productos..." name="q" aria-label="Search">',
-        '        <button class="btn btn-outline-light" type="submit"><i class="bi bi-search"></i></button>',
-        '      </div>',
-        '    </form>',
         '    <ul class="navbar-nav justify-content-center w-100 secondary-nav-list">',
         ...cats.map(cat => `      <li class="nav-item"><a class="nav-link" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
         '    </ul>',
