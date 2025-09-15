@@ -288,8 +288,10 @@
     cont.addEventListener('click', onContClick);
     cont._cartHandler = onContClick;
 
-    const onResClick = (e)=>{
+    const onResClick = async (e)=>{
       if (e.target.closest('[data-action="vaciar"]')){
+        const ok = await confirmToast('¿Vaciar todo el carrito?', { okText: 'Vaciar', cancelText: 'Cancelar' });
+        if (!ok) return;
         vaciarCarrito();
         renderCarrito(opts);
       }
