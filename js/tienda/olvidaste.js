@@ -21,7 +21,7 @@
       const ok = !!val && EMAIL_RE.test(val);
       setInvalid(email, !ok);
       if (!ok) return;
-      try { if (typeof showNotification==='function') showNotification('Si el correo existe, te enviaremos un enlace.', 'bi-envelope-check', 'text-success'); } catch {}
+      try { if (typeof showNotification==='function') showNotification('Correo de confirmación enviado. Revisa tu bandeja de entrada.', 'bi-envelope-check', 'text-success'); } catch {}
     });
   });
 })();
