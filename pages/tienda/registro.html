@@ -80,41 +80,45 @@
                     <form id="registerForm" novalidate>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="run" class="form-label">RUN</label>
+                                <label for="run" class="form-label">RUN *</label>
                                 <input type="text" class="form-control" id="run" placeholder="Ej: 12.345.678-5" maxlength="9" required>
                                 <div class="invalid-feedback" id="e-run">Ingresa un RUN válido.</div>
+                                <div class="form-text limit-hint d-none">Se formatea automáticamente (ej: 12.345.678-5). Debe tener entre 7 y 9 (incluye DV) y DV válido.</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">Correo Electrónico</label>
+                                <label for="email" class="form-label">Correo Electrónico *</label>
                                 <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com" maxlength="100" required>
                                 <div class="invalid-feedback" id="e-email">Ingresa un correo válido.</div>
+                                <div class="form-text limit-hint d-none">Máximo 100 caracteres. Dominios permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com.</div>
                                 <div class="form-text text-success d-none" id="duoc-hint"><i class="bi bi-award me-1"></i>Detectamos correo Duoc: tendrás 20% de descuento de por vida.</div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nombres" class="form-label">Nombres</label>
+                                <label for="nombres" class="form-label">Nombres *</label>
                                 <input type="text" class="form-control" id="nombres" placeholder="Ej: Juan Sebastián" maxlength="50" required>
                                 <div class="invalid-feedback" id="e-nombres">Ingresa tus nombres.</div>
+                                <div class="form-text limit-hint d-none">Máximo 50 caracteres.</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="apellidos" class="form-label">Apellidos</label>
+                                <label for="apellidos" class="form-label">Apellidos *</label>
                                 <input type="text" class="form-control" id="apellidos" placeholder="Ej: Pérez Soto" maxlength="100" required>
                                 <div class="invalid-feedback" id="e-apellidos">Ingresa tus apellidos.</div>
+                                <div class="form-text limit-hint d-none">Máximo 100 caracteres.</div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Contraseña</label>
+                                <label for="password" class="form-label">Contraseña *</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password" placeholder="********" required>
                                     <button class="btn btn-outline-secondary" type="button" id="toggleRegPassword"><i class="bi bi-eye"></i></button>
                                 </div>
-                                <div class="form-text">Mínimo 8 caracteres.</div>
+                                <div class="form-text limit-hint d-none">Mínimo 8 caracteres.</div>
                                 <div class="invalid-feedback" id="e-password">La contraseña es inválida.</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                                <label for="confirmPassword" class="form-label">Confirmar Contraseña *</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="confirmPassword" placeholder="********" required>
                                     <button class="btn btn-outline-secondary" type="button" id="toggleRegConfirm"><i class="bi bi-eye"></i></button>
@@ -123,30 +127,31 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="fechaNacimiento" required>
-                            <div class="form-text">Debes ser mayor de 18 años para registrarte.</div>
+                            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento *</label>
+                            <input type="date" class="form-control" id="fechaNacimiento" placeholder="AAAA-MM-DD" required>
+                            <div class="form-text limit-hint d-none">Debes ser mayor de 18 años para registrarte.</div>
                             <div class="invalid-feedback" id="e-fecha">Debes tener 18 años o más.</div>
                         </div>
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label for="region" class="form-label">Región</label>
+                                <label for="region" class="form-label">Región *</label>
                                 <select id="region" class="form-select" required>
                                     <option value="" selected disabled>Selecciona región</option>
                                 </select>
                                 <div class="invalid-feedback" id="e-region">Selecciona una región.</div>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="comuna" class="form-label">Comuna</label>
+                                <label for="comuna" class="form-label">Comuna *</label>
                                 <select id="comuna" class="form-select" required disabled>
                                     <option value="" selected disabled>Selecciona comuna</option>
                                 </select>
                                 <div class="invalid-feedback" id="e-comuna">Selecciona una comuna.</div>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="direccion" class="form-label">Dirección</label>
+                                <label for="direccion" class="form-label">Dirección *</label>
                                 <input type="text" class="form-control" id="direccion" placeholder="Ej: Av. Siempre Viva 742, Dpto 12" maxlength="300" required>
                                 <div class="invalid-feedback" id="e-direccion">Ingresa tu dirección.</div>
+                                <div class="form-text limit-hint d-none">Máximo 300 caracteres.</div>
                             </div>
                         </div>
                         <div class="mb-4">

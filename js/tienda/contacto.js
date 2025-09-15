@@ -4,15 +4,16 @@
   // Utilidad: trim seguro y normalización básica
   const trim = (s) => (s || '').trim();
 
-  // Email regex razonable (no excesivamente estricta)
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  // Email regex razonable (no excesivamente estricta) + dominios permitidos
+  const BASIC_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const ALLOWED_DOMAINS = new Set(['duoc.cl', 'profesor.duoc.cl', 'gmail.com']);
 
   // Límites
   const LIMITS = {
-    nombre: 200,
-    email: 254,
+    nombre: 100,
+    email: 100,
     asunto: 50,
-    mensaje: 1000,
+    mensaje: 500,
   };
 
   function setUp() {
@@ -36,22 +37,36 @@
     // Validaciones básicas por input
     const showError = (el, msg) => {
       el.classList.add('is-invalid');
-      // Agrega feedback si no existe
-      let fb = el.nextElementSibling;
-      if (!fb || !fb.classList.contains('invalid-feedback')) {
+      const parent = el.parentNode;
+      // Reutiliza un único feedback por campo
+      let fb = parent.querySelector('.invalid-feedback');
+      if (!fb) {
         fb = document.createElement('div');
         fb.className = 'invalid-feedback';
-        el.parentNode.appendChild(fb);
+        // Si existe un .form-text como hijo directo, inserta el feedback antes; si no, al final
+        const directHelp = Array.from(parent.children).find(ch => ch.classList && ch.classList.contains('form-text'));
+        if (directHelp) {
+          parent.insertBefore(fb, directHelp);
+        } else {
+          parent.appendChild(fb);
+        }
+      } else {
+        // Si por alguna razón hay múltiples, deja solo el primero
+        const all = parent.querySelectorAll('.invalid-feedback');
+        for (let i = 1; i < all.length; i++) all[i].remove();
       }
       fb.textContent = msg;
+      // Mostrar pistas de límite si existen
+      parent.querySelectorAll('.limit-hint').forEach(h => h.classList.remove('d-none'));
     };
 
     const clearError = (el) => {
       el.classList.remove('is-invalid');
-      let fb = el.nextElementSibling;
-      if (fb && fb.classList.contains('invalid-feedback')) {
-        fb.textContent = '';
-      }
+      const parent = el.parentNode;
+      const fb = parent.querySelector('.invalid-feedback');
+      if (fb) fb.textContent = '';
+      // Ocultar pistas de límite cuando no hay error
+      parent.querySelectorAll('.limit-hint').forEach(h => h.classList.add('d-none'));
     };
 
     const validateNombre = () => {
@@ -65,7 +80,12 @@
       const v = trim(email.value);
       if (!v) { showError(email, 'Ingresa tu correo electrónico.'); return false; }
       if (v.length > LIMITS.email) { showError(email, `Máximo ${LIMITS.email} caracteres.`); return false; }
-      if (!EMAIL_RE.test(v)) { showError(email, 'Correo inválido.'); return false; }
+      if (!BASIC_EMAIL_RE.test(v)) { showError(email, 'Ingresa un correo electrónico válido.'); return false; }
+      const domain = v.split('@').pop().toLowerCase();
+      if (!ALLOWED_DOMAINS.has(domain)) {
+        showError(email, 'Dominios permitidos: @duoc.cl, @profesor.duoc.cl o @gmail.com.');
+        return false;
+      }
       clearError(email); return true;
     };
 

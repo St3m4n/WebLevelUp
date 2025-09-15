@@ -80,13 +80,15 @@
                     <h2 class="text-center mb-4">Iniciar Sesión</h2>
                     <form id="clientLoginForm" novalidate>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="email" required>
+                            <label for="email" class="form-label">Correo Electrónico *</label>
+                            <input type="email" class="form-control" id="email" placeholder="tu.correo@ejemplo.com" required>
+                            <div class="form-text limit-hint d-none">Ingresa tu correo.</div>
                             <div class="invalid-feedback">Ingresa un correo válido.</div>
                         </div>
                         <div class="mb-4">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" required>
+                            <label for="password" class="form-label">Contraseña *</label>
+                            <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+                            <div class="form-text limit-hint d-none">Ingresa tu contraseña.</div>
                             <div class="invalid-feedback">Ingresa tu contraseña.</div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-4">

@@ -267,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             try { el.setSelectionRange(newCaret, newCaret); } catch {}
         });
+        // Formateamos en blur para mostrar puntos y guion
         runInput.addEventListener('blur', () => {
             const clean = normalizeRun(runInput.value);
             if (!clean) return;
@@ -301,6 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function setInvalid(input, invalid, feedbackId, message) {
         if (!input) return;
         input.classList.toggle('is-invalid', invalid);
+        // Mostrar/ocultar pistas de límite solo cuando hay error
+        try {
+            const container = input.closest('.mb-3, .col-md-6, .col-md-4, .col-12') || input.parentNode;
+            container.querySelectorAll('.limit-hint').forEach(h => h.classList.toggle('d-none', !invalid));
+        } catch {}
         if (!invalid) return;
         if (feedbackId && message) {
             const el = document.getElementById(feedbackId);
@@ -389,9 +395,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const refCode = String(refInput?.value || '').trim();
 
             let valid = true;
-            // RUN: largo 8-9 (cuerpo+DV) y DV correcto
+            // RUN: largo 7-9 (cuerpo+DV) y DV correcto (sin puntos ni guion)
             const lenBody = normalizeRun(runInput?.value).length;
-            if (lenBody < 8 || lenBody > 9) { valid = false; setInvalid(runInput, true, 'e-run', 'El RUN debe tener 8 o 9 caracteres (incluye DV).'); }
+            if (lenBody < 7 || lenBody > 9) { valid = false; setInvalid(runInput, true, 'e-run', 'El RUN debe tener entre 7 y 9 caracteres (incluye DV).'); }
             else if (!isValidRUN(runInput?.value)) { valid = false; setInvalid(runInput, true, 'e-run', 'El dígito verificador (DV) no es válido.'); }
             // Email: requerido, max 100, dominios permitidos
             const allowedDomains = ['duoc.cl','profesor.duoc.cl','gmail.com'];
@@ -507,6 +513,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!el) return false;
             el.classList.toggle('is-invalid', !ok);
             el.classList.toggle('is-valid', !!ok);
+            try {
+                const container = el.closest('.mb-3, .col-md-6, .col-md-4, .col-12') || el.parentNode;
+                container.querySelectorAll('.limit-hint').forEach(h => h.classList.toggle('d-none', !!ok));
+            } catch {}
             if (!ok && feedbackId && msg){
                 const fb = document.getElementById(feedbackId);
                 if (fb) fb.textContent = msg;
@@ -517,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function validateRunField(){
             const v = String(runEl?.value || '');
             const len = normalizeRun(v).length;
-            if (len < 8 || len > 9) return setValidity(runEl, false, 'e-run', 'El RUN debe tener 8 o 9 caracteres (incluye DV).');
+            if (len < 7 || len > 9) return setValidity(runEl, false, 'e-run', 'El RUN debe tener entre 7 y 9 caracteres (incluye DV).');
             if (!isValidRUN(v)) return setValidity(runEl, false, 'e-run', 'El dígito verificador (DV) no es válido.');
             // unicidad si ya existe lista
             try {

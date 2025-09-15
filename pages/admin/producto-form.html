@@ -23,7 +23,7 @@
     <!-- Sidebar -->
     <aside class="lup-sidebar d-flex flex-column p-3">
       <a href="./index.html" class="d-flex align-items-center mb-3 text-decoration-none">
-        <span class="lup-logo me-2">👾</span><span class="lup-brand">LEVEL-UP ADMIN</span>
+        <img src="../../assets/logo.png" alt="Level-Up" class="lup-logo me-2"><span class="lup-brand">LevelUP- GAMER</span>
       </a>
       <hr class="border-secondary">
 
@@ -59,42 +59,42 @@
               <div class="col-sm-4">
                 <label class="form-label">Código <span class="text-success">*</span></label>
                 <input type="text" class="form-control" id="codigo" placeholder="Ej: JM001" minlength="3" required>
-                <div class="form-text">Mínimo 3 caracteres. Único.</div>
+                <div class="form-text limit-hint d-none">Mínimo 3 caracteres. Único.</div>
                 <div class="invalid-feedback">Código requerido (≥ 3). Si estás creando, no debe repetirse.</div>
               </div>
 
               <!-- Nombre -->
               <div class="col-sm-8">
                 <label class="form-label">Nombre <span class="text-success">*</span></label>
-                <input type="text" class="form-control" id="nombre" maxlength="100" required>
+                <input type="text" class="form-control" id="nombre" maxlength="100" placeholder="Ej: Polerón Gamer RGB" required>
                 <div class="invalid-feedback">Nombre requerido (≤ 100 caracteres).</div>
               </div>
 
               <!-- Descripción -->
               <div class="col-12">
                 <label class="form-label">Descripción</label>
-                <textarea class="form-control" id="descripcion" rows="3" maxlength="500"></textarea>
+                <textarea class="form-control" id="descripcion" rows="3" maxlength="500" placeholder="Ej: Polerón con diseño gamer, algodón 100%, con iluminación RGB opcional."></textarea>
                 <div class="invalid-feedback">Máximo 500 caracteres.</div>
               </div>
 
               <!-- Precio / Stock / Stock crítico -->
               <div class="col-sm-4">
                 <label class="form-label">Precio (CLP) <span class="text-success">*</span></label>
-                <input type="number" class="form-control" id="precio" min="0" step="0.01" placeholder="0.00" required>
-                <div class="form-text">Admite decimales. 0 = FREE.</div>
+                <input type="number" class="form-control" id="precio" min="0" step="0.01" placeholder="Ej: 49990.00" required>
+                <div class="form-text limit-hint d-none">Admite decimales. 0 = FREE.</div>
                 <div class="invalid-feedback">Precio requerido (≥ 0, admite decimales).</div>
               </div>
 
               <div class="col-sm-4">
                 <label class="form-label">Stock <span class="text-success">*</span></label>
-                <input type="number" class="form-control" id="stock" min="0" step="1" placeholder="0" required>
+                <input type="number" class="form-control" id="stock" min="0" step="1" placeholder="Ej: 20" required>
                 <div class="invalid-feedback">Stock requerido (entero ≥ 0).</div>
               </div>
 
               <div class="col-sm-4">
                 <label class="form-label">Stock crítico (opcional)</label>
-                <input type="number" class="form-control" id="stockCritico" min="0" step="1" placeholder="0">
-                <div class="form-text">Al listar, mostrará alerta cuando stock ≤ stock crítico.</div>
+                <input type="number" class="form-control" id="stockCritico" min="0" step="1" placeholder="Ej: 5">
+                <div class="form-text limit-hint d-none">Al listar, mostrará alerta cuando stock ≤ stock crítico.</div>
                 <div class="invalid-feedback">Debe ser entero ≥ 0.</div>
               </div>
 
@@ -120,7 +120,7 @@
               <div class="col-sm-6">
                 <label class="form-label">Imagen (opcional)</label>
                 <input type="file" class="form-control" id="imagen" accept="image/*">
-                <div class="form-text">Solo guardaremos el nombre/URL en esta fase.</div>
+                <div class="form-text limit-hint d-none">Solo guardaremos el nombre/URL en esta fase.</div>
               </div>
 
             </div>

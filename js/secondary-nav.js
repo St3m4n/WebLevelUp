@@ -64,29 +64,24 @@
       }
     })();
 
-    // Crear dropdown en la barra superior (desktop) para "Categorías"
-    ;(function ensureTopNavDropdown(){
+    // Eliminar/evitar dropdown de "Categorías" en la barra superior (solo debe ser un link en desktop)
+    ;(function disableTopNavDropdown(){
       const topNav = document.querySelector('.top-nav');
       if (!topNav) return;
       const navList = topNav.querySelector('.navbar-nav');
       if (!navList) return;
-      // Buscar el item que apunta a categorias.html
-      const catLink = navList.querySelector('a.nav-link[href$="categorias.html"]');
-      if (!catLink) return;
-      const li = catLink.closest('li');
+      const li = navList.querySelector('a.nav-link[href$="categorias.html"]')?.closest('li');
       if (!li) return;
-      if (!li.classList.contains('dropdown')) {
-        li.classList.add('dropdown');
-        catLink.classList.add('dropdown-toggle');
-        catLink.setAttribute('data-bs-toggle', 'dropdown');
-        catLink.setAttribute('role', 'button');
-        catLink.setAttribute('aria-expanded', 'false');
-        // Construir menú con categorías
-        const menu = document.createElement('ul');
-        menu.className = 'dropdown-menu';
-        menu.innerHTML = cats.map(cat => `<li><a class="dropdown-item" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`).join('');
-        li.appendChild(menu);
+      // Quitar cualquier rastro de dropdown previo
+      li.classList.remove('dropdown');
+      const a = li.querySelector('a.nav-link[href$="categorias.html"]');
+      if (a){
+        a.classList.remove('dropdown-toggle');
+        a.removeAttribute('data-bs-toggle');
+        a.removeAttribute('role');
+        a.removeAttribute('aria-expanded');
       }
+      li.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
     })();
 
     navs.forEach((nav, idx) => {

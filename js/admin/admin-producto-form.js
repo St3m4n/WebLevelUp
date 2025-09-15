@@ -117,12 +117,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (iDescripcion.value && iDescripcion.value.length > 500) ok = setInvalid(iDescripcion); else clearInvalid(iDescripcion);
 
     // Precio (requerido, número >= 0)
-    const precio = Number(iPrecio.value);
-    if (!isNum(iPrecio.value) || precio < 0) ok = setInvalid(iPrecio); else clearInvalid(iPrecio);
+    const precioRaw = String(iPrecio.value).trim();
+    if (precioRaw === '') {
+      ok = setInvalid(iPrecio);
+    } else {
+      const precio = Number(precioRaw);
+      if (!isNum(precioRaw) || precio < 0) ok = setInvalid(iPrecio); else clearInvalid(iPrecio);
+    }
 
     // Stock (requerido, entero >= 0)
-    const stock = Number(iStock.value);
-    if (!isNum(iStock.value) || !isInt(iStock.value) || stock < 0) ok = setInvalid(iStock); else clearInvalid(iStock);
+    const stockRaw = String(iStock.value).trim();
+    if (stockRaw === '') {
+      ok = setInvalid(iStock);
+    } else {
+      const stock = Number(stockRaw);
+      if (!isNum(stockRaw) || !Number.isInteger(stock) || stock < 0) ok = setInvalid(iStock); else clearInvalid(iStock);
+    }
 
     // Stock crítico (opcional, entero >= 0 si viene)
     if (iStockCritico.value !== "") {
@@ -139,12 +149,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return ok;
   }
 
+  function toggleHint(el, invalid){
+    const parent = el.closest('.col-sm-4, .col-sm-6, .col-sm-8, .col-12') || el.parentNode;
+    if (!parent) return;
+    parent.querySelectorAll('.limit-hint').forEach(h => h.classList.toggle('d-none', !invalid));
+  }
   function setInvalid(input) {
     input.classList.add("is-invalid");
+    toggleHint(input, true);
     return false;
   }
   function clearInvalid(input) {
     input.classList.remove("is-invalid");
+    toggleHint(input, false);
   }
 
   // Validación en tiempo real básica

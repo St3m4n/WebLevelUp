@@ -353,9 +353,13 @@
         }
       }
     } catch {}
-    // 2) Badge junto al icono de usuario (opcional, si el DOM lo permite)
+    // 2) Badge junto al icono de usuario (solo en la barra principal .primary-nav)
     try {
-      const link = document.querySelector('.nav-item.dropdown > a.nav-link, .nav-item.dropdown .nav-link');
+      // Limpiar badges que se hayan pegado por error en la barra superior (.top-nav)
+      document.querySelectorAll('.top-nav .nav-points-inline').forEach(el => el.remove());
+
+      // Seleccionar SOLO el link del dropdown de usuario dentro de .primary-nav
+      const link = document.querySelector('.primary-nav .nav-item.dropdown > a.nav-link');
       if (link){
         let badge = link.querySelector('.nav-points-inline');
         if (!badge){

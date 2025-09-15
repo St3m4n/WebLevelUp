@@ -18,7 +18,7 @@
     <!-- Sidebar -->
     <aside class="lup-sidebar d-flex flex-column p-3">
       <a href="./index.html" class="d-flex align-items-center mb-3 text-decoration-none">
-        <span class="lup-logo me-2">👾</span><span class="lup-brand">LEVEL-UP ADMIN</span>
+        <img src="../../assets/logo.png" alt="Level-Up" class="lup-logo me-2"><span class="lup-brand">LevelUP- GAMER</span>
       </a>
       <hr class="border-secondary">
       <ul class="nav nav-pills flex-column mb-auto gap-1" id="lup-menu">
@@ -56,33 +56,34 @@
               <!-- RUN -->
               <div class="col-sm-4">
                 <label class="form-label">RUN <span class="text-success">*</span></label>
-                <input type="text" class="form-control" id="run" placeholder="Ej: 11.111.111-1" maxlength="12" required>
-                <div class="form-text">Se formatea automáticamente (ej: 11.111.111-1). Validaremos dígito verificador.</div>
+                <input type="text" class="form-control" id="run" placeholder="Ej: 12345678K" maxlength="12" required>
+                <div class="form-text limit-hint d-none">Se formatea automáticamente (ej: 11.111.111-1). Validaremos dígito verificador.</div>
                 <div class="invalid-feedback">RUN inválido.</div>
               </div>
 
               <!-- Nombre / Apellidos -->
               <div class="col-sm-4">
                 <label class="form-label">Nombre <span class="text-success">*</span></label>
-                <input type="text" class="form-control" id="nombre" maxlength="50" required>
+                <input type="text" class="form-control" id="nombre" maxlength="50" placeholder="Ej: Juan Sebastián" required>
                 <div class="invalid-feedback">Nombre requerido (≤ 50).</div>
               </div>
               <div class="col-sm-4">
                 <label class="form-label">Apellidos <span class="text-success">*</span></label>
-                <input type="text" class="form-control" id="apellidos" maxlength="100" required>
+                <input type="text" class="form-control" id="apellidos" maxlength="100" placeholder="Ej: Pérez Soto" required>
                 <div class="invalid-feedback">Apellidos requeridos (≤ 100).</div>
               </div>
 
               <!-- Correo / Fecha -->
               <div class="col-sm-6">
                 <label class="form-label">Correo <span class="text-success">*</span></label>
-                <input type="email" class="form-control" id="correo" maxlength="100" placeholder="usuario@duoc.cl" required>
-                <div class="form-text">Permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com (≤ 100).</div>
+                <input type="email" class="form-control" id="correo" maxlength="100" placeholder="Ej: usuario@duoc.cl" required>
+                <div class="form-text limit-hint d-none">Permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com (≤ 100).</div>
                 <div class="invalid-feedback">Correo inválido o dominio no permitido.</div>
               </div>
               <div class="col-sm-6">
                 <label class="form-label">Fecha de nacimiento (opcional)</label>
-                <input type="date" class="form-control" id="fechaNacimiento">
+                <input type="date" class="form-control" id="fechaNacimiento" placeholder="AAAA-MM-DD">
+                <div class="invalid-feedback">Debe ser mayor de edad (≥ 18 años).</div>
               </div>
 
               <!-- Perfil / Región / Comuna -->
@@ -91,8 +92,8 @@
                 <select id="perfil" class="form-select" required>
                   <option value="">Selecciona…</option>
                   <option>Administrador</option>
-                  <option>Vendedor</option>
                   <option>Cliente</option>
+                  <option>Vendedor</option>
                 </select>
                 <div class="invalid-feedback">Selecciona un perfil.</div>
               </div>
@@ -114,7 +115,7 @@
               <!-- Dirección -->
               <div class="col-12">
                 <label class="form-label">Dirección <span class="text-success">*</span></label>
-                <input type="text" class="form-control" id="direccion" maxlength="300" placeholder="Calle, número, depto" required>
+                <input type="text" class="form-control" id="direccion" maxlength="300" placeholder="Ej: Av. Siempre Viva 742, Dpto 12" required>
                 <div class="invalid-feedback">Dirección requerida (≤ 300).</div>
               </div>
             </div>

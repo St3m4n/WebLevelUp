@@ -123,8 +123,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
       // Mostrar correo en el título cuando se edita
       titulo.textContent = `Editar usuario: ${found.correo || found.run}`;
 
-      // Mostrar RUN formateado, pero persistir normalizado al guardar
-      iRun.value = formatearRun(found.run);
+  // Mostrar RUN formateado (puntos y guion) en edición
+  iRun.value = formatearRun(found.run);
       iRun.setAttribute('readonly','readonly'); // clave primaria
       iNombre.value = found.nombre || "";
       iApellidos.value = found.apellidos || "";
@@ -156,9 +156,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   // ---- Validaciones básicas en tiempo real
+  function toggleHint(el, invalid){
+    const parent = el.closest('.col-sm-4, .col-sm-6, .col-12') || el.parentNode;
+    if (!parent) return;
+    parent.querySelectorAll('.limit-hint').forEach(h => h.classList.toggle('d-none', !invalid));
+  }
   [iRun, iNombre, iApellidos, iCorreo, iPerfil, iRegion, iComuna, iDireccion].forEach(inp=>{
-    inp.addEventListener('input', ()=>inp.classList.remove('is-invalid'));
-    inp.addEventListener('change', ()=>inp.classList.remove('is-invalid'));
+    inp.addEventListener('input', ()=>{ inp.classList.remove('is-invalid'); toggleHint(inp, false); });
+    inp.addEventListener('change', ()=>{ inp.classList.remove('is-invalid'); toggleHint(inp, false); });
   });
 
   // Toggle badge en tiempo real segun correo/perfil
@@ -172,7 +177,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   iCorreo.addEventListener('input', updateBadgeRealtime);
   iPerfil.addEventListener('change', updateBadgeRealtime);
 
-  // RUN: sanitiza mientras escribe, formatea al salir
+  // RUN: sanitiza mientras escribe y formatea en blur
   iRun.addEventListener('input', ()=>{
     const before = iRun.value;
     const clean = normalizarRun(before);
@@ -185,8 +190,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     iRun.value = formatearRun(iRun.value);
   });
 
-  function setInvalid(el){ el.classList.add('is-invalid'); return false; }
-  function clearInvalid(el){ el.classList.remove('is-invalid'); }
+  function setInvalid(el){ el.classList.add('is-invalid'); toggleHint(el, true); return false; }
+  function clearInvalid(el){ el.classList.remove('is-invalid'); toggleHint(el, false); }
 
   function validar(){
     let ok = true;
@@ -210,6 +215,21 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     // Correo permitido
     if (!validarCorreo(iCorreo.value.trim())) ok = setInvalid(iCorreo); else clearInvalid(iCorreo);
+
+    // Fecha de nacimiento (opcional, pero si existe debe ser ≥ 18)
+    const f = String(iFecha.value || '').trim();
+    if (f) {
+      try {
+        const hoy = new Date();
+        const d = new Date(f + 'T00:00:00');
+        let edad = hoy.getFullYear() - d.getFullYear();
+        const m = hoy.getMonth() - d.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < d.getDate())) edad--;
+        if (edad < 18) ok = setInvalid(iFecha); else clearInvalid(iFecha);
+      } catch { ok = setInvalid(iFecha); }
+    } else {
+      clearInvalid(iFecha);
+    }
 
     // Perfil / Región / Comuna
     if (!iPerfil.value) ok = setInvalid(iPerfil); else clearInvalid(iPerfil);

@@ -26,10 +26,15 @@ body{
   font-family:"Orbitron", ui-sans-serif, system-ui;
   letter-spacing:.3px;
   font-weight:700;
-  font-size:1.05rem;
+  font-size:1.25rem; /* aumentado para mejor presencia */
   color: var(--fg);
 }
-.lup-logo{font-size:1.4rem}
+/* Si .lup-logo es IMG, usa altura fija; si es texto, puedes ajustar con font-size */
+.lup-logo{
+  height:48px; /* was 32px; +50% */
+  width:auto;
+  display:inline-block;
+}
 .lup-sidebar{
   width:260px;
   background: var(--sidebar-bg);
@@ -51,7 +56,7 @@ body{
 }
 .lup-sidebar .nav-link.active{
   background: var(--primary);
-  color: blue;
+  color: #fff;
   font-weight:600;
   border:none;
 }

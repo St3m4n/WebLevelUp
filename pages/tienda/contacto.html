@@ -115,21 +115,27 @@
                     <h2 class="mb-4">Envíanos un Mensaje</h2>
                     <form id="contact-form">
                         <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre Completo</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" maxlength="200" autocomplete="name" required>
+                            <label for="nombre" class="form-label">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" maxlength="100" autocomplete="name" placeholder="Ej: Juan Sebastián" required>
+                            <div class="form-text limit-hint d-none">Máximo 100 caracteres.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="email" name="email" maxlength="254" autocomplete="email" inputmode="email" required>
+                            <label for="email" class="form-label">Correo Electrónico *</label>
+                            <input type="email" class="form-control" id="email" name="email" maxlength="100" autocomplete="email" inputmode="email" placeholder="Ej: usuario@duoc.cl" required>
+                            <div class="form-text limit-hint d-none">Máximo 100 caracteres. Dominios permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com</div>
                         </div>
                         <div class="mb-3">
-                            <label for="asunto" class="form-label">Asunto</label>
-                            <input type="text" class="form-control" id="asunto" name="asunto" maxlength="50" required>
+                            <label for="asunto" class="form-label">Asunto *</label>
+                            <input type="text" class="form-control" id="asunto" name="asunto" maxlength="50" placeholder="Ej: Consulta sobre mi pedido" required>
+                            <div class="form-text limit-hint d-none">Máximo 50 caracteres.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="mensaje" class="form-label">Mensaje</label>
-                            <textarea class="form-control" id="mensaje" name="mensaje" rows="5" maxlength="1000" required></textarea>
-                            <div class="form-text text-end" id="mensaje-count">0/1000</div>
+                            <label for="mensaje" class="form-label">Mensaje *</label>
+                            <textarea class="form-control" id="mensaje" name="mensaje" rows="5" maxlength="500" placeholder="Ej: Hola, tengo una duda sobre el estado de mi compra..." required></textarea>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="form-text limit-hint d-none">Máximo 500 caracteres.</div>
+                                <div class="form-text text-end" id="mensaje-count">0/500</div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-add-cart w-100">Enviar Mensaje</button>
                     </form>

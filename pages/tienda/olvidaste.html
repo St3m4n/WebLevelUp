@@ -85,10 +85,12 @@
                             <p class="text-secondary">No te preocupes. Ingresa tu correo y te enviaremos un enlace para recuperarla.</p>
                         </div>
 
-                        <form>
+                        <form id="forgotForm" novalidate>
                             <div class="mb-4">
-                                <label for="email" class="form-label">Correo Electrónico</label>
+                                <label for="email" class="form-label">Correo Electrónico *</label>
                                 <input type="email" class="form-control form-control-lg" id="email" placeholder="tu.correo@ejemplo.com" required>
+                                <div class="form-text limit-hint d-none">Ingresa tu correo para enviarte el enlace.</div>
+                                <div class="invalid-feedback">Ingresa un correo válido.</div>
                             </div>
 
                             <div class="d-grid gap-2">
@@ -130,6 +132,7 @@
     <script src="../../js/session.js"></script>
     <script src="../../data/usuarios.js"></script>
     <script src="../../js/tienda/levelup-points.js"></script>
+    <script src="../../js/tienda/olvidaste.js"></script>
 </body>
 
 </html>

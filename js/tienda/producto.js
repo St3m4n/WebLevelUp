@@ -122,14 +122,24 @@
     const descLong = document.getElementById('desc-long');
     if (descLong) descLong.textContent = `${p.nombre} es parte de nuestra categoría ${p.categoria}.`;
 
+  // Fabricante y Distribuidor
+  const makerEl = document.getElementById('product-maker');
+  const supplierEl = document.getElementById('product-supplier');
+  if (makerEl) makerEl.textContent = (p.fabricante && String(p.fabricante).trim()) || '—';
+  if (supplierEl) supplierEl.textContent = 'Level-Up Gamer';
+
     // Specs (placeholder amigable)
     const specs = document.getElementById('specs-list');
     if (specs){
+      const maker = (p.fabricante && String(p.fabricante).trim()) || '';
+      const supplier = 'Level-Up Gamer';
       specs.innerHTML = `
         <li><strong>Categoría:</strong> ${p.categoria}</li>
         <li><strong>Stock:</strong> ${p.stock}</li>
         <li><strong>Código:</strong> ${p.codigo}</li>
         <li><strong>Precio:</strong> ${CLP.format(p.precio)}</li>
+        ${maker ? `<li><strong>Fabricante:</strong> ${maker}</li>` : ''}
+        <li><strong>Distribuidor:</strong> ${supplier}</li>
       `;
     }
 
