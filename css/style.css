@@ -35,6 +35,36 @@ h1, h2 {
     z-index: 1040;
 }
 
+/* Alinear verticalmente logo, buscador (desktop) e íconos de usuario/carrito */
+.primary-nav .container { 
+    display: flex; 
+    align-items: center; 
+}
+.primary-nav .navbar-brand { 
+    display: flex; 
+    align-items: center; 
+}
+.primary-nav .navbar-collapse {
+    display: flex;
+    align-items: center;
+}
+/* Asegura que los enlaces con íconos queden centrados verticalmente */
+.primary-nav .nav-link { 
+    display: inline-flex; 
+    align-items: center; 
+}
+/* Ajuste fino de padding en móviles para mejorar alineación */
+@media (max-width: 991.98px) {
+    .primary-nav .nav-link { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    /* En móviles, evitar que la sección derecha ocupe toda la fila */
+    .primary-nav .navbar-collapse {
+        flex-basis: auto !important;
+        width: auto !important;
+        margin-left: auto; /* empuja los íconos a la derecha alineados con el logo */
+    }
+    .primary-nav .d-flex.justify-content-end { margin-left: auto; }
+}
+
 .navbar-brand {
     font-family: 'Open Sans', sans-serif;
     font-weight: 700;
@@ -105,6 +135,32 @@ h1, h2 {
 .secondary-nav .nav-link.active {
     color: var(--color-text-primary);
     border-bottom: 2px solid var(--color-accent-neon);
+}
+
+/* Barra de categorías: comportamiento móvil (colapsable) */
+@media (max-width: 991.98px) {
+    .secondary-nav .secondary-nav-list {
+        flex-wrap: wrap;
+        gap: .25rem .5rem;
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+    }
+    .secondary-nav .secondary-nav-list .nav-link {
+        padding: .35rem .6rem;
+        font-size: .85rem;
+        border-radius: .375rem;
+    }
+}
+
+.secondary-nav .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text-secondary);
+}
+.secondary-nav .navbar-toggler:focus {
+    box-shadow: 0 0 0 .2rem rgba(199, 41, 242, 0.25);
+}
+.secondary-nav .navbar-toggler .navbar-toggler-icon {
+    filter: invert(1) grayscale(1);
 }
 
 /* --- COMPONENTES GENERALES --- */

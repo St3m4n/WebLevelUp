@@ -15,17 +15,33 @@
     const usp = new URLSearchParams(window.location.search);
     const currentCat = (usp.get('categoria') || '').trim().toLowerCase();
 
-    const inner = [
-      '<div class="container">',
-      '  <div class="collapse navbar-collapse">',
-      '    <ul class="navbar-nav justify-content-center w-100">',
-      ...cats.map(cat => `      <li class="nav-item"><a class="nav-link" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
-      '    </ul>',
-      '  </div>',
-      '</div>'
-    ].join('\n');
+    navs.forEach((nav, idx) => {
+      // Asegurar estilo oscuro para el ícono del toggler
+      if (!nav.classList.contains('navbar-dark')) {
+        nav.classList.add('navbar-dark');
+      }
+      const collapseId = `secNavCollapse-${idx}`;
 
-    navs.forEach(nav => {
+      const inner = [
+        '<div class="container">',
+        `  <button class="navbar-toggler d-lg-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-controls="${collapseId}" aria-expanded="false" aria-label="Toggle categories">`,
+        '    <span class="navbar-toggler-icon"></span>',
+        '    <span class="ms-2">Categorías</span>',
+        '  </button>',
+        `  <div class="collapse navbar-collapse" id="${collapseId}">`,
+        '    <form class="d-lg-none my-3" role="search" action="busqueda.html" method="get">',
+        '      <div class="input-group">',
+        '        <input class="form-control" type="search" placeholder="Buscar productos..." name="q" aria-label="Search">',
+        '        <button class="btn btn-outline-light" type="submit"><i class="bi bi-search"></i></button>',
+        '      </div>',
+        '    </form>',
+        '    <ul class="navbar-nav justify-content-center w-100 secondary-nav-list">',
+        ...cats.map(cat => `      <li class="nav-item"><a class="nav-link" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
+        '    </ul>',
+        '  </div>',
+        '</div>'
+      ].join('\n');
+
       nav.innerHTML = inner;
       if (currentCat) {
         nav.querySelectorAll('a.nav-link').forEach(a => {
