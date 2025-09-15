@@ -64,6 +64,31 @@
       }
     })();
 
+    // Crear dropdown en la barra superior (desktop) para "Categorías"
+    ;(function ensureTopNavDropdown(){
+      const topNav = document.querySelector('.top-nav');
+      if (!topNav) return;
+      const navList = topNav.querySelector('.navbar-nav');
+      if (!navList) return;
+      // Buscar el item que apunta a categorias.html
+      const catLink = navList.querySelector('a.nav-link[href$="categorias.html"]');
+      if (!catLink) return;
+      const li = catLink.closest('li');
+      if (!li) return;
+      if (!li.classList.contains('dropdown')) {
+        li.classList.add('dropdown');
+        catLink.classList.add('dropdown-toggle');
+        catLink.setAttribute('data-bs-toggle', 'dropdown');
+        catLink.setAttribute('role', 'button');
+        catLink.setAttribute('aria-expanded', 'false');
+        // Construir menú con categorías
+        const menu = document.createElement('ul');
+        menu.className = 'dropdown-menu';
+        menu.innerHTML = cats.map(cat => `<li><a class="dropdown-item" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`).join('');
+        li.appendChild(menu);
+      }
+    })();
+
     navs.forEach((nav, idx) => {
       // Asegurar estilo oscuro para el ícono del toggler
       if (!nav.classList.contains('navbar-dark')) {
@@ -75,7 +100,25 @@
       const inner = [
         '<div class="container">',
         `  <div class="collapse navbar-collapse" id="${collapseId}">`,
-        '    <ul class="navbar-nav justify-content-center w-100 secondary-nav-list">',
+        // En móvil, incluir los enlaces de la barra superior y anidar las categorías dentro de "Categorías"
+        `    <ul class="navbar-nav w-100 d-lg-none mb-2">`,
+        `      <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>`,
+        `      <li class="nav-item">`,
+        `        <button class="nav-link w-100 text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#mobileCategories-${idx}" aria-expanded="false" aria-controls="mobileCategories-${idx}">`,
+        `          Categorías <i class="bi bi-chevron-down ms-2"></i>`,
+        `        </button>`,
+        `        <div class="collapse mobile-cats-collapse mt-2" id="mobileCategories-${idx}">`,
+        `          <ul class="navbar-nav ps-3">`,
+        ...cats.map(cat => `            <li class="nav-item"><a class="nav-link" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
+        `          </ul>`,
+        `        </div>`,
+        `      </li>`,
+        `      <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>`,
+        `      <li class="nav-item"><a class="nav-link" href="comunidad.html">Comunidad</a></li>`,
+        `      <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>`,
+        `    </ul>`,
+        // En desktop, mantener barra horizontal de categorías
+        '    <ul class="navbar-nav justify-content-center w-100 secondary-nav-list d-none d-lg-flex">',
         ...cats.map(cat => `      <li class="nav-item"><a class="nav-link" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
         '    </ul>',
         '  </div>',

@@ -167,6 +167,10 @@ h1, h2 {
     filter: invert(1) grayscale(1);
 }
 
+/* Sublista de categorías dentro del menú móvil */
+.mobile-cats-collapse .nav-link { padding: .35rem .5rem; font-size: .95rem; }
+.mobile-cats-collapse .nav-link:hover { color: var(--color-text-primary); }
+
 /* --- BÚSQUEDA MÓVIL DEBAJO DEL HEADER --- */
 .mobile-search-wrapper { 
     background: rgba(18, 18, 18, 0.7); 
@@ -389,6 +393,21 @@ footer .bi:hover { transform: scale(1.2); }
 
 .top-nav .nav-link:hover {
     color: var(--color-text-primary);
+}
+
+/* Dropdown de Categorías en desktop: abrir al pasar el mouse */
+@media (min-width: 992px) {
+    .top-nav .dropdown:hover > .dropdown-menu { display: block; }
+    .top-nav .dropdown .dropdown-menu {
+        margin-top: 0.25rem;
+        background: rgba(18, 18, 18, 0.95);
+        border: 1px solid rgba(187, 62, 255, 0.5);
+    }
+    .top-nav .dropdown-item { color: var(--color-text-primary); }
+    .top-nav .dropdown-item:hover { 
+        color: var(--color-accent-neon); 
+        background-color: rgba(199, 41, 242, 0.15);
+    }
 }
 
 /* --- ESTILO PERSONALIZADO PARA LA BARRA DE BÚSQUEDA DEL HEADER --- */
