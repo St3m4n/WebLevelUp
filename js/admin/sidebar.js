@@ -55,9 +55,9 @@
       </ul>
       <hr class="border-secondary mt-2">
       <div class="small text-secondary">Administrador</div>
-      <div class="d-flex gap-2 w-100 mt-2">
-        <a href="./perfil.html" class="btn btn-outline-light w-50${isActive('perfil.html')?' active':''}" role="button"><i class="bi bi-person me-1"></i> Perfil</a>
-        <a href="#" class="btn btn-danger w-50 js-admin-logout" data-action="logout" role="button"><i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión</a>
+      <div class="d-grid gap-2 w-100 mt-2">
+        <a href="./perfil.html" class="btn btn-outline-light btn-sm w-100${isActive('perfil.html')?' active':''}" role="button"><i class="bi bi-person me-1"></i> Perfil</a>
+        <a href="#" class="btn btn-danger btn-sm w-100 js-admin-logout" data-action="logout" role="button"><i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión</a>
       </div>`;
   }
 
@@ -105,9 +105,9 @@
         </ul>
         <hr class="border-secondary mt-2">
         <div class="small text-secondary">Administrador</div>
-        <div class="d-flex gap-2 w-100 mt-2">
-          <a href="./perfil.html" class="btn btn-outline-dark w-50${isActive('perfil.html')?' active':''}" role="button"><i class="bi bi-person me-1"></i> Perfil</a>
-          <a href="#" class="btn btn-danger w-50 js-admin-logout" data-action="logout" role="button"><i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión</a>
+        <div class="d-grid gap-2 w-100 mt-2">
+          <a href="./perfil.html" class="btn btn-outline-dark btn-sm w-100${isActive('perfil.html')?' active':''}" role="button"><i class="bi bi-person me-1"></i> Perfil</a>
+          <a href="#" class="btn btn-danger btn-sm w-100 js-admin-logout" data-action="logout" role="button"><i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión</a>
         </div>
       </div>`;
   }
