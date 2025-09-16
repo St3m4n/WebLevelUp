@@ -223,6 +223,13 @@ tr[data-ref="row-empty"] td{color:#ffffff !important}
   color:#ffffff !important;
 }
 
+/* Global: todas las tablas del admin con clase .lup-table deben tener texto blanco */
+.lup-table,
+.lup-table thead th,
+.lup-table tbody td{
+  color:#ffffff !important;
+}
+
 /* ========== Utilities ========== */
 .min-vh-100{min-height:100vh!important}
 .small.text-secondary{color:#ffffff!important}
@@ -288,6 +295,22 @@ tr[data-ref="row-empty"] td{color:#ffffff !important}
   .lup-table-mensajes tbody tr td:nth-child(6){--label:"Acciones"}
   .lup-table-mensajes tbody tr td{position:relative}
   .lup-table-mensajes tbody tr td::before{content: var(--label)}
+
+  /* Categorías labels */
+  .lup-table-categorias tbody tr td:nth-child(1){--label:"Nombre"}
+  .lup-table-categorias tbody tr td:nth-child(2){--label:"Acciones"}
+  .lup-table-categorias tbody tr td{position:relative}
+  .lup-table-categorias tbody tr td::before{content: var(--label)}
+
+  /* Direcciones (usuario) labels */
+  .lup-table-direcciones tbody tr td:nth-child(1){--label:"Nombre"}
+  .lup-table-direcciones tbody tr td:nth-child(2){--label:"Dirección"}
+  .lup-table-direcciones tbody tr td:nth-child(3){--label:"Ciudad"}
+  .lup-table-direcciones tbody tr td:nth-child(4){--label:"Región"}
+  .lup-table-direcciones tbody tr td:nth-child(5){--label:"Principal"}
+  .lup-table-direcciones tbody tr td:nth-child(6){--label:"Acciones"}
+  .lup-table-direcciones tbody tr td{position:relative}
+  .lup-table-direcciones tbody tr td::before{content: var(--label)}
 }
 
 /* ========== Offcanvas (mobile menu) ========== */
