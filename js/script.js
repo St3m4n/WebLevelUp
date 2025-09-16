@@ -302,15 +302,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function setInvalid(input, invalid, feedbackId, message) {
         if (!input) return;
         input.classList.toggle('is-invalid', invalid);
+        input.classList.toggle('is-valid', !invalid && input.value);
+        // Marcar también el input-group para que el borde rojo abarque todo el grupo (icono ojo, etc.)
+        try {
+            const ig = input.closest('.input-group');
+            if (ig) ig.classList.toggle('is-invalid', invalid);
+        } catch {}
         // Mostrar/ocultar pistas de límite solo cuando hay error
         try {
             const container = input.closest('.mb-3, .col-md-6, .col-md-4, .col-12') || input.parentNode;
             container.querySelectorAll('.limit-hint').forEach(h => h.classList.toggle('d-none', !invalid));
         } catch {}
-        if (!invalid) return;
-        if (feedbackId && message) {
-            const el = document.getElementById(feedbackId);
-            if (el) el.textContent = message;
+        // Gestionar el texto y la visibilidad del feedback explícitamente (por si el markup no es hermano directo)
+        if (feedbackId) {
+            const fb = document.getElementById(feedbackId);
+            if (fb) {
+                if (message && invalid) fb.textContent = message;
+                if (invalid) {
+                    fb.classList.add('d-block');
+                    fb.classList.remove('d-none');
+                } else {
+                    fb.classList.remove('d-block');
+                    fb.classList.add('d-none');
+                }
+            }
         }
     }
 
@@ -339,6 +354,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
+        // Limitar rango de fecha (18–120 años) a nivel de input[type=date]
+        (function setDateRangeLimits(){
+            try {
+                const fechaInput = document.getElementById('fechaNacimiento');
+                if (!fechaInput) return;
+                const today = new Date();
+                const y = today.getFullYear();
+                const m = String(today.getMonth()+1).padStart(2,'0');
+                const d = String(today.getDate()).padStart(2,'0');
+                const maxYear = y - 18;   // máximo permitido: 18 años
+                const minYear = y - 120;  // mínimo permitido: 120 años
+                fechaInput.setAttribute('max', `${maxYear}-${m}-${d}`);
+                fechaInput.setAttribute('min', `${minYear}-${m}-${d}`);
+            } catch {}
+        })();
         // Pre-cargar código de referido desde la URL si viene (?ref=)
         (function preloadRefFromURL(){
             try {
@@ -412,9 +442,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!apellidos || apellidos.length>100) { valid = false; setInvalid(apellidosInput, true, 'e-apellidos', 'Apellidos requeridos (máx. 100).'); }
             // Password
             if (password.length < 8) { valid = false; setInvalid(passwordInput, true, 'e-password', 'La contraseña debe tener al menos 8 caracteres.'); }
-            if (password !== confirm) { valid = false; setInvalid(confirmInput, true, 'e-confirm', 'Las contraseñas no coinciden.'); }
-            // Fecha de nacimiento obligatoria y 18+
-            if (!fecha || calcAge(fecha) < 18) { valid = false; setInvalid(fechaInput, true, 'e-fecha', 'Debes tener 18 años o más.'); }
+            // Confirmación: mensaje claro según caso
+            if (confirm.length === 0) { valid = false; setInvalid(confirmInput, true, 'e-confirm', 'Confirma tu contraseña.'); }
+            else if (password !== confirm) { valid = false; setInvalid(confirmInput, true, 'e-confirm', 'Las contraseñas no coinciden.'); }
+            // Fecha de nacimiento obligatoria: rango 18–120
+            {
+                const age = calcAge(fecha);
+                if (!fecha || age < 18 || age > 120) { valid = false; setInvalid(fechaInput, true, 'e-fecha', 'Debes tener entre 18 y 120 años.'); }
+            }
             // Dirección
             if (!region) { valid = false; setInvalid(regionSelect, true, 'e-region', 'Selecciona una región.'); }
             if (!comuna) { valid = false; setInvalid(comunaSelect, true, 'e-comuna', 'Selecciona una comuna.'); }
@@ -513,13 +548,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!el) return false;
             el.classList.toggle('is-invalid', !ok);
             el.classList.toggle('is-valid', !!ok);
+            // Sincronizar estado del input-group contenedor si existe
+            try {
+                const ig = el.closest('.input-group');
+                if (ig) ig.classList.toggle('is-invalid', !ok);
+            } catch {}
+            // Mostrar/ocultar hints de límite
             try {
                 const container = el.closest('.mb-3, .col-md-6, .col-md-4, .col-12') || el.parentNode;
                 container.querySelectorAll('.limit-hint').forEach(h => h.classList.toggle('d-none', !!ok));
             } catch {}
-            if (!ok && feedbackId && msg){
+            // Control explícito del feedback
+            if (feedbackId){
                 const fb = document.getElementById(feedbackId);
-                if (fb) fb.textContent = msg;
+                if (fb){
+                    if (!ok && msg) fb.textContent = msg;
+                    if (!ok) {
+                        fb.classList.add('d-block');
+                        fb.classList.remove('d-none');
+                    } else {
+                        fb.classList.remove('d-block');
+                        fb.classList.add('d-none');
+                    }
+                }
             }
             return !!ok;
         }
@@ -566,19 +617,27 @@ document.addEventListener('DOMContentLoaded', () => {
         function validatePasswordField(){
             const v = String(passwordEl?.value || '');
             if (v.length < 8) return setValidity(passwordEl, false, 'e-password', 'La contraseña debe tener al menos 8 caracteres.');
-            return setValidity(passwordEl, true);
+            return setValidity(passwordEl, true, 'e-password');
         }
-        function validateConfirmField(){
+        function validateConfirmField(opts={}){
+            const from = opts.from || 'confirm'; // 'confirm' | 'password' | 'blur' | 'submit'
             const p = String(passwordEl?.value || '');
             const c = String(confirmEl?.value || '');
-            if (c.length === 0) return setValidity(confirmEl, false, 'e-confirm', 'Confirma tu contraseña.');
+            // Si está vacío, no mostrar error mientras escribe la contraseña o en foco inicial
+            if (c.length === 0) {
+                if (from === 'submit') return setValidity(confirmEl, false, 'e-confirm', 'Confirma tu contraseña.');
+                // Limpiar errores visuales si viene desde password typing o confirm typing sin contenido
+                setValidity(confirmEl, true, 'e-confirm');
+                return true;
+            }
             if (p !== c) return setValidity(confirmEl, false, 'e-confirm', 'Las contraseñas no coinciden.');
-            return setValidity(confirmEl, true);
+            return setValidity(confirmEl, true, 'e-confirm');
         }
         function validateFechaField(){
             const v = String(fechaEl?.value || '');
-            if (!v || calcAge(v) < 18) return setValidity(fechaEl, false, 'e-fecha', 'Debes tener 18 años o más.');
-            return setValidity(fechaEl, true);
+            const age = calcAge(v);
+            if (!v || age < 18 || age > 120) return setValidity(fechaEl, false, 'e-fecha', 'Debes tener entre 18 y 120 años.');
+            return setValidity(fechaEl, true, 'e-fecha');
         }
         function validateRegionField(){
             const v = String(regionEl?.value || '');
@@ -604,8 +663,13 @@ document.addEventListener('DOMContentLoaded', () => {
         emailInput?.addEventListener('blur', validateEmailField);
         nombresEl?.addEventListener('blur', validateNombreField);
         apellidosEl?.addEventListener('blur', validateApellidosField);
-        passwordEl?.addEventListener('input', () => { validatePasswordField(); validateConfirmField(); });
-        confirmEl?.addEventListener('input', validateConfirmField);
+        passwordEl?.addEventListener('input', () => {
+            validatePasswordField();
+            // Solo revalidar confirmación si el usuario ya escribió algo en confirm
+            if (confirmEl && confirmEl.value && confirmEl.value.length > 0) validateConfirmField({ from: 'password' });
+        });
+        confirmEl?.addEventListener('input', () => validateConfirmField({ from: 'confirm' }));
+        confirmEl?.addEventListener('blur', () => validateConfirmField({ from: 'blur' }));
         fechaEl?.addEventListener('change', validateFechaField);
         regionEl?.addEventListener('change', () => { validateRegionField(); validateComunaField(); });
         comunaEl?.addEventListener('change', validateComunaField);
