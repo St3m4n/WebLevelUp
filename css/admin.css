@@ -1,16 +1,16 @@
 /* =========================
-   ADMIN LIGHT PRO THEME
+   ADMIN DARK THEME
    ========================= */
 :root{
-  --bg:#f7f8fa;
-  --fg:#1f2328;
-  --muted:#6b7280;
+  --bg:#121212;
+  --fg:#ffffff;
+  --muted:#b0b0b0;
   --primary:#0d6efd;     /* Bootstrap primary */
   --success:#16a34a;
-  --card:#ffffff;
-  --border:#e5e7eb;
-  --sidebar-bg:#ffffff;
-  --sidebar-border:#e5e7eb;
+  --card:#1e1e1e;
+  --border:#2a2a2a;
+  --sidebar-bg:#181818;
+  --sidebar-border:#2a2a2a;
 }
 
 *{box-sizing:border-box}
@@ -44,15 +44,15 @@ body{
   top:0;
 }
 .lup-sidebar .nav-link{
-  color:#374151;
+  color:#ffffff;
   border:1px solid transparent;
   border-radius:.5rem;
   padding:.5rem .75rem;
 }
 .lup-sidebar .nav-link:hover{
-  color: var(--fg);
-  background:#98aacf;
-  border-color:#96a5c4;
+  color: #fff;
+  background:#2a2a2a;
+  border-color:#2f2f2f;
 }
 .lup-sidebar .nav-link.active{
   background: var(--primary);
@@ -63,37 +63,116 @@ body{
 
 /* ========== Topbar ========== */
 .lup-topbar{
-  background:#fff !important;
+  background:#181818 !important;
   border-color:var(--border) !important;
-  box-shadow: 0 1px 0 rgba(0,0,0,.03);
+  box-shadow: 0 1px 0 rgba(0,0,0,.4);
+  position: sticky;
+  top: 0;
+  z-index: 1020; /* above content, below modal */
 }
-.navbar-brand{color:#111827 !important}
+.navbar-brand{color:#fff !important}
 
 /* ========== Cards & containers ========== */
-.lup-card{
+.lup-card,
+.card{
   background: var(--card);
   border:1px solid var(--border);
   border-radius:16px;
-  box-shadow: 0 1px 2px rgba(0,0,0,.03);
+  box-shadow: 0 1px 2px rgba(0,0,0,.3);
+  color:#ffffff;            /* force text white inside cards */
+  --bs-card-color:#ffffff;  /* bootstrap var for card text */
 }
-.card-title{font-weight:600}
-.text-secondary{color:var(--muted)!important}
+.card-title{font-weight:600; color:#ffffff}
+.text-secondary{color:#ffffff!important}
 .border-secondary{border-color:var(--border)!important}
 .container.py-4{padding-top:1.25rem!important; padding-bottom:1.25rem!important}
 
-/* ========== Forms (claros) ========== */
-.form-label{font-weight:500}
-.form-control, .form-select, .form-check-input{
-  background:#ffffff;
-  color:#111827;
-  border-color:#d1d5db;
+/* ========== Forms (dark theme refinement) ========== */
+.form-label{font-weight:500; color: var(--fg) !important}
+/* Base inputs/selects */
+.form-control,
+.form-select{
+  background:#151515;
+  color:#ffffff !important;
+  border-color:#3a3a3a;
 }
-.form-control:focus, .form-select:focus, .form-check-input:focus{
+/* Checkboxes/Radios base */
+.form-check-input{
+  background-color:#111111;
+  border-color:#3a3a3a;
+}
+/* Placeholders */
+.form-control::placeholder{color:#9aa0a6; opacity:1}
+/* Focus states */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus{
+  color:#ffffff;
+  background-color:#151515;
   border-color: var(--primary);
-  box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
+  box-shadow: 0 0 0 .2rem rgba(13,110,253,.25);
 }
+/* Disabled/readonly */
+.form-control:disabled,
+.form-control[readonly],
+.form-select:disabled{
+  background:#1a1a1a;
+  color:#9ca3af;
+  opacity:1;
+}
+.form-control:disabled::placeholder{color:#7a7a7a}
+/* Input group */
+.input-group-text{
+  background:#1a1a1a;
+  border-color:#3a3a3a;
+  color:#ffffff;
+}
+/* Select dropdown arrow (light) */
+.form-select{
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23e5e7eb' viewBox='0 0 16 16'%3e%3cpath d='M3.204 5.096a.5.5 0 0 1 .707 0L8 9.185l4.089-4.089a.5.5 0 0 1 .707.707l-4.442 4.442a.5.5 0 0 1-.708 0L3.204 5.803a.5.5 0 0 1 0-.707z'/%3e%3c/svg%3e");
+  background-repeat:no-repeat;
+  background-position:right .75rem center;
+  background-size:16px 12px;
+  padding-right:2.5rem;
+}
+/* Checks */
+.form-check-input:checked{
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.form-switch .form-check-input{background:#222}
+.form-switch .form-check-input:checked{background-color: var(--primary)}
+.form-check-label{color:#ffffff}
+/* File input button */
+.form-control[type="file"]{ color:#ffffff }
+.form-control[type="file"]::file-selector-button{
+  color:#e5e7eb;
+  background:#222;
+  border:1px solid #3a3a3a;
+}
+.form-control[type="file"]::file-selector-button:hover{ background:#2a2a2a }
+/* Floating labels */
+.form-floating>.form-control,
+.form-floating>.form-select{ background:#151515; color:#ffffff }
+.form-floating>label{ color:#ffffff }
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label,
+.form-floating>.form-select~label{ color:#ffffff }
+/* Validation feedback */
 .is-invalid{border-color:#dc3545!important}
-.form-text{color:#6b7280}
+.is-valid{border-color:#198754!important}
+.invalid-feedback{color:#fca5a5}
+.valid-feedback{color:#86efac}
+.form-text{color:#ffffff}
+/* Autofill fix on dark */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill{
+  -webkit-text-fill-color:#ffffff;
+  -webkit-box-shadow: 0 0 0px 1000px #151515 inset;
+  box-shadow: 0 0 0px 1000px #151515 inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
 
 /* ========== Buttons ========== */
 .btn-primary{
@@ -102,13 +181,16 @@ body{
   font-weight:600;
 }
 .btn-outline-light{
-  color:#374151;
-  border-color:#d1d5db;
+  color:#ffffff;
+  border-color:#4b5563;
+  background:transparent;
 }
 .btn-outline-secondary{
-  color:#374151;
-  border-color:#d1d5db;
+  color:#ffffff;
+  border-color:#4b5563;
 }
+.btn-outline-light:hover{background:#2a2a2a;border-color:#6b7280;color:#ffffff}
+.btn-outline-secondary:hover{background:#2a2a2a;border-color:#6b7280;color:#ffffff}
 .btn-success{
   background: var(--success);
   border:1px solid var(--success);
@@ -116,14 +198,112 @@ body{
 }
 
 /* ========== Tables (claras) ========== */
-.table{--bs-table-bg: #ffffff}
+.table{--bs-table-bg: #181818; color:#ffffff}
+.table > :not(caption) > * > *{border-color: var(--border) !important}
+.table thead tr{background:#202020}
 .table thead th{
-  border-bottom:1px solid var(--border);
-  color:#374151;
-  font-weight:600;
+  border-bottom:2px solid var(--border);
+  color:#ffffff;
+  font-weight:700;
 }
+.table-striped>tbody>tr:nth-of-type(odd){--bs-table-accent-bg: #1f1f1f}
+.table tbody tr:hover{background-color:#222 !important}
 .table td, .table th{vertical-align:middle}
+/* Links/buttons inside tables now white */
+.table a, .table .btn-link{color:#ffffff}
+.table a:hover, .table .btn-link:hover{color:#ffffff}
+/* Force white for secondary/muted text inside tables and empty state rows */
+.table .text-secondary, .table .text-muted{color:#ffffff !important}
+tr[data-ref="row-empty"] td{color:#ffffff !important}
 
 /* ========== Utilities ========== */
 .min-vh-100{min-height:100vh!important}
-.small.text-secondary{color:#9ca3af!important}
+.small.text-secondary{color:#ffffff!important}
+.text-muted{color:#ffffff!important}
+
+/* ========== Responsive Tables (stacked on mobile) ========== */
+@media (max-width: 575.98px){
+  .lup-table thead{display:none}
+  .lup-table tbody tr{
+    display:block;
+    margin-bottom: .75rem;
+    border:1px solid var(--border);
+    border-radius: .75rem;
+    background: var(--card);
+    box-shadow: 0 1px 1px rgba(0,0,0,.3);
+    overflow:hidden;
+  }
+  .lup-table tbody tr td{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:.75rem;
+    padding:.5rem .75rem;
+    border-bottom:1px solid var(--border);
+  }
+  .lup-table tbody tr td:last-child{border-bottom:none}
+  .lup-table tbody tr td::before{
+    content: attr(data-label);
+    font-weight:600;
+    color:#e5e7eb;
+  }
+  .lup-table .text-end{justify-content:space-between}
+
+  /* Productos labels */
+  .lup-table-productos tbody tr td:nth-child(1){--label:"Código"}
+  .lup-table-productos tbody tr td:nth-child(2){--label:"Nombre"}
+  .lup-table-productos tbody tr td:nth-child(3){--label:"Categoría"}
+  .lup-table-productos tbody tr td:nth-child(4){--label:"Precio"}
+  .lup-table-productos tbody tr td:nth-child(5){--label:"Stock"}
+  .lup-table-productos tbody tr td:nth-child(6){--label:"Acciones"}
+  .lup-table-productos tbody tr td{position:relative}
+  .lup-table-productos tbody tr td::before{content: var(--label)}
+
+  /* Usuarios labels */
+  .lup-table-usuarios tbody tr td:nth-child(1){--label:"RUN"}
+  .lup-table-usuarios tbody tr td:nth-child(2){--label:"Nombre"}
+  .lup-table-usuarios tbody tr td:nth-child(3){--label:"Apellidos"}
+  .lup-table-usuarios tbody tr td:nth-child(4){--label:"Correo"}
+  .lup-table-usuarios tbody tr td:nth-child(5){--label:"Perfil"}
+  .lup-table-usuarios tbody tr td:nth-child(6){--label:"Región"}
+  .lup-table-usuarios tbody tr td:nth-child(7){--label:"Comuna"}
+  .lup-table-usuarios tbody tr td:nth-child(8){--label:"Descuento"}
+  .lup-table-usuarios tbody tr td:nth-child(9){--label:"Acciones"}
+  .lup-table-usuarios tbody tr td{position:relative}
+  .lup-table-usuarios tbody tr td::before{content: var(--label)}
+
+  /* Mensajes labels */
+  .lup-table-mensajes tbody tr td:nth-child(1){--label:"Fecha"}
+  .lup-table-mensajes tbody tr td:nth-child(2){--label:"Nombre"}
+  .lup-table-mensajes tbody tr td:nth-child(3){--label:"Correo"}
+  .lup-table-mensajes tbody tr td:nth-child(4){--label:"Asunto"}
+  .lup-table-mensajes tbody tr td:nth-child(5){--label:"Estado"}
+  .lup-table-mensajes tbody tr td:nth-child(6){--label:"Acciones"}
+  .lup-table-mensajes tbody tr td{position:relative}
+  .lup-table-mensajes tbody tr td::before{content: var(--label)}
+}
+
+/* ========== Offcanvas (mobile menu) ========== */
+.offcanvas-start{
+  width: 260px; /* align with desktop sidebar */
+}
+
+/* Offcanvas dark styling */
+.offcanvas,
+.offcanvas-header{
+  background: var(--sidebar-bg);
+  color: var(--fg);
+}
+.offcanvas .btn-close{filter: invert(1)}
+.offcanvas .nav-link{color:#ffffff}
+.offcanvas .nav-link:hover{color:#ffffff; background:#2a2a2a; border-radius:.5rem}
+
+/* Improve touch targets on small screens */
+@media (max-width: 575.98px){
+  .lup-sidebar .nav-link,
+  .offcanvas .nav-link{
+    padding:.625rem .875rem;
+    font-size: 0.98rem;
+  }
+  .lup-logo{height:40px}
+}
