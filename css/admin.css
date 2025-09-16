@@ -216,6 +216,13 @@ select:-webkit-autofill{
 .table .text-secondary, .table .text-muted{color:#ffffff !important}
 tr[data-ref="row-empty"] td{color:#ffffff !important}
 
+/* Usuarios: fuerza texto blanco en la tabla (fondo oscuro) */
+.lup-table-usuarios,
+.lup-table-usuarios thead th,
+.lup-table-usuarios tbody td{
+  color:#ffffff !important;
+}
+
 /* ========== Utilities ========== */
 .min-vh-100{min-height:100vh!important}
 .small.text-secondary{color:#ffffff!important}
