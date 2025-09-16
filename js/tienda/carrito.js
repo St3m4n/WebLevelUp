@@ -288,6 +288,56 @@
     cont.addEventListener('click', onContClick);
     cont._cartHandler = onContClick;
 
+    // Sanitizar inputs de cantidad: solo números, mínimo 1 y máximo stock
+    const onQtyInput = (e)=>{
+      const input = e.target.closest('.quantity-selector input[type="number"]');
+      if (!input) return;
+      // Limpiar caracteres no numéricos mientras escribe
+      const raw = String(input.value || '');
+      const digits = raw.replace(/\D+/g, '');
+      let v = parseInt(digits, 10);
+      if (!Number.isFinite(v) || v < 1) v = 1;
+      const maxAttr = Number(input.getAttribute('max')) || 0;
+      if (maxAttr > 0) v = Math.min(v, maxAttr);
+      input.value = String(v);
+    };
+    const onQtyKeyDown = (e)=>{
+      const input = e.target.closest('.quantity-selector input[type="number"]');
+      if (!input) return;
+      const allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End'];
+      if (allowed.includes(e.key)) return;
+      if (/^[0-9]$/.test(e.key)) return;
+      // Bloquear letras, signos, etc.
+      e.preventDefault();
+    };
+    const onQtyCommit = (e)=>{
+      const input = e.target.closest('.quantity-selector input[type="number"]');
+      if (!input) return;
+      const row = input.closest('.cart-item-row');
+      if (!row) return;
+      const codigo = row.getAttribute('data-codigo');
+      const maxAttr = Number(input.getAttribute('max')) || 0;
+      let v = parseInt(String(input.value||'').replace(/\D+/g,''), 10);
+      if (!Number.isFinite(v) || v < 1) v = 1;
+      if (maxAttr > 0) v = Math.min(v, maxAttr);
+      input.value = String(v);
+      updateCantidad(codigo, v);
+      renderCarrito(opts);
+    };
+    // Limpiar handlers previos para evitar duplicaciones al re-render
+    if (cont._qtyInputHandler) cont.removeEventListener('input', cont._qtyInputHandler);
+    if (cont._qtyKeyHandler) cont.removeEventListener('keydown', cont._qtyKeyHandler);
+    if (cont._qtyChangeHandler) cont.removeEventListener('change', cont._qtyChangeHandler);
+    if (cont._qtyBlurHandler) cont.removeEventListener('blur', cont._qtyBlurHandler, true);
+    cont.addEventListener('input', onQtyInput);
+    cont.addEventListener('keydown', onQtyKeyDown);
+    cont.addEventListener('change', onQtyCommit);
+    cont.addEventListener('blur', onQtyCommit, true);
+    cont._qtyInputHandler = onQtyInput;
+    cont._qtyKeyHandler = onQtyKeyDown;
+    cont._qtyChangeHandler = onQtyCommit;
+    cont._qtyBlurHandler = onQtyCommit;
+
     const onResClick = async (e)=>{
       if (e.target.closest('[data-action="vaciar"]')){
         const ok = await confirmToast('¿Vaciar todo el carrito?', { okText: 'Vaciar', cancelText: 'Cancelar' });
