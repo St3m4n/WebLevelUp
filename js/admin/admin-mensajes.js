@@ -146,12 +146,22 @@
   btnResponder?.addEventListener('click', ()=>{
     if(selectedIndex == null) return;
     const resp = mRespuesta.value.trim();
-    mensajes[selectedIndex].respuesta = resp;
-    mensajes[selectedIndex].estado = 'respondido';
-    saveMensajes();
-    if(window.showNotification){ window.showNotification('Respuesta registrada (demo localStorage)'); }
-    render();
-    modal?.hide();
+    confirmAction({
+      title: 'Marcar como respondido',
+      message: '¿Deseas marcar este mensaje como respondido?',
+      confirmText: 'Sí, marcar',
+      cancelText: 'Cancelar',
+      variant: 'success'
+    }).then(ok => {
+      if(!ok) return;
+      mensajes[selectedIndex].respuesta = resp;
+      mensajes[selectedIndex].estado = 'respondido';
+      saveMensajes();
+  try { window.audit?.log({ entity:'mensaje', action:'respond', target: mensajes[selectedIndex].email, meta: { asunto: mensajes[selectedIndex].asunto } }); } catch {}
+      if(window.showNotification){ window.showNotification('Respuesta registrada (demo localStorage)'); }
+      render();
+      modal?.hide();
+    });
   });
 
   // Init

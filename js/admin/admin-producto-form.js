@@ -193,8 +193,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (editing) {
       data = data.map(p => p.codigo === originalCode ? { ...p, ...payload, codigo: originalCode } : p);
+      try { window.audit?.log({ entity:'producto', action:'update', target: originalCode }); } catch {}
     } else {
       data = [...data, payload];
+      try { window.audit?.log({ entity:'producto', action:'create', target: payload.codigo }); } catch {}
     }
 
     saveProductos(data);

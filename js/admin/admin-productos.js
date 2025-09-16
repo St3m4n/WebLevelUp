@@ -74,21 +74,73 @@
     `).join("");
   }
 
+  // --- Render tabla (activos y eliminados) ---
+  function renderTablas(list){
+    const tbodyA = $('[data-ref="tbody-prod-activos"]');
+    const tbodyE = $('[data-ref="tbody-prod-eliminados"]');
+    if (!tbodyA || !tbodyE){
+      // fallback a la tabla única si existiese
+      return renderTabla(list);
+    }
+    const activos = list.filter(p => !p.deletedAt);
+    const eliminados = list.filter(p => !!p.deletedAt);
+
+    tbodyA.innerHTML = activos.map(p => `
+      <tr>
+        <td>${p.codigo}</td>
+        <td>${p.nombre}</td>
+        <td>${p.categoria ?? ''}</td>
+        <td class="text-end">${fmtCLP.format(Number(p.precio) || 0)}</td>
+        <td class="text-end ${p.stockCritico != null && Number(p.stock) <= Number(p.stockCritico) ? 'text-warning' : ''}" title="${(p.stockCritico != null && Number(p.stock) <= Number(p.stockCritico)) ? 'Stock bajo' : ''}">
+          ${Number(p.stock) || 0}
+        </td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-outline-primary" href="./producto-form.html?id=${encodeURIComponent(p.codigo)}">Editar</a>
+          <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${p.codigo}">Eliminar</button>
+        </td>
+      </tr>
+    `).join('');
+
+    tbodyE.innerHTML = eliminados.map(p => {
+      const fecha = new Date(p.deletedAt).toLocaleString();
+      return `
+      <tr>
+        <td>${p.codigo}</td>
+        <td>${p.nombre}</td>
+        <td>${p.categoria ?? ''}</td>
+        <td>${fecha}</td>
+        <td class="text-end">
+          <div class="d-inline-flex gap-2 align-items-center">
+            <a class="btn btn-sm btn-outline-light" href="./producto-form.html?id=${encodeURIComponent(p.codigo)}" tabindex="-1" aria-disabled="true">Ver</a>
+            <button class="btn btn-sm btn-outline-success" data-action="restore" data-id="${p.codigo}">Restaurar</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // override renderTabla to call renderTablas if tabs exist
+  const _renderTabla = renderTabla;
+  renderTabla = function(list){
+    const hasTabs = $('[data-ref="tbody-prod-activos"]') && $('[data-ref="tbody-prod-eliminados"]');
+    if (hasTabs) return renderTablas(list);
+    return _renderTabla(list);
+  }
+
   // --- Filtros ---
-  function aplicarFiltros() {
-    const q = ($('[data-ref="busqueda"]')?.value || "").trim().toLowerCase();
-    const cat = ($('[data-ref="categoria"]')?.value || "").trim();
+  function aplicarFiltros(){
+    const q = ($('[data-ref="busqueda"]')?.value || '').trim().toLowerCase();
+    const cat = ($('[data-ref="categoria"]')?.value || '').trim();
 
     let list = [...productosData];
-
-    if (q) {
+    if (q){
       list = list.filter(p =>
         String(p.codigo).toLowerCase().includes(q) ||
         String(p.nombre).toLowerCase().includes(q) ||
-        String(p.categoria || "").toLowerCase().includes(q)
+        String(p.categoria || '').toLowerCase().includes(q)
       );
     }
-    if (cat) {
+    if (cat){
       list = list.filter(p => String(p.categoria) === cat);
     }
     renderTabla(list);
@@ -96,15 +148,53 @@
 
   // --- Eliminar (persistente) ---
   function onTablaClick(e) {
-    const btn = e.target.closest('button[data-action="del"]');
-    if (!btn) return;
-    const id = btn.getAttribute("data-id");
-    if (!id) return;
+    const delBtn = e.target.closest('button[data-action="del"]');
+    const restoreBtn = e.target.closest('button[data-action="restore"]');
 
-    if (confirm(`¿Eliminar producto ${id}?`)) {
-      productosData = productosData.filter(p => p.codigo !== id);
-      saveProductos(productosData);
-      aplicarFiltros();
+    if (delBtn){
+      const id = delBtn.getAttribute('data-id');
+      const p = productosData.find(x => x.codigo === id);
+      if (!p) return;
+      const runConfirm = (opts) => typeof window.confirmAction === 'function'
+        ? window.confirmAction(opts)
+        : Promise.resolve(window.confirm((opts.message||'¿Confirmar?').replace(/<[^>]*>/g, '')));
+      runConfirm({
+        title: 'Eliminar producto',
+        message: `¿Seguro deseas eliminar el producto <strong>${id}</strong>?`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        variant: 'danger'
+      }).then(ok => {
+        if(!ok) return;
+        p.deletedAt = new Date().toISOString();
+        saveProductos(productosData);
+        try { window.audit?.log({ entity:'producto', action:'delete', target:id }); } catch {}
+        aplicarFiltros();
+      });
+      return;
+    }
+
+    if (restoreBtn){
+      const id = restoreBtn.getAttribute('data-id');
+      const p = productosData.find(x => x.codigo === id);
+      if (!p) return;
+      const runConfirm = (opts) => typeof window.confirmAction === 'function'
+        ? window.confirmAction(opts)
+        : Promise.resolve(window.confirm((opts.message||'¿Confirmar?').replace(/<[^>]*>/g, '')));
+      runConfirm({
+        title: 'Restaurar producto',
+        message: `¿Restaurar el producto <strong>${id}</strong>?`,
+        confirmText: 'Restaurar',
+        cancelText: 'Cancelar',
+        variant: 'success'
+      }).then(ok => {
+        if(!ok) return;
+        delete p.deletedAt;
+        saveProductos(productosData);
+        try { window.audit?.log({ entity:'producto', action:'restore', target:id }); } catch {}
+        aplicarFiltros();
+      });
+      return;
     }
   }
 
@@ -142,6 +232,12 @@
       aplicarFiltros();
     });
 
-    document.addEventListener("click", onTablaClick);
+  // Delegate clicks within the tables area only
+  document.querySelector('.lup-card')?.addEventListener("click", onTablaClick);
+
+    // Re-render on tab switch
+    document.querySelectorAll('#productosTabs button[data-bs-toggle="tab"]').forEach(btn => {
+      btn.addEventListener('shown.bs.tab', () => aplicarFiltros());
+    });
   });
 })();

@@ -147,25 +147,25 @@
       saveLS(LS_USU, usuarios);
       // actualizar header
       paintHeader(usuarios[idx]);
-      // log
-      pushAudit({ actor: uActual.run, entity:"perfil", action:"update", target: uActual.run });
-      renderAudit(uActual.run);
+  // log
+  try { window.audit?.log({ entity:'perfil', action:'update', target: uActual.run }); } catch {}
+  renderAudit(uActual.run, usuarios[idx].correo);
       alert("Perfil actualizado ✅");
     }
   }
 
   // audit
-  function loadAudit(){ return loadLS(LS_LOG, []); }
-  function saveAudit(log){ saveLS(LS_LOG, log); }
-  function pushAudit(entry){
-    const log = loadAudit();
-    log.unshift({ ...entry, at: new Date().toISOString() });
-    saveAudit(log.slice(0,50)); // limita a 50
-  }
-  function renderAudit(run){
+  function renderAudit(run, correo){
     const list = DOM('[data-ref="audit-list"]');
     const empty= DOM('[data-ref="audit-empty"]');
-    const log = loadAudit().filter(x => !x.actor || x.actor===run).slice(0,10);
+    const all = (window.audit && typeof window.audit.load==='function') ? window.audit.load() : loadLS(LS_LOG, []);
+    // filtrar por actorRun o actorEmail cuando exista, o por campo legacy actor
+    const log = (all || []).filter(x => {
+      if (x.actorRun && run) return String(x.actorRun).toUpperCase() === String(run).toUpperCase();
+      if (x.actorEmail && correo) return String(x.actorEmail).toLowerCase() === String(correo).toLowerCase();
+      if (x.actor && run) return String(x.actor) === String(run);
+      return false;
+    }).slice(0, 20);
     if (log.length===0){
       list.classList.add('d-none'); empty.classList.remove('d-none');
       return;
@@ -174,12 +174,16 @@
     list.innerHTML = log.map(x=>{
       const d = new Date(x.at);
       const f = d.toLocaleString();
+      const actor = x.actorEmail || x.actorRun || '—';
+      const entity = x.entity || '—';
+      const action = (x.action||'').toUpperCase();
+      const target = x.target || '';
       return `<li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
           <div class="small text-muted">${f}</div>
-          <div><b>${x.action.toUpperCase()}</b> · ${x.entity} · ${x.target ?? ""}</div>
+          <div><b>${action}</b> · ${entity} · ${target}</div>
         </div>
-        <span class="badge text-bg-secondary">${x.actor || "—"}</span>
+        <span class="badge text-bg-secondary">${actor}</span>
       </li>`;
     }).join('');
   }
@@ -192,11 +196,16 @@
 
     paintHeader(u);
     paintForm(u);
-    renderAudit(u.run);
+  renderAudit(u.run, u.correo);
 
     DOM('[data-ref="btn-guardar"]').addEventListener('click', ()=> onGuardar(u, usuarios));
     DOM('[data-ref="btn-limpiar-log"]').addEventListener('click', ()=>{
-      saveAudit([]); renderAudit(u.run);
+      if (window.audit && typeof window.audit.clearForActor==='function'){
+        window.audit.clearForActor({ run: u.run, email: u.correo });
+      } else {
+        saveLS(LS_LOG, []);
+      }
+      renderAudit(u.run, u.correo);
     });
   });
 })();

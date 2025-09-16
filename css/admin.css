@@ -39,9 +39,15 @@ body{
   width:260px;
   background: var(--sidebar-bg);
   border-right:1px solid var(--sidebar-border);
-  min-height:100vh;
+  height:100vh;            /* fijo al viewport */
   position:sticky;
   top:0;
+  overflow:hidden;         /* evita que crezca; el menú hará scroll */
+}
+/* El listado del menú ocupa el espacio disponible y hace scroll si es necesario */
+.lup-sidebar #lup-menu{
+  flex:1 1 auto;
+  overflow:auto;
 }
 .lup-sidebar .nav-link{
   color:#ffffff;
@@ -86,6 +92,17 @@ body{
 .text-secondary{color:#ffffff!important}
 .border-secondary{border-color:var(--border)!important}
 .container.py-4{padding-top:1.25rem!important; padding-bottom:1.25rem!important}
+
+/* List groups in dark theme */
+.list-group { --bs-list-group-bg: #181818; --bs-list-group-color: #ffffff; }
+.list-group-item{
+  background-color:#181818;
+  color:#ffffff;
+  border-color: var(--border);
+}
+.list-group-item .small.text-muted{color:#cbd5e1 !important}
+.list-group-item .badge{font-weight:600}
+.text-bg-secondary{ background-color:#3a3f44 !important; color:#ffffff !important }
 
 /* ========== Forms (dark theme refinement) ========== */
 .form-label{font-weight:500; color: var(--fg) !important}
@@ -164,6 +181,9 @@ body{
 .invalid-feedback{color:#fca5a5}
 .valid-feedback{color:#86efac}
 .form-text{color:#ffffff}
+/* Ensure modal dark inputs keep readable placeholders and help text */
+.modal-content.bg-dark .form-control::placeholder{color:#9aa0a6; opacity:1}
+.modal-content.bg-dark .form-text{color:#cbd5e1}
 /* Autofill fix on dark */
 input:-webkit-autofill,
 textarea:-webkit-autofill,
@@ -271,14 +291,22 @@ tr[data-ref="row-empty"] td{color:#ffffff !important}
   .lup-table .text-end{justify-content:space-between}
 
   /* Productos labels */
-  .lup-table-productos tbody tr td:nth-child(1){--label:"Código"}
-  .lup-table-productos tbody tr td:nth-child(2){--label:"Nombre"}
-  .lup-table-productos tbody tr td:nth-child(3){--label:"Categoría"}
-  .lup-table-productos tbody tr td:nth-child(4){--label:"Precio"}
-  .lup-table-productos tbody tr td:nth-child(5){--label:"Stock"}
-  .lup-table-productos tbody tr td:nth-child(6){--label:"Acciones"}
-  .lup-table-productos tbody tr td{position:relative}
-  .lup-table-productos tbody tr td::before{content: var(--label)}
+  .lup-table-productos-activos tbody tr td:nth-child(1){--label:"Código"}
+  .lup-table-productos-activos tbody tr td:nth-child(2){--label:"Nombre"}
+  .lup-table-productos-activos tbody tr td:nth-child(3){--label:"Categoría"}
+  .lup-table-productos-activos tbody tr td:nth-child(4){--label:"Precio"}
+  .lup-table-productos-activos tbody tr td:nth-child(5){--label:"Stock"}
+  .lup-table-productos-activos tbody tr td:nth-child(6){--label:"Acciones"}
+  .lup-table-productos-activos tbody tr td{position:relative}
+  .lup-table-productos-activos tbody tr td::before{content: var(--label)}
+
+  .lup-table-productos-eliminados tbody tr td:nth-child(1){--label:"Código"}
+  .lup-table-productos-eliminados tbody tr td:nth-child(2){--label:"Nombre"}
+  .lup-table-productos-eliminados tbody tr td:nth-child(3){--label:"Categoría"}
+  .lup-table-productos-eliminados tbody tr td:nth-child(4){--label:"Eliminado el"}
+  .lup-table-productos-eliminados tbody tr td:nth-child(5){--label:"Acciones"}
+  .lup-table-productos-eliminados tbody tr td{position:relative}
+  .lup-table-productos-eliminados tbody tr td::before{content: var(--label)}
 
   /* Usuarios labels (activos y eliminados) */
   /* Activos: RUN, Nombre, Apellidos, Correo, Perfil, Descuento, Acciones */
@@ -312,10 +340,16 @@ tr[data-ref="row-empty"] td{color:#ffffff !important}
   .lup-table-mensajes tbody tr td::before{content: var(--label)}
 
   /* Categorías labels */
-  .lup-table-categorias tbody tr td:nth-child(1){--label:"Nombre"}
-  .lup-table-categorias tbody tr td:nth-child(2){--label:"Acciones"}
-  .lup-table-categorias tbody tr td{position:relative}
-  .lup-table-categorias tbody tr td::before{content: var(--label)}
+  .lup-table-categorias-activas tbody tr td:nth-child(1){--label:"Nombre"}
+  .lup-table-categorias-activas tbody tr td:nth-child(2){--label:"Acciones"}
+  .lup-table-categorias-activas tbody tr td{position:relative}
+  .lup-table-categorias-activas tbody tr td::before{content: var(--label)}
+
+  .lup-table-categorias-eliminadas tbody tr td:nth-child(1){--label:"Nombre"}
+  .lup-table-categorias-eliminadas tbody tr td:nth-child(2){--label:"Eliminada el"}
+  .lup-table-categorias-eliminadas tbody tr td:nth-child(3){--label:"Acciones"}
+  .lup-table-categorias-eliminadas tbody tr td{position:relative}
+  .lup-table-categorias-eliminadas tbody tr td::before{content: var(--label)}
 
   /* Direcciones (usuario) labels */
   .lup-table-direcciones tbody tr td:nth-child(1){--label:"Nombre"}
@@ -342,6 +376,9 @@ tr[data-ref="row-empty"] td{color:#ffffff !important}
 .offcanvas .btn-close{filter: invert(1)}
 .offcanvas .nav-link{color:#ffffff}
 .offcanvas .nav-link:hover{color:#ffffff; background:#2a2a2a; border-radius:.5rem}
+/* En offcanvas, la lista hace scroll y deja los botones de abajo siempre accesibles */
+.offcanvas-body{display:flex; flex-direction:column}
+.offcanvas-body > ul.nav{flex:1 1 auto; overflow:auto}
 
 /* Improve touch targets on small screens */
 @media (max-width: 575.98px){

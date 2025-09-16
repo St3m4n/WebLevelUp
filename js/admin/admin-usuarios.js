@@ -203,11 +203,19 @@ function onTablaClick(e){
       alert('Este usuario está protegido y no puede eliminarse.');
       return;
     }
-    if (confirm(`¿Eliminar usuario ${id}?`)){
+    confirmAction({
+      title: 'Eliminar usuario',
+      message: `¿Seguro deseas eliminar al usuario <strong>${formatRunDisplay(id)}</strong>?`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      variant: 'danger'
+    }).then(ok => {
+      if(!ok) return;
       u.deletedAt = new Date().toISOString();
       saveUsuarios(dataUsuarios);
+      try { window.audit?.log({ entity:'usuario', action:'delete', target: id }); } catch {}
       aplicarFiltros();
-    }
+    });
     return;
   }
 
@@ -264,11 +272,19 @@ function onTablaClick(e){
     const id = restoreBtn.getAttribute('data-id');
     const u = dataUsuarios.find(x => x.run === id);
     if (!u) return;
-    if (confirm(`¿Restaurar usuario ${formatRunDisplay(u.run)}?`)){
+    confirmAction({
+      title: 'Restaurar usuario',
+      message: `¿Restaurar al usuario <strong>${formatRunDisplay(u.run)}</strong>?`,
+      confirmText: 'Restaurar',
+      cancelText: 'Cancelar',
+      variant: 'success'
+    }).then(ok => {
+      if(!ok) return;
       delete u.deletedAt;
       saveUsuarios(dataUsuarios);
+      try { window.audit?.log({ entity:'usuario', action:'restore', target: id }); } catch {}
       aplicarFiltros();
-    }
+    });
     return;
   }
 }

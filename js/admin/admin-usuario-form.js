@@ -278,8 +278,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     if (editing){
       data = data.map(u => normalizarRun(u.run) === normalizarRun(originalRun) ? {...u, ...payload, run: originalRun} : u);
+      try { window.audit?.log({ entity:'usuario', action:'update', target: originalRun }); } catch {}
     } else {
       data = [...data, payload];
+      try { window.audit?.log({ entity:'usuario', action:'create', target: payload.run }); } catch {}
     }
     saveUsuarios(data);
     location.href = "./usuarios.html";

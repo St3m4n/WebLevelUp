@@ -15,45 +15,7 @@
 <body>
   <div class="d-flex">
     <!-- Sidebar (desktop) -->
-    <aside class="lup-sidebar d-none d-lg-flex flex-column p-3">
-      <a href="./index.html" class="d-flex align-items-center mb-3 text-decoration-none">
-  <img src="../../assets/logo2.png" alt="Level-Up" class="lup-logo me-2">
-      </a>
-      <hr class="border-secondary">
-      <ul class="nav nav-pills flex-column mb-auto gap-1" id="lup-menu">
-  <li class="nav-item"><a href="./index.html" class="nav-link"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
-  <li><a href="./mensajes.html" class="nav-link"><i class="bi bi-envelope me-1"></i>Mensajes</a></li>
-  <li><a href="./perfil.html" class="nav-link"><i class="bi bi-person me-1"></i>Perfil</a></li>
-        <li>
-          <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#menuProductos" role="button" aria-expanded="false" aria-controls="menuProductos">
-            <span><i class="bi bi-bag me-1"></i>Productos</span>
-            <i class="bi bi-caret-down"></i>
-          </a>
-          <div class="collapse" id="menuProductos">
-            <ul class="nav flex-column ms-3 my-1 small">
-              <li><a href="./productos.html" class="nav-link py-1"><i class="bi bi-list me-1"></i>Listado</a></li>
-              <li><a href="./producto-form.html" class="nav-link py-1"><i class="bi bi-plus-circle me-1"></i>Nuevo producto</a></li>
-            </ul>
-          </div>
-        </li>
-        <li>
-          <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#menuUsuarios" role="button" aria-expanded="false" aria-controls="menuUsuarios">
-            <span><i class="bi bi-people me-1"></i>Usuarios</span>
-            <i class="bi bi-caret-down"></i>
-          </a>
-          <div class="collapse" id="menuUsuarios">
-            <ul class="nav flex-column ms-3 my-1 small">
-              <li><a href="./usuarios.html" class="nav-link py-1"><i class="bi bi-list me-1"></i>Listado</a></li>
-              <li><a href="./usuario-form.html" class="nav-link py-1"><i class="bi bi-plus-circle me-1"></i>Nuevo usuario</a></li>
-            </ul>
-          </div>
-        </li>
-  <li><a href="./categorias.html" class="nav-link active"><i class="bi bi-tags me-1"></i>Categorías</a></li>
-      </ul>
-  <a href="#" class="btn btn-danger w-100 mt-2 js-admin-logout" data-action="logout" role="button"><i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión</a>
-      <hr class="border-secondary mt-auto">
-      <div class="small text-secondary">Administrador</div>
-    </aside>
+    <aside class="lup-sidebar d-none d-lg-flex flex-column p-3"></aside>
 
     <!-- Main -->
     <main class="flex-grow-1">
@@ -74,50 +36,8 @@
         </div>
       </nav>
 
-      <!-- Mobile Offcanvas Menu -->
-      <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-        <div class="offcanvas-header">
-          <div class="d-flex align-items-center">
-            <img src="../../assets/logo2.png" alt="Level-Up" class="lup-logo me-2">
-          </div>
-          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-        </div>
-        <div class="offcanvas-body d-flex flex-column">
-          <ul class="nav nav-pills flex-column mb-auto gap-1">
-            <li class="nav-item"><a href="./index.html" class="nav-link"><i class="bi bi-house-door me-1"></i>Dashboard</a></li>
-            <li><a href="./mensajes.html" class="nav-link"><i class="bi bi-envelope me-1"></i>Mensajes</a></li>
-            <li><a href="./perfil.html" class="nav-link"><i class="bi bi-person me-1"></i>Perfil</a></li>
-            <li>
-              <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#menuProductosMobile" role="button" aria-expanded="false" aria-controls="menuProductosMobile">
-                <span><i class="bi bi-bag me-1"></i>Productos</span>
-                <i class="bi bi-caret-down"></i>
-              </a>
-              <div class="collapse" id="menuProductosMobile">
-                <ul class="nav flex-column ms-3 my-1 small">
-                  <li><a href="./productos.html" class="nav-link py-1"><i class="bi bi-list me-1"></i>Listado</a></li>
-                  <li><a href="./producto-form.html" class="nav-link py-1"><i class="bi bi-plus-circle me-1"></i>Nuevo producto</a></li>
-                </ul>
-              </div>
-            </li>
-            <li>
-              <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#menuUsuariosMobile" role="button" aria-expanded="false" aria-controls="menuUsuariosMobile">
-                <span><i class="bi bi-people me-1"></i>Usuarios</span>
-                <i class="bi bi-caret-down"></i>
-              </a>
-              <div class="collapse" id="menuUsuariosMobile">
-                <ul class="nav flex-column ms-3 my-1 small">
-                  <li><a href="./usuarios.html" class="nav-link py-1"><i class="bi bi-list me-1"></i>Listado</a></li>
-                  <li><a href="./usuario-form.html" class="nav-link py-1"><i class="bi bi-plus-circle me-1"></i>Nuevo usuario</a></li>
-                </ul>
-              </div>
-            </li>
-            <li><a href="./categorias.html" class="nav-link active"><i class="bi bi-tags me-1"></i>Categorías</a></li>
-          </ul>
-          <a href="#" class="btn btn-danger w-100 mt-2 js-admin-logout" data-action="logout" role="button"><i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión</a>
-          <hr class="border-secondary mt-auto">
-          <div class="small text-secondary">Administrador</div>
-        </div>
-      </div>
+      <!-- Mobile Offcanvas Menu (renderizado por sidebar.js) -->
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel"></div>
 
       <section class="container py-4">
         <div class="card lup-card mb-4">
@@ -143,18 +63,47 @@
               <h5 class="card-title mb-0">Listado de categorías</h5>
               <button class="btn btn-outline-secondary btn-sm" type="button" data-ref="btn-seed">Sembrar desde catálogo</button>
             </div>
-            <div class="table-responsive">
-              <table class="table table-striped align-middle lup-table lup-table-categorias">
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th class="text-end">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody data-ref="tbody">
-                  <tr class="text-secondary" data-ref="row-empty"><td colspan="2" class="text-center">Sin categorías aún.</td></tr>
-                </tbody>
-              </table>
+            <!-- Tabs: Activas / Eliminadas -->
+            <ul class="nav nav-tabs" id="categoriasTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-cat-activas-tab" data-bs-toggle="tab" data-bs-target="#tabCatActivas" type="button" role="tab" aria-controls="tabCatActivas" aria-selected="true">Activas</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-cat-eliminadas-tab" data-bs-toggle="tab" data-bs-target="#tabCatEliminadas" type="button" role="tab" aria-controls="tabCatEliminadas" aria-selected="false">Eliminadas</button>
+              </li>
+            </ul>
+            <div class="tab-content pt-3">
+              <div class="tab-pane fade show active" id="tabCatActivas" role="tabpanel" aria-labelledby="tab-cat-activas-tab">
+                <div class="table-responsive">
+                  <table class="table table-striped align-middle lup-table lup-table-categorias lup-table-categorias-activas">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th class="text-end">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody data-ref="tbody-cat-activas">
+                      <tr class="text-secondary" data-ref="row-empty-act"><td colspan="2" class="text-center">Sin categorías aún.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="tabCatEliminadas" role="tabpanel" aria-labelledby="tab-cat-eliminadas-tab">
+                <div class="table-responsive">
+                  <table class="table table-striped align-middle lup-table lup-table-categorias lup-table-categorias-eliminadas">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Eliminada el</th>
+                        <th class="text-end">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody data-ref="tbody-cat-eliminadas">
+                      <tr class="text-secondary" data-ref="row-empty-del"><td colspan="3" class="text-center">Sin categorías eliminadas.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -165,7 +114,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../../data/productos.js"></script>
   <script src="../../js/admin/auth.js"></script>
+  <script src="../../js/admin/audit.js"></script>
+  <script src="../../js/admin/confirm.js"></script>
   <script src="../../js/admin/admin-categorias.js"></script>
+  <script src="../../js/admin/sidebar.js"></script>
 </body>
 
 </html>
