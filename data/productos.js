@@ -76,7 +76,8 @@ window.productos = [
     precio: 349990,
     stock: 4,
     stockCritico: 1,
-    url: "../assets/CO002.webp"
+    url: "../assets/CO002.webp",
+    descripcion: "La consola Nintendo Switch OLED ofrece una pantalla OLED de 7 pulgadas, audio mejorado y un soporte ajustable para una experiencia de juego versátil tanto en modo portátil como en modo TV." 
   },
 
   // --- Computadores Gamers ---

@@ -13,6 +13,7 @@
 //   descuentoVitalicio: boolean (true solo para Clientes con correo @duoc.cl)
 // }
 window.usuarios = [
+  { run:"000000000", nombre:"System", apellidos:"", correo:"system@levelup.local", perfil:"Administrador", fechaNacimiento:null, region:"", comuna:"", direccion:"", descuentoVitalicio:false, isSystem:true },
   { run:"190110222", nombre:"Felipe",    apellidos:"Ahumada Silva",     correo:"felipe@duoc.cl",              perfil:"Cliente",      fechaNacimiento:"1994-05-12", region:"Biobío",     comuna:"Concepción",  direccion:"Av. Los Carrera 123",   descuentoVitalicio:true  },
   { run:"123456785", nombre:"Ana",       apellidos:"Pérez Gómez",       correo:"ana@gmail.com",               perfil:"Vendedor",     fechaNacimiento:"1988-11-03", region:"RM",         comuna:"Santiago",    direccion:"Av. Providencia 456",   descuentoVitalicio:false },
   { run:"876543214", nombre:"Carlos",    apellidos:"Muñoz Torres",      correo:"carlos@profesor.duoc.cl",     perfil:"Administrador",fechaNacimiento:"1982-07-21", region:"Valparaíso", comuna:"Viña del Mar", direccion:"Calle Marina 789",     descuentoVitalicio:false },

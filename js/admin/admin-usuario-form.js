@@ -118,6 +118,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (id){
     const found = data.find(u => normalizarRun(u.run) === normalizarRun(id));
     if (found){
+      // Proteger usuario system: no permitir edición
+      if (found.isSystem || String(found.correo||'').toLowerCase()==='system@levelup.local'){
+        alert('El usuario del sistema no puede editarse.');
+        location.href = './usuarios.html';
+        return;
+      }
       editing = true;
       originalRun = found.run;
       // Mostrar correo en el título cuando se edita

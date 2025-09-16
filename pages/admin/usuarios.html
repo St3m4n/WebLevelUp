@@ -149,27 +149,105 @@
             </div>
 
 
-            <div class="table-responsive">
-              <table class="table table-striped align-middle lup-table lup-table-usuarios">
-                <thead>
-                  <tr>
-                    <th>RUN</th>
-                    <th>Nombre</th>
-                    <th>Apellidos</th>
-                    <th>Correo</th>
-                    <th>Perfil</th>
-                    <th>Región</th>
-                    <th>Comuna</th>
-                    <th>Descuento</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Ejemplos estáticos (luego JS) -->
-                  
-                  <!-- Más filas dinámicas después -->
-                </tbody>
-              </table>
+            <!-- Tabs: Activos / Eliminados -->
+            <ul class="nav nav-tabs" id="usuariosTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-activos-tab" data-bs-toggle="tab" data-bs-target="#tabActivos" type="button" role="tab" aria-controls="tabActivos" aria-selected="true">
+                  Activos
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-eliminados-tab" data-bs-toggle="tab" data-bs-target="#tabEliminados" type="button" role="tab" aria-controls="tabEliminados" aria-selected="false">
+                  Eliminados
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content pt-3">
+              <!-- Activos -->
+              <div class="tab-pane fade show active" id="tabActivos" role="tabpanel" aria-labelledby="tab-activos-tab">
+                <div class="table-responsive">
+                  <table class="table table-striped align-middle lup-table lup-table-usuarios lup-table-usuarios-activos">
+                    <thead>
+                      <tr>
+                        <th data-sort="run">RUN <span class="sort-caret"></span></th>
+                        <th data-sort="nombre">Nombre <span class="sort-caret"></span></th>
+                        <th data-sort="apellidos">Apellidos <span class="sort-caret"></span></th>
+                        <th data-sort="correo">Correo <span class="sort-caret"></span></th>
+                        <th data-sort="perfil">Perfil <span class="sort-caret"></span></th>
+                        <th data-sort="descuento">Descuento <span class="sort-caret"></span></th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody data-ref="tbody-activos">
+                      <!-- Filas dinámicas (activos) -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Eliminados -->
+              <div class="tab-pane fade" id="tabEliminados" role="tabpanel" aria-labelledby="tab-eliminados-tab">
+                <div class="table-responsive">
+                  <table class="table table-striped align-middle lup-table lup-table-usuarios lup-table-usuarios-eliminados">
+                    <thead>
+                      <tr>
+                        <th data-sort="run">RUN <span class="sort-caret"></span></th>
+                        <th data-sort="correo">Correo <span class="sort-caret"></span></th>
+                        <th data-sort="perfil">Perfil <span class="sort-caret"></span></th>
+                        <th data-sort="deletedAt">Eliminado el <span class="sort-caret"></span></th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody data-ref="tbody-eliminados">
+                      <!-- Filas dinámicas (eliminados) -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Modal: Ver Usuario (solo lectura) -->
+            <div class="modal fade" id="userViewModal" tabindex="-1" aria-labelledby="userViewModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content bg-dark text-white">
+                  <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="userViewModalLabel">Detalle de usuario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row g-3 mb-3">
+                      <div class="col-sm-6"><div class="small text-secondary">RUN</div><div data-ref="view-run" class="fw-semibold"></div></div>
+                      <div class="col-sm-6"><div class="small text-secondary">Correo</div><div data-ref="view-correo" class="fw-semibold"></div></div>
+                      <div class="col-sm-6"><div class="small text-secondary">Nombre</div><div data-ref="view-nombre"></div></div>
+                      <div class="col-sm-6"><div class="small text-secondary">Apellidos</div><div data-ref="view-apellidos"></div></div>
+                      <div class="col-sm-4"><div class="small text-secondary">Perfil</div><div data-ref="view-perfil"></div></div>
+                      <div class="col-sm-4"><div class="small text-secondary">Región</div><div data-ref="view-region"></div></div>
+                      <div class="col-sm-4"><div class="small text-secondary">Comuna</div><div data-ref="view-comuna"></div></div>
+                    </div>
+                    <hr class="border-secondary">
+                    <h6 class="mb-2">Historial de pedidos</h6>
+                    <div class="table-responsive">
+                      <table class="table table-striped align-middle">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody id="user-orders-body">
+                          <tr id="user-orders-empty"><td colspan="4" class="text-center text-secondary">Sin pedidos registrados.</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cerrar</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

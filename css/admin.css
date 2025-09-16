@@ -209,6 +209,13 @@ select:-webkit-autofill{
 .table-striped>tbody>tr:nth-of-type(odd){--bs-table-accent-bg: #1f1f1f}
 .table tbody tr:hover{background-color:#222 !important}
 .table td, .table th{vertical-align:middle}
+/* Prevent nowrap issues on date inside deleted users column */
+.deleted-date{white-space: nowrap}
+/* Keep entire last column content on one line in Eliminados */
+/* Prevent wrapping in Acciones column */
+.lup-table-usuarios-eliminados tbody td:nth-child(5){white-space: nowrap}
+/* Prevent flex container from wrapping in Acciones column */
+.lup-table-usuarios-eliminados tbody td:nth-child(5) .d-inline-flex{flex-wrap: nowrap}
 /* Links/buttons inside tables now white */
 .table a, .table .btn-link{color:#ffffff}
 .table a:hover, .table .btn-link:hover{color:#ffffff}
@@ -273,18 +280,26 @@ tr[data-ref="row-empty"] td{color:#ffffff !important}
   .lup-table-productos tbody tr td{position:relative}
   .lup-table-productos tbody tr td::before{content: var(--label)}
 
-  /* Usuarios labels */
-  .lup-table-usuarios tbody tr td:nth-child(1){--label:"RUN"}
-  .lup-table-usuarios tbody tr td:nth-child(2){--label:"Nombre"}
-  .lup-table-usuarios tbody tr td:nth-child(3){--label:"Apellidos"}
-  .lup-table-usuarios tbody tr td:nth-child(4){--label:"Correo"}
-  .lup-table-usuarios tbody tr td:nth-child(5){--label:"Perfil"}
-  .lup-table-usuarios tbody tr td:nth-child(6){--label:"Región"}
-  .lup-table-usuarios tbody tr td:nth-child(7){--label:"Comuna"}
-  .lup-table-usuarios tbody tr td:nth-child(8){--label:"Descuento"}
-  .lup-table-usuarios tbody tr td:nth-child(9){--label:"Acciones"}
-  .lup-table-usuarios tbody tr td{position:relative}
-  .lup-table-usuarios tbody tr td::before{content: var(--label)}
+  /* Usuarios labels (activos y eliminados) */
+  /* Activos: RUN, Nombre, Apellidos, Correo, Perfil, Descuento, Acciones */
+  .lup-table-usuarios-activos tbody tr td:nth-child(1){--label:"RUN"}
+  .lup-table-usuarios-activos tbody tr td:nth-child(2){--label:"Nombre"}
+  .lup-table-usuarios-activos tbody tr td:nth-child(3){--label:"Apellidos"}
+  .lup-table-usuarios-activos tbody tr td:nth-child(4){--label:"Correo"}
+  .lup-table-usuarios-activos tbody tr td:nth-child(5){--label:"Perfil"}
+  .lup-table-usuarios-activos tbody tr td:nth-child(6){--label:"Descuento"}
+  .lup-table-usuarios-activos tbody tr td:nth-child(7){--label:"Acciones"}
+  .lup-table-usuarios-activos tbody tr td{position:relative}
+  .lup-table-usuarios-activos tbody tr td::before{content: var(--label)}
+
+  /* Eliminados: RUN, Correo, Perfil, Eliminado el, Acciones */
+  .lup-table-usuarios-eliminados tbody tr td:nth-child(1){--label:"RUN"}
+  .lup-table-usuarios-eliminados tbody tr td:nth-child(2){--label:"Correo"}
+  .lup-table-usuarios-eliminados tbody tr td:nth-child(3){--label:"Perfil"}
+  .lup-table-usuarios-eliminados tbody tr td:nth-child(4){--label:"Eliminado el"}
+  .lup-table-usuarios-eliminados tbody tr td:nth-child(5){--label:"Acciones"}
+  .lup-table-usuarios-eliminados tbody tr td{position:relative}
+  .lup-table-usuarios-eliminados tbody tr td::before{content: var(--label)}
 
   /* Mensajes labels */
   .lup-table-mensajes tbody tr td:nth-child(1){--label:"Fecha"}
