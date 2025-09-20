@@ -17,9 +17,13 @@
 
   function resolveImg(p){
     try {
+      if (window.LevelUpAssets && typeof window.LevelUpAssets.resolveProductImage === 'function'){
+        return window.LevelUpAssets.resolveProductImage(p, { byCategory: IMG_BY_CATEGORY });
+      }
+    } catch {}
+    try {
       const raw = p && p.url ? String(p.url) : '';
       if (raw) {
-        // Ajustar ruta cuando la página está bajo /pages/tienda/
         if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
           return raw.replace('../assets/', '../../assets/');
         }
@@ -117,10 +121,11 @@
       priceEl.textContent = `${CLP.format(basePrice)} CLP`;
     }
 
-    const desc = document.getElementById('product-desc');
-    if (desc) desc.textContent = `Categoría: ${p.categoria}. Stock disponible: ${p.stock}.`;
-    const descLong = document.getElementById('desc-long');
-    if (descLong) descLong.textContent = `${p.nombre} es parte de nuestra categoría ${p.categoria}.`;
+  const desc = document.getElementById('product-desc');
+  const descLong = document.getElementById('desc-long');
+  const d = (p.descripcion && String(p.descripcion).trim()) || null;
+  if (desc) desc.textContent = d || `Categoría: ${p.categoria}. Stock disponible: ${p.stock}.`;
+  if (descLong) descLong.textContent = d || `${p.nombre} es parte de nuestra categoría ${p.categoria}.`;
 
   // Fabricante y Distribuidor
   const makerEl = document.getElementById('product-maker');

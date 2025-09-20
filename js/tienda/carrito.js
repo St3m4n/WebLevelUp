@@ -39,12 +39,8 @@
 
   function resolveImg(p){
     try {
-      const raw = p && p.url ? String(p.url) : '';
-      if (raw){
-        if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
-          return raw.replace('../assets/', '../../assets/');
-        }
-        return raw;
+      if (window.LevelUpAssets && typeof window.LevelUpAssets.resolveProductImage === 'function'){
+        return window.LevelUpAssets.resolveProductImage(p);
       }
     } catch {}
     return '../../assets/gamer.jpg';

@@ -17,6 +17,11 @@
 
   function resolveImg(p){
     try {
+      if (window.LevelUpAssets && typeof window.LevelUpAssets.resolveProductImage === 'function'){
+        return window.LevelUpAssets.resolveProductImage(p, { byCategory: IMG_BY_CATEGORY });
+      }
+    } catch {}
+    try {
       const raw = p && p.url ? String(p.url) : '';
       if (raw){
         if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){

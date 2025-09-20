@@ -1,5 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Utilidad global: resolver rutas de imágenes de productos según ubicación actual
+    (function setupLevelUpAssets(){
+        try {
+            if (!window.LevelUpAssets) window.LevelUpAssets = {};
+            window.LevelUpAssets.resolveProductImage = function(p, opts={}){
+                const byCategory = opts.byCategory || null;
+                const desiredBase = (function(){
+                    const path = String(window.location && window.location.pathname || '');
+                    return path.includes('/pages/') ? '../../assets/' : 'assets/';
+                })();
+                try {
+                    const raw = p && p.url ? String(p.url) : '';
+                    if (raw) {
+                        if (/^https?:\/\//i.test(raw)) return raw;
+                        let cleaned = raw.replace(/^\/+/, '');
+                        cleaned = cleaned.replace(/^(\.\.\/)+assets\//, 'assets/');
+                        cleaned = cleaned.replace(/^\.\/assets\//, 'assets/');
+                        if (cleaned.startsWith('assets/')) return cleaned.replace(/^assets\//, desiredBase);
+                        if (cleaned.startsWith('/assets/')) return cleaned.replace(/^\/assets\//, desiredBase);
+                        return cleaned;
+                    }
+                } catch {}
+                const cat = p && p.categoria;
+                if (byCategory && cat && byCategory[cat]){
+                    const rel = String(byCategory[cat])
+                        .replace(/^(\.\.\/)+assets\//, 'assets/')
+                        .replace(/^assets\//, desiredBase)
+                        .replace(/^\/assets\//, desiredBase);
+                    return rel;
+                }
+                return desiredBase + 'gamer.jpg';
+            };
+        } catch {}
+    })();
+
     // =========================================================================
     // --- 1. SISTEMA CENTRAL DE NOTIFICACIONES (TOAST) ---
     // =========================================================================
