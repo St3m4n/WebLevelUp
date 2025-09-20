@@ -38,6 +38,7 @@
   }
   function save(comments){ localStorage.setItem(POST_KEY, JSON.stringify(comments)); }
 
+  // Cargar/guardar mapa de hilos contraídos (persistencia por publicación)
   function loadCollapsed(){
     try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '{}'); }
     catch { return {}; }
@@ -53,6 +54,7 @@
     return expanded;
   }
 
+  // Cargar/guardar estado de expansión de "mostrar más respuestas" por hilo
   function loadSlices(){ try { return JSON.parse(localStorage.getItem(SLICE_KEY) || '{}'); } catch { return {}; } }
   function saveSlices(m){ localStorage.setItem(SLICE_KEY, JSON.stringify(m||{})); }
   function isSlicedExpanded(id){ const m = loadSlices(); return !!m[id]; }
@@ -72,7 +74,7 @@
       const cc = { ...node };
       if (!cc.id){ cc.id = uid(); changed = true; }
       if (!Array.isArray(cc.replies)){ cc.replies = []; changed = true; }
-      // Recursively normalize children
+  // Normalizar recursivamente las respuestas hijas
       const newReplies = [];
       for (const r of cc.replies){
         const nn = normalizeNode(r);
@@ -98,7 +100,7 @@
       list.innerHTML = '<div class="text-muted">No hay comentarios todavía. ¡Sé el primero en opinar!</div>';
       return;
     }
-    // Toolbar (collapse/expand all)
+  // Barra superior: contraer/expandir todo
     let toolbar = document.getElementById(toolbarId);
     if (!toolbar){
       toolbar = document.createElement('div');
@@ -108,14 +110,16 @@
     }
     const expanded = anyExpanded(comments);
     toolbar.innerHTML = `<button type="button" class="btn btn-sm btn-outline-secondary" data-action="toggle-all-threads">${expanded ? 'Contraer todos' : 'Expandir todos'}</button>`;
-    function countDesc(n){
+  // Contar respuestas descendientes totales (para etiqueta de contraído)
+  function countDesc(n){
       let total = 0;
       const children = Array.isArray(n.replies) ? n.replies : [];
       for (const ch of children){ total += 1 + countDesc(ch); }
       return total;
     }
 
-    function commentHTML(c, depth){
+  // Render recursivo del comentario con sus respuestas
+  function commentHTML(c, depth){
       const indentWrapStart = depth > 0 ? '<div class="lu-replies" data-replies>' : '';
       const indentWrapEnd = depth > 0 ? '</div>' : '';
       const children = (Array.isArray(c.replies) ? c.replies : []);
@@ -239,7 +243,7 @@
     });
   }
 
-  // Reply handlers via delegation (works at any depth)
+  // Manejadores de respuesta mediante delegación (funciona a cualquier profundidad)
   if (list){
     list.addEventListener('click', (e)=>{
       const toggleAll = e.target.closest('[data-action="toggle-all-threads"]');

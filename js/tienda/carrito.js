@@ -43,7 +43,7 @@
         return window.LevelUpAssets.resolveProductImage(p);
       }
     } catch {}
-    // Local fallback resolver (mirrors global logic)
+  // Resolutor local (equivalente a la lógica global) si aún no existe LevelUpAssets
     try {
       const desiredBase = (function(){
         const path = String(window.location && window.location.pathname || '');
@@ -123,7 +123,7 @@
     try { localStorage.setItem(ORDERS_KEY(correo), JSON.stringify(Array.isArray(list)?list:[])); } catch {}
   }
 
-  // Utilidad: mini confirm con estilo toast, reutilizando el contenedor global si existe
+  // Utilidad: confirmación mínima con estilo toast, reutilizando el contenedor global si existe
   function confirmToast(message, { okText='Aceptar', cancelText='Cancelar' }={}){
     return new Promise((resolve)=>{
       try {
@@ -132,7 +132,7 @@
         const toastIcon = document.getElementById('toast-icon');
         if (!toastEl || !window.bootstrap) throw new Error('no-toast');
 
-        // Construir contenido temporal con botones
+  // Construir contenido temporal con botones
         const prev = { body: toastBody?.innerHTML || '', icon: toastIcon?.className || '' };
         if (toastIcon) toastIcon.className = 'bi bi-question-circle-fill text-warning me-2';
         if (toastBody){
@@ -153,7 +153,7 @@
           } catch {}
           resolve(val);
         };
-        // Listeners de botones
+  // Listeners de botones
         setTimeout(()=>{
           const okBtn = document.getElementById('toast-confirm-ok');
           const cancelBtn = document.getElementById('toast-confirm-cancel');
@@ -162,7 +162,7 @@
         }, 0);
         inst.show();
       } catch {
-        // Fallback al confirm nativo si no hay toast
+  // Fallback al confirm nativo si no hay toast
         const ok = window.confirm(message);
         resolve(ok);
       }
@@ -273,7 +273,7 @@
       `;
     }
 
-    // Delegación de eventos para +/-/del/vaciar (manejadores persistentes)
+  // Delegación de eventos para +/-/eliminar/vaciar (manejadores persistentes)
     const onContClick = async (e)=>{
       const row = e.target.closest('.cart-item-row');
       if (!row) return;
@@ -307,7 +307,7 @@
     const onQtyInput = (e)=>{
       const input = e.target.closest('.quantity-selector input[type="number"]');
       if (!input) return;
-      // Limpiar caracteres no numéricos mientras escribe
+  // Limpiar caracteres no numéricos mientras escribe
       const raw = String(input.value || '');
       const digits = raw.replace(/\D+/g, '');
       let v = parseInt(digits, 10);
@@ -322,7 +322,7 @@
       const allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End'];
       if (allowed.includes(e.key)) return;
       if (/^[0-9]$/.test(e.key)) return;
-      // Bloquear letras, signos, etc.
+  // Bloquear letras, signos, etc.
       e.preventDefault();
     };
     const onQtyCommit = (e)=>{
@@ -339,7 +339,7 @@
       updateCantidad(codigo, v);
       renderCarrito(opts);
     };
-    // Limpiar handlers previos para evitar duplicaciones al re-render
+  // Limpiar handlers previos para evitar duplicaciones al re-render
     if (cont._qtyInputHandler) cont.removeEventListener('input', cont._qtyInputHandler);
     if (cont._qtyKeyHandler) cont.removeEventListener('keydown', cont._qtyKeyHandler);
     if (cont._qtyChangeHandler) cont.removeEventListener('change', cont._qtyChangeHandler);
@@ -477,7 +477,7 @@
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('.btn-add-cart');
     if (!btn) return;
-    // Evita que anclas con href="#" o botones dentro de enlaces provoquen scroll al tope
+  // Evita que anclas con href="#" o botones dentro de enlaces provoquen scroll al tope
     try { e.preventDefault(); } catch {}
     try { e.stopPropagation(); } catch {}
     const card = btn.closest('[data-producto]');
@@ -486,7 +486,7 @@
     let precio = Number(btn.getAttribute('data-precio') || card?.getAttribute('data-precio')) || 0;
     let cantidad = Number(btn.getAttribute('data-cantidad') || 1) || 1;
 
-    // fallback para páginas de detalle con DOM fijo
+  // Fallback para páginas de detalle con DOM fijo
     if (!codigo){
       const codeText = document.querySelector('.product-title + p.text-secondary')?.textContent || '';
       codigo = (codeText.match(/Código:\s*(\w+)/) || [,''])[1];
@@ -495,7 +495,7 @@
       precio = Number((priceText.match(/([\d.]+)/)||[,'0'])[1].replaceAll('.','')) || precio;
     }
 
-    // fallback general por nombre en tarjetas (index/listados)
+  // Fallback general por nombre en tarjetas (index/listados)
     if (!codigo){
       const nameFromCard = nombre || card?.querySelector('.card-body a, .card-title + p a, .card-title, .product-title')?.textContent?.trim();
       if (nameFromCard){
@@ -508,7 +508,7 @@
       }
     }
 
-    // intentar parsear precio desde la tarjeta si aún no hay precio
+  // Intentar parsear precio desde la tarjeta si aún no hay precio
     if (!precio && card){
       const priceText = card.querySelector('.price-highlight, .fw-bold, h4')?.textContent || '';
       precio = Number((priceText.match(/([\d.]+)/)||[,'0'])[1].replaceAll('.','')) || 0;
@@ -516,7 +516,7 @@
 
     const res = addToCarrito({codigo, nombre, precio, cantidad});
     if (res.ok){
-      // Notificación universal (fallback si no está script.js)
+  // Notificación universal (fallback si no está script.js)
       try {
         if (typeof window.showNotification === 'function') {
           window.showNotification('¡Producto añadido al carrito!', 'bi-check-circle-fill', 'text-success');

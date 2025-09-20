@@ -74,16 +74,20 @@
           </form>
           <hr class="contact-hr">
           <h5 class="mb-3">Categorías relacionadas</h5>
+          <!-- Contenido dinámico: categorías relacionadas se inyectan por js/tienda/busqueda.js -->
           <ul class="list-unstyled mb-0" id="cats-list"></ul>
         </div>
       </aside>
       <main class="col-lg-9">
-        <div id="results-grid" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4"></div>
+  <!-- Contenido dinámico: resultados de búsqueda -->
+  <div id="results-grid" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4"></div>
         <nav class="mt-4" aria-label="Paginación de resultados">
+          <!-- Contenido dinámico: paginación de resultados -->
           <ul id="pagination" class="pagination justify-content-center mb-0"></ul>
         </nav>
         <div class="mt-5" id="suggest-block" style="display:none;">
           <h3 class="mb-3">Quizás te interese</h3>
+          <!-- Contenido dinámico: sugerencias relacionadas -->
           <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="suggest-grid"></div>
         </div>
       </main>

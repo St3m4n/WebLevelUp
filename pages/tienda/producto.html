@@ -73,13 +73,16 @@
             </ol>
         </nav>
 
-        <div class="row g-5 mt-3" id="product-detail" data-producto>
+    <!-- Contenido dinámico: detalle del producto se llena por js/tienda/producto.js -->
+    <div class="row g-5 mt-3" id="product-detail" data-producto>
             <div class="col-lg-6">
+                <!-- Contenido dinámico: imagen principal y miniaturas -->
                 <img id="product-image" src="../../assets/gamer.jpg" class="img-fluid rounded-3 mb-3" alt="Producto">
                 <div class="d-flex gap-2" id="product-thumbs"></div>
             </div>
 
             <div class="col-lg-6">
+                <!-- Contenido dinámico: título, código, precio y descripción corta -->
                 <h1 class="product-title" id="product-title">Producto</h1>
                 <p class="text-secondary" id="product-code">Código: </p>
                 <p class="display-5 fw-bold price-highlight" id="product-price">$0 CLP</p>
@@ -102,6 +105,7 @@
                 </div>
 
                 <div class="mb-3" id="lug-earn-box">
+                    <!-- Contenido dinámico: puntos que acumula el usuario -->
                     <span class="text-secondary">Acumulas:</span>
                     <span class="badge bg-info text-dark ms-1" id="lug-earn-points">+0 EXP</span>
                 </div>
@@ -134,9 +138,11 @@
                 </ul>
                 <div class="tab-content p-4" id="productTabContent">
                     <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <!-- Contenido dinámico: descripción extendida -->
                         <p class="text-secondary" id="desc-long">Producto destacado de nuestro catálogo.</p>
                     </div>
                     <div class="tab-pane fade" id="specs" role="tabpanel">
+                        <!-- Contenido dinámico: especificaciones -->
                         <ul class="list-unstyled text-secondary" id="specs-list"></ul>
                     </div>
                     <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">

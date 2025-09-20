@@ -77,8 +77,11 @@
                     <div class="profile-avatar mb-3">
                         <i class="bi bi-person-circle"></i>
                     </div>
+                    <!-- Dinámico: nombre del perfil (js/tienda/perfil.js) -->
                     <h2 class="h4" id="profileName">—</h2>
+                    <!-- Dinámico: correo del perfil (js/tienda/perfil.js) -->
                     <p class="text-secondary mb-1" id="profileEmailText">—</p>
+                    <!-- Dinámico: fecha de membresía (js/tienda/perfil.js) -->
                     <p class="text-secondary mb-1" id="memberSinceText" style="display:none;"><small>Miembro desde: —</small></p>
 
                     <!-- Level-Up resumen movido aquí -->
@@ -86,21 +89,26 @@
                     <div class="text-start">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-secondary">Mi progreso Level-Up</span>
+                            <!-- Dinámico: nivel actual (js/tienda/levelup-points.js) -->
                             <span class="badge bg-info text-dark">Nivel <span id="lugLevelValue">1</span></span>
                         </div>
                         <div class="mb-2">
                             <div class="progress" style="height: 8px;">
+                                <!-- Dinámico: barra de progreso (js/tienda/levelup-points.js) -->
                                 <div id="lugLevelProgressBar" class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
                             </div>
+                            <!-- Dinámico: texto de EXP (js/tienda/levelup-points.js) -->
                             <div class="small text-secondary mt-1" id="lugLevelExpText">0 / 1000 EXP</div>
                         </div>
                         <div class="mb-3">
                             <div class="small text-secondary">Experiencia acumulada</div>
+                            <!-- Dinámico: EXP acumulada (js/tienda/levelup-points.js) -->
                             <div class="h3 text-info mb-0" id="lugPointsTotal">0</div>
                         </div>
                         <div class="mb-2">
                             <div class="small text-secondary mb-1">Código de referido</div>
                             <div class="input-group input-group-sm">
+                                <!-- Dinámico: código de referido (js/tienda/levelup-points.js) -->
                                 <input type="text" id="lugReferralCode" class="form-control" readonly placeholder="—">
                                 <button class="btn btn-outline-light" id="lugCopyRefCode" title="Copiar código"><i class="bi bi-clipboard"></i></button>
                             </div>
@@ -158,6 +166,7 @@
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
+                                        <!-- Dinámico: filas del historial de pedidos (js/tienda/perfil.js) -->
                                         <tbody id="orders-body">
                                             <tr id="orders-empty"><td colspan="5" class="text-center text-secondary">Aún nada por acá.</td></tr>
                                         </tbody>
@@ -172,14 +181,17 @@
                             <div class="mb-4">
                                 <div class="detail-item">
                                     <span class="label">Nombre</span>
+                                    <!-- Dinámico: detalle nombre -->
                                     <span class="value" id="detailNombre">—</span>
                                 </div>
                                 <div class="detail-item">
                                     <span class="label">Apellido</span>
+                                    <!-- Dinámico: detalle apellido -->
                                     <span class="value" id="detailApellido">—</span>
                                 </div>
                                 <div class="detail-item">
                                     <span class="label">Correo Electrónico</span>
+                                    <!-- Dinámico: detalle correo -->
                                     <span class="value" id="detailCorreo">—</span>
                                 </div>
                             </div>
@@ -198,6 +210,7 @@
 
                         <div class="tab-pane fade" id="address" role="tabpanel">
                             <h3 class="h5 mb-3">Mis Direcciones Guardadas</h3>
+                            <!-- Dinámico: listado de direcciones guardadas (js/tienda/perfil.js) -->
                             <div class="row g-3" id="addresses-container">
                                 <div class="col-12">
                                     <div class="alert alert-secondary" id="addresses-empty" role="alert">Aún no tienes direcciones guardadas.</div>

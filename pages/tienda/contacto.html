@@ -113,6 +113,7 @@
             <div class="col-lg-7">
                 <div class="card p-4">
                     <h2 class="mb-4">Envíanos un Mensaje</h2>
+                    <!-- Dinámico: validación, límites y feedback por js/tienda/contacto.js -->
                     <form id="contact-form">
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre Completo *</label>
@@ -132,6 +133,7 @@
                         <div class="mb-3">
                             <label for="mensaje" class="form-label">Mensaje *</label>
                             <textarea class="form-control" id="mensaje" name="mensaje" rows="5" maxlength="500" placeholder="Ej: Hola, tengo una duda sobre el estado de mi compra..." required></textarea>
+                            <!-- Dinámico: contador de caracteres del mensaje -->
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="form-text limit-hint d-none">Máximo 500 caracteres.</div>
                                 <div class="form-text text-end" id="mensaje-count">0/500</div>
