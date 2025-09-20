@@ -43,7 +43,26 @@
         return window.LevelUpAssets.resolveProductImage(p);
       }
     } catch {}
-    return '../../assets/gamer.jpg';
+    // Local fallback resolver (mirrors global logic)
+    try {
+      const desiredBase = (function(){
+        const path = String(window.location && window.location.pathname || '');
+        return path.includes('/pages/') ? '../../assets/' : 'assets/';
+      })();
+      const raw = p && p.url ? String(p.url) : '';
+      if (raw){
+        if (/^https?:\/\//i.test(raw)) return raw;
+        let cleaned = raw.replace(/^\/+/, '');
+        cleaned = cleaned.replace(/^(\.\.\/)+assets\//, 'assets/');
+        cleaned = cleaned.replace(/^\.\/assets\//, 'assets/');
+        if (cleaned.startsWith('assets/')) return cleaned.replace(/^assets\//, desiredBase);
+        if (cleaned.startsWith('/assets/')) return cleaned.replace(/^\/assets\//, desiredBase);
+        return cleaned;
+      }
+      return desiredBase + 'gamer.jpg';
+    } catch {
+      return '../../assets/gamer.jpg';
+    }
   }
 
   function addToCarrito({codigo, nombre, precio, cantidad=1}){
