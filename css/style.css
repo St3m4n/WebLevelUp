@@ -398,6 +398,73 @@ select:-webkit-autofill{
 .btn-remove-item { background: none; border: none; color: var(--color-text-secondary); font-size: 1.2rem; padding: 0; transition: color 0.2s ease-in-out; }
 .btn-remove-item:hover { color: #dc3545; }
 .cart-hr { border-color: rgba(187, 62, 255, 0.2); margin: 1.5rem 0; }
+
+/* --- BLOG COMMENTS (Reddit-like threads) --- */
+#comments .lu-comment {
+    border-color: rgba(255,255,255,0.08);
+    background: rgba(26, 26, 26, 0.5);
+}
+#comments .lu-comment.collapsed { opacity: .95; }
+#comments .lu-author { cursor: help; }
+#comments .lu-toggle { color: var(--color-text-secondary); text-decoration: none; }
+#comments .lu-toggle:hover { text-decoration: underline; color: var(--color-text-primary); }
+#comments #comments-toolbar { margin-top: .5rem; }
+#comments .lu-date { opacity: .7; margin-left: .35rem; }
+#comments [data-action="expand-replies"] { color: var(--color-text-secondary); }
+#comments [data-action="expand-replies"]:hover { color: var(--color-text-primary); text-decoration: underline; }
+#comments .lu-comment .card-body { padding: 0.75rem 0.9rem; }
+
+/* Flatten nested comments (no box-on-box stacking) */
+#comments .lu-comment[data-depth="0"] { border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; margin-bottom: 1rem; }
+#comments .lu-comment[data-depth="0"] .card-body { padding: 1rem 1.1rem; }
+#comments .lu-comment[data-depth]:not([data-depth="0"]) {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 0 .4rem 0;
+    padding: 0;
+}
+#comments .lu-comment[data-depth]:not([data-depth="0"]) .card-body { padding: 0; }
+#comments .lu-comment[data-depth]:not([data-depth="0"]) .small { opacity: .6; }
+#comments .lu-replies { position: relative; margin-left: .75rem; padding-left: .6rem; }
+#comments .lu-replies::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 0.1rem;
+    bottom: 0.1rem;
+    width: 2px;
+    background: linear-gradient(
+        to bottom,
+        rgba(199, 41, 242, 0.65),
+        rgba(83, 58, 250, 0.65)
+    );
+    border-radius: 1px;
+    box-shadow: 0 0 6px rgba(199, 41, 242, 0.25);
+}
+#comments [data-reply-form] textarea.form-control {
+    background: #151515;
+}
+#comments .btn[data-action="reply"] {
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    padding: 0;
+}
+#comments .btn[data-action="reply"]:hover {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+}
+
+/* Optional: subtle divider between sibling replies */
+#comments .lu-replies > .lu-comment + .lu-comment { margin-top: .35rem; }
+
+/* Removed thread node circle for nested comments (cleaner look) */
+
+/* Enforce flattening if any nested .card sneaks in */
+#comments .lu-replies .card { background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+#comments .lu-replies .card .card-body { padding: 0 !important; }
 .breadcrumb-item a { color: var(--color-text-secondary); text-decoration: none; }
 .breadcrumb-item a:hover { color: var(--color-accent-neon); }
 .breadcrumb-item.active { color: var(--color-text-primary); }
