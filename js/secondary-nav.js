@@ -5,6 +5,11 @@
     const navs = document.querySelectorAll('.secondary-nav');
     if (!navs.length) return;
 
+    const path = (location.pathname || '').replace(/\\/g, '/');
+    const inTienda = path.includes('/pages/tienda/');
+    const tiendaBase = inTienda ? '' : 'pages/tienda/';
+    const rootIndexHref = inTienda ? '../../index.html' : 'index.html';
+
     const productos = Array.isArray(window.productos) ? window.productos : [];
     const cats = [...new Set(productos.map(p => (p && p.categoria ? String(p.categoria).trim() : '')).filter(Boolean))];
     if (cats.length === 0) {
@@ -25,7 +30,7 @@
         wrapper.className = 'mobile-search-wrapper d-lg-none';
         wrapper.innerHTML = [
           '<div class="container py-2">',
-          '  <form role="search" action="busqueda.html" method="get" aria-label="Buscar productos">',
+          `  <form role="search" action="${tiendaBase}busqueda.html" method="get" aria-label="Buscar productos">`,
           '    <div class="mobile-search input-group">',
           '      <input class="form-control mobile-search-input" type="search" placeholder="Buscar productos..." name="q" aria-label="Buscar">',
           '      <button class="btn mobile-search-btn" type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button>',
@@ -97,24 +102,24 @@
         `  <div class="collapse navbar-collapse" id="${collapseId}">`,
         // En móvil, incluir los enlaces de la barra superior y anidar las categorías dentro de "Categorías"
         `    <ul class="navbar-nav w-100 d-lg-none mb-2">`,
-        `      <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>`,
+        `      <li class="nav-item"><a class="nav-link" href="${rootIndexHref}">Inicio</a></li>`,
         `      <li class="nav-item">`,
         `        <button class="nav-link w-100 text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#mobileCategories-${idx}" aria-expanded="false" aria-controls="mobileCategories-${idx}">`,
         `          Categorías <i class="bi bi-chevron-down ms-2"></i>`,
         `        </button>`,
         `        <div class="collapse mobile-cats-collapse mt-2" id="mobileCategories-${idx}">`,
         `          <ul class="navbar-nav ps-3">`,
-        ...cats.map(cat => `            <li class="nav-item"><a class="nav-link" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
+        ...cats.map(cat => `            <li class="nav-item"><a class="nav-link" href="${tiendaBase}categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
         `          </ul>`,
         `        </div>`,
         `      </li>`,
-        `      <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>`,
-        `      <li class="nav-item"><a class="nav-link" href="comunidad.html">Comunidad</a></li>`,
-        `      <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>`,
+        `      <li class="nav-item"><a class="nav-link" href="${tiendaBase}nosotros.html">Nosotros</a></li>`,
+        `      <li class="nav-item"><a class="nav-link" href="${tiendaBase}comunidad.html">Comunidad</a></li>`,
+        `      <li class="nav-item"><a class="nav-link" href="${tiendaBase}contacto.html">Contacto</a></li>`,
         `    </ul>`,
         // En desktop, mantener barra horizontal de categorías
         '    <ul class="navbar-nav justify-content-center w-100 secondary-nav-list d-none d-lg-flex">',
-        ...cats.map(cat => `      <li class="nav-item"><a class="nav-link" href="categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
+        ...cats.map(cat => `      <li class="nav-item"><a class="nav-link" href="${tiendaBase}categoria.html?categoria=${encodeURIComponent(cat)}">${cat}</a></li>`),
         '    </ul>',
         '  </div>',
         '</div>'

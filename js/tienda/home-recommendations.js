@@ -3,16 +3,21 @@
 (function(){
   const CLP = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
 
+  const path = (location.pathname || '').replace(/\\/g, '/');
+  const inTienda = path.includes('/pages/tienda/');
+  const tiendaBase = inTienda ? '' : 'pages/tienda/';
+  const assetsBase = inTienda ? '../../assets/' : 'assets/';
+
   const IMG_BY_CATEGORY = {
-    'Juegos de Mesa': '../../assets/catan.webp',
-    'Accesorios': '../../assets/teclados.avif',
-    'Consolas': '../../assets/play5.webp',
-    'Computadores Gamers': '../../assets/pcgamer.png',
-    'Sillas Gamers': '../../assets/sillasecretlab.jpg',
-    'Mouse': '../../assets/gamer.jpg',
-    'Mousepad': '../../assets/gamer.jpg',
-    'Poleras Personalizadas': '../../assets/gamer.jpg',
-    'Polerones Gamers Personalizados': '../../assets/gamer.jpg'
+    'Juegos de Mesa': assetsBase + 'catan.webp',
+    'Accesorios': assetsBase + 'teclados.avif',
+    'Consolas': assetsBase + 'play5.webp',
+    'Computadores Gamers': assetsBase + 'pcgamer.png',
+    'Sillas Gamers': assetsBase + 'sillasecretlab.jpg',
+    'Mouse': assetsBase + 'gamer.jpg',
+    'Mousepad': assetsBase + 'gamer.jpg',
+    'Poleras Personalizadas': assetsBase + 'gamer.jpg',
+    'Polerones Gamers Personalizados': assetsBase + 'gamer.jpg'
   };
 
   function resolveImg(p){
@@ -24,13 +29,16 @@
     try {
       const raw = p && p.url ? String(p.url) : '';
       if (raw){
-        if (window.location && String(window.location.pathname).includes('/pages/tienda/') && raw.startsWith('../assets/')){
-          return raw.replace('../assets/', '../../assets/');
-        }
-        return raw;
+        if (/^https?:\/\//i.test(raw)) return raw;
+        let cleaned = raw.replace(/^\/+/, '');
+        cleaned = cleaned.replace(/^(\.\.\/)+assets\//, 'assets/');
+        cleaned = cleaned.replace(/^\.\/assets\//, 'assets/');
+        if (cleaned.startsWith('assets/')) return cleaned.replace(/^assets\//, assetsBase);
+        if (cleaned.startsWith('/assets/')) return cleaned.replace(/^\/assets\//, assetsBase);
+        return cleaned;
       }
     } catch {}
-    return IMG_BY_CATEGORY[p?.categoria] || '../../assets/gamer.jpg';
+    return IMG_BY_CATEGORY[p?.categoria] || (assetsBase + 'gamer.jpg');
   }
 
   function pickRandom(list, n){
@@ -52,7 +60,7 @@
           <div class="card-body d-flex flex-column text-center">
             <h5 class="card-title">${p.nombre}</h5>
             <p class="card-text">
-              <a href="producto.html?codigo=${encodeURIComponent(p.codigo)}" class="stretched-link text-decoration-none text-reset">Ver detalle</a>
+              <a href="${tiendaBase}producto.html?codigo=${encodeURIComponent(p.codigo)}" class="stretched-link text-decoration-none text-reset">Ver detalle</a>
             </p>
             <div class="mt-auto">
               <h4 class="fw-bold mb-3" style="color: var(--color-accent-neon);">${price}</h4>

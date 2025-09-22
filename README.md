@@ -22,7 +22,7 @@ Esta entrega se centra en **estructura**, **diseño**, **validaciones en JS** y 
 - **Perfil (admin)** `/pages/admin/perfil.html`
 
 ### Tienda
-- **Inicio** `/pages/tienda/index.html`
+- **Inicio** `/index.html`
 - **Categorías** `/pages/tienda/categorias.html`
 - **Categoría** `/pages/tienda/categoria.html?categoria=...`
 - **Búsqueda** `/pages/tienda/busqueda.html?q=...`
@@ -165,7 +165,7 @@ git clone https://github.com/usuario/proyecto-levelup.git
 ```
 2. Abrir:
 - Admin → `/pages/admin/index.html`
-- Tienda → `/pages/tienda/index.html`
+- Tienda → `/index.html`
 
 Notas de navegación:
 - En escritorio, el link "Categorías" no despliega menú en top-nav (solo link).  
