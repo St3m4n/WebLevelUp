@@ -408,8 +408,20 @@ select:-webkit-autofill{
 #comments .lu-author { cursor: help; }
 #comments .lu-toggle { color: var(--color-text-secondary); text-decoration: none; }
 #comments .lu-toggle:hover { text-decoration: underline; color: var(--color-text-primary); }
-#comments #comments-toolbar { margin-top: .5rem; }
-#comments .lu-date { opacity: .7; margin-left: .35rem; }
+#comments .lu-date { opacity: .9; margin-left: .35rem; color: var(--color-text-secondary); font-size: .9em; }
+#comments .lu-edited { opacity: .9; color: var(--color-text-secondary); margin-left: .25rem; font-style: italic; }
+#comments .lu-action { color: var(--color-text-secondary); text-decoration: none; }
+#comments .lu-action:hover { color: var(--color-text-primary); text-decoration: underline; }
+#comments .lu-action-danger { color: #ff6b6b; }
+#comments .lu-action-danger:hover { color: #ff8787; }
+#comments #comment-form.lu-locked .btn,
+#comments #comment-form.lu-locked textarea,
+#comments #comment-form.lu-locked input,
+#comments #comment-form.lu-locked label,
+#comments #comment-form.lu-locked .form-text,
+#comments #comment-form.lu-locked .col-12,
+#comments #comment-form.lu-locked .col-md-6 { display: none !important; }
+#comments #comment-form.lu-locked #comment-auth-msg { display: block !important; }
 #comments [data-action="expand-replies"] { color: var(--color-text-secondary); }
 #comments [data-action="expand-replies"]:hover { color: var(--color-text-primary); text-decoration: underline; }
 #comments .lu-comment .card-body { padding: 0.75rem 0.9rem; }

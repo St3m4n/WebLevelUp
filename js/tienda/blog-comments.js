@@ -17,10 +17,11 @@
   const POST_KEY = getPostKey();
   const form = document.getElementById('comment-form');
   const list = document.getElementById('comments-list');
-  const toolbarId = 'comments-toolbar';
   const COLLAPSE_KEY = `${POST_KEY}:collapsed`;
   const SLICE_KEY = `${POST_KEY}:slice-expanded`;
   const REPLIES_SLICE = 5;
+  const BORRADO_USER = '[borrado por el usuario]';
+  const BORRADO_ADMIN = '[borrado por un administrador]';
 
   function getSession(){
     try { return (window.Session && typeof window.Session.get==='function') ? window.Session.get() : null; } catch { return null; }
@@ -30,6 +31,13 @@
     if (ses.nombre) return String(ses.nombre).split(' ')[0];
     if (ses.correo) return String(ses.correo).split('@')[0];
     return 'Usuario';
+  }
+
+  function isAdmin(ses){ try { return !!ses && String(ses.perfil||'') === 'Administrador'; } catch { return false; } }
+  function canModerate(ses, comment){
+    if (!ses || !comment) return false;
+    if (isAdmin(ses)) return true;
+    try { return !!ses.correo && !!comment.email && String(ses.correo) === String(comment.email); } catch { return false; }
   }
 
   function load() {
@@ -74,6 +82,8 @@
       const cc = { ...node };
       if (!cc.id){ cc.id = uid(); changed = true; }
       if (!Array.isArray(cc.replies)){ cc.replies = []; changed = true; }
+      if (typeof cc.edited !== 'boolean'){ cc.edited = false; changed = true; }
+      if (typeof cc.deleted !== 'boolean'){ cc.deleted = false; changed = true; }
   // Normalizar recursivamente las respuestas hijas
       const newReplies = [];
       for (const r of cc.replies){
@@ -100,16 +110,6 @@
       list.innerHTML = '<div class="text-muted">No hay comentarios todavía. ¡Sé el primero en opinar!</div>';
       return;
     }
-  // Barra superior: contraer/expandir todo
-    let toolbar = document.getElementById(toolbarId);
-    if (!toolbar){
-      toolbar = document.createElement('div');
-      toolbar.id = toolbarId;
-      toolbar.className = 'd-flex justify-content-end align-items-center mb-2 gap-2';
-      list.parentNode?.insertBefore(toolbar, list);
-    }
-    const expanded = anyExpanded(comments);
-    toolbar.innerHTML = `<button type="button" class="btn btn-sm btn-outline-secondary" data-action="toggle-all-threads">${expanded ? 'Contraer todos' : 'Expandir todos'}</button>`;
   // Contar respuestas descendientes totales (para etiqueta de contraído)
   function countDesc(n){
       let total = 0;
@@ -129,6 +129,11 @@
       const collapsed = isCollapsed(c.id);
       const descCount = collapsed ? countDesc(c) : 0;
       const toggleLabel = collapsed ? `▸ ${descCount}` : '▾';
+      const ses = getSession();
+      const admin = isAdmin(ses);
+      const canEditDelete = canModerate(ses, c) && (!c.deleted || admin);
+  const editedBadge = c.edited ? '<span class="lu-edited small">· editado</span>' : '';
+      const msgHtml = c.deleted ? `<em class="text-secondary">${escapeHtml(c.message || BORRADO_USER)}</em>` : escapeHtml(c.message);
       return `${indentWrapStart}
         <div class="${outerClasses}${collapsed ? ' collapsed' : ''}" data-comment-id="${c.id}" data-depth="${depth}">
           <div class="${bodyClass}${!isTop ? '' : ''}">
@@ -136,16 +141,19 @@
               <div class="d-inline-flex align-items-center gap-2">
                 <button type="button" class="btn btn-link btn-sm p-0 lu-toggle" data-action="toggle-thread" data-id="${c.id}" aria-expanded="${!collapsed}">${toggleLabel}</button>
                 <strong class="lu-author" title="${escapeHtml(c.email)}">${escapeHtml(c.name)}</strong>
-                <span class="lu-date small text-muted">${new Date(c.date).toLocaleString()}</span>
+                <span class="lu-date small text-muted">${new Date(c.date).toLocaleString()}</span>${editedBadge}
               </div>
             </div>
             ${collapsed ? `
               <div class="text-muted small">Comentario contraído • ${descCount} ${descCount===1?'respuesta':'respuestas'}</div>
             ` : `
-              <div style="white-space: pre-wrap;">${escapeHtml(c.message)}</div>
-              <div class="mt-2 d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary" data-action="reply" data-id="${c.id}"><i class="bi bi-reply me-1"></i>Responder</button>
+              <div style="white-space: pre-wrap;" data-message-container>${msgHtml}</div>
+              <div class="mt-2 d-flex gap-3 align-items-center">
+                <button type="button" class="btn btn-link btn-sm p-0 lu-action" data-action="reply" data-id="${c.id}"><i class="bi bi-reply me-1"></i>Responder</button>
+                ${canEditDelete ? `<button type="button" class="btn btn-link btn-sm p-0 lu-action" data-action="edit" data-id="${c.id}"><i class="bi bi-pencil-square me-1"></i>Editar</button>` : ''}
+                ${canEditDelete ? `<button type="button" class="btn btn-link btn-sm p-0 lu-action lu-action-danger" data-action="delete" data-id="${c.id}"><i class="bi bi-trash3 me-1"></i>Eliminar</button>` : ''}
               </div>
+              <div class="mt-2" data-edit-form-container></div>
               <div class="mt-2" data-reply-form-container></div>
               ${(() => {
                 const expandedSlice = isSlicedExpanded(c.id);
@@ -172,6 +180,7 @@
     const emailInput = document.getElementById('c-email');
     const nameGroup = nameInput ? nameInput.closest('.col-md-6, .col-12') : null;
     const emailGroup = emailInput ? emailInput.closest('.col-md-6, .col-12') : null;
+    const formChildren = Array.from(form.children || []);
 
     // Crear/ubicar mensaje de autenticación
     let authMsg = document.getElementById('comment-auth-msg');
@@ -196,6 +205,9 @@
       if (submitBtn) submitBtn.disabled = true;
       authMsg.style.display = '';
       authMsg.innerHTML = '<div class="alert alert-warning bg-transparent border-warning text-warning mb-0">Debes iniciar sesión para comentar. <a href="login.html" class="alert-link">Inicia sesión aquí</a>.</div>';
+      // Ocultar todos los elementos del formulario excepto el mensaje de autenticación
+      formChildren.forEach(ch => { if (ch !== authMsg) ch.style.display = 'none'; });
+      form.classList.add('lu-locked');
     } else {
       if (nameInput) { nameInput.value = ses.nombre || getDisplayName(ses); nameInput.readOnly = true; nameInput.disabled = true; }
       if (emailInput) { emailInput.value = ses.correo || ''; emailInput.readOnly = true; emailInput.disabled = true; }
@@ -203,6 +215,9 @@
       if (submitBtn) submitBtn.disabled = false;
       authMsg.innerHTML = '';
       authMsg.style.display = 'none';
+      // Mostrar nuevamente los campos (luego ocultamos nombre/correo como arriba)
+      formChildren.forEach(ch => { if (ch !== authMsg) ch.style.display = ''; });
+      form.classList.remove('lu-locked');
     }
   }
 
@@ -246,13 +261,6 @@
   // Manejadores de respuesta mediante delegación (funciona a cualquier profundidad)
   if (list){
     list.addEventListener('click', (e)=>{
-      const toggleAll = e.target.closest('[data-action="toggle-all-threads"]');
-      if (toggleAll){
-        const data = loadNormalized();
-        if (anyExpanded(data)) collapseAll(data); else expandAll();
-        render();
-        return;
-      }
       const toggler = e.target.closest('[data-action="toggle-thread"]');
       if (toggler){
         const id = toggler.getAttribute('data-id');
@@ -267,6 +275,84 @@
         render();
         return;
       }
+      // Editar comentario
+      const editBtn = e.target.closest('[data-action="edit"]');
+      if (editBtn){
+        const ses = getSession();
+        const id = editBtn.getAttribute('data-id');
+        const data = loadNormalized();
+        function find(nodes){ for (const n of nodes){ if (n.id===id) return n; const r = find(n.replies||[]); if (r) return r; } return null; }
+        const node = find(data);
+        if (!node) return;
+        if (!canModerate(ses, node)) { alert('No tienes permisos para editar este comentario.'); return; }
+        const card = editBtn.closest('[data-comment-id]');
+        if (!card) return;
+        const container = card.querySelector('[data-edit-form-container]');
+        if (!container) return;
+        if (container.querySelector('form[data-edit-form]')) return; // ya abierto
+        const original = String(node.message||'');
+        container.innerHTML = `
+          <form data-edit-form class="row g-2">
+            <div class="col-12">
+              <textarea class="form-control" rows="3">${original.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button type="submit" class="btn btn-sm btn-outline-light" data-action="save-edit">Guardar</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-action="cancel-edit">Cancelar</button>
+            </div>
+          </form>`;
+        const formEdit = container.querySelector('form[data-edit-form]');
+        formEdit.addEventListener('submit', (ev)=>{
+          ev.preventDefault();
+          const ta = formEdit.querySelector('textarea');
+          const msg = (ta?.value||'').toString().trim();
+          if (!msg){ alert('El mensaje no puede estar vacío.'); return; }
+          node.message = msg;
+          node.edited = true;
+          node.editedAt = new Date().toISOString();
+          save(data);
+          render();
+        });
+        const cancelBtn = formEdit.querySelector('[data-action="cancel-edit"]');
+        cancelBtn?.addEventListener('click', ()=>{ container.innerHTML = ''; });
+        return;
+      }
+
+      // Eliminar comentario
+      const delBtn = e.target.closest('[data-action="delete"]');
+      if (delBtn){
+        const ses = getSession();
+        const id = delBtn.getAttribute('data-id');
+        const data = loadNormalized();
+        function removeOrSoft(nodes){
+          for (let i=0;i<nodes.length;i++){
+            const n = nodes[i];
+            if (n.id === id){
+              if (!canModerate(ses, n)) { alert('No tienes permisos para eliminar este comentario.'); return true; }
+              const hasReplies = Array.isArray(n.replies) && n.replies.length>0;
+              if (hasReplies){
+                n.message = isAdmin(ses) ? BORRADO_ADMIN : BORRADO_USER;
+                n.deleted = true;
+                save(data);
+                return true;
+              } else {
+                nodes.splice(i,1);
+                save(data);
+                return true;
+              }
+            }
+            if (Array.isArray(n.replies) && n.replies.length){ if (removeOrSoft(n.replies)) return true; }
+          }
+          return false;
+        }
+        if (confirm('¿Eliminar este comentario?')){
+          removeOrSoft(data);
+          render();
+        }
+        return;
+      }
+
+      // Responder comentario
       const btn = e.target.closest('[data-action="reply"]');
       if (!btn) return;
       const id = btn.getAttribute('data-id');
