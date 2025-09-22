@@ -622,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const exists = merged.some(u => normalizeRun(u.run) === runNorm);
                 if (exists) return setValidity(runEl, false, 'e-run', 'Este RUN ya está registrado.');
             } catch {}
-            return setValidity(runEl, true);
+            return setValidity(runEl, true, 'e-run');
         }
         function validateEmailField(){
             const email = String(emailInput?.value || '').trim().toLowerCase();
@@ -637,17 +637,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const exists = merged.some(u => String(u.correo||'').toLowerCase() === email);
                 if (exists) return setValidity(emailInput, false, 'e-email', 'Este correo ya está registrado.');
             } catch {}
-            return setValidity(emailInput, true);
+            return setValidity(emailInput, true, 'e-email');
         }
         function validateNombreField(){
             const v = String(nombresEl?.value || '').trim();
             if (!v || v.length>50) return setValidity(nombresEl, false, 'e-nombres', 'Nombre requerido (máx. 50).');
-            return setValidity(nombresEl, true);
+            return setValidity(nombresEl, true, 'e-nombres');
         }
         function validateApellidosField(){
             const v = String(apellidosEl?.value || '').trim();
             if (!v || v.length>100) return setValidity(apellidosEl, false, 'e-apellidos', 'Apellidos requeridos (máx. 100).');
-            return setValidity(apellidosEl, true);
+            return setValidity(apellidosEl, true, 'e-apellidos');
         }
         function validatePasswordField(){
             const v = String(passwordEl?.value || '');
@@ -677,17 +677,17 @@ document.addEventListener('DOMContentLoaded', () => {
         function validateRegionField(){
             const v = String(regionEl?.value || '');
             if (!v) return setValidity(regionEl, false, 'e-region', 'Selecciona una región.');
-            return setValidity(regionEl, true);
+            return setValidity(regionEl, true, 'e-region');
         }
         function validateComunaField(){
             const v = String(comunaEl?.value || '');
             if (!v) return setValidity(comunaEl, false, 'e-comuna', 'Selecciona una comuna.');
-            return setValidity(comunaEl, true);
+            return setValidity(comunaEl, true, 'e-comuna');
         }
         function validateDireccionField(){
             const v = String(direccionEl?.value || '').trim();
             if (!v || v.length>300) return setValidity(direccionEl, false, 'e-direccion', 'Dirección requerida (máx. 300).');
-            return setValidity(direccionEl, true);
+            return setValidity(direccionEl, true, 'e-direccion');
         }
         function validateTerminosField(){
             const ok = !!terminosEl?.checked;
@@ -695,7 +695,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         runEl?.addEventListener('blur', validateRunField);
-        emailInput?.addEventListener('blur', validateEmailField);
+    emailInput?.addEventListener('blur', validateEmailField);
+    emailInput?.addEventListener('input', validateEmailField);
         nombresEl?.addEventListener('blur', validateNombreField);
         apellidosEl?.addEventListener('blur', validateApellidosField);
         passwordEl?.addEventListener('input', () => {
