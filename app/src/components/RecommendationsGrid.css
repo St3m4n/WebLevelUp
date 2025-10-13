@@ -1,0 +1,7 @@
+/* Imagen de producto estandarizada (legacy ratio) */
+.card-img-top { height: 180px; width: 100%; object-fit: cover; background: #111; }
+.card[data-producto] { background:#1c1c1c; border:1px solid rgba(255,255,255,.08); }
+.card[data-producto] .card-body { display:flex; flex-direction:column; }
+.card[data-producto] .price-highlight { font-weight:700; color: var(--color-accent-neon); }
+.btn-view-product { background:linear-gradient(90deg,#C729F2,#533AFA); border:none; padding:.4rem .8rem; font-size:.85rem; font-weight:600; color:#fff; border-radius:6px; }
+.btn-view-product:hover { filter:brightness(1.1); }

@@ -1,0 +1,6 @@
+/* Tamaños estandarizados como legacy */
+.category-card { position:relative; }
+.category-card-tall { height:520px; }
+.category-card-short { height:250px; }
+.category-card { background-size:cover; background-position:center; }
+
