@@ -1,26 +1,83 @@
-import React from 'react';
-import './Footer.css';
+import { Link } from 'react-router-dom';
+import logo from '@/assets/logo2.png';
+import styles from './Footer.module.css';
 
-const Footer: React.FC = () => (
-  <footer className="container-fluid py-3 mt-5">
-    <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
-      <div className="mb-3 mb-md-0">
-        <a href="#" className="navbar-brand"><img src="/assets/logo2.png" alt="Logo Level-UP Gamer" /></a>
+const Footer: React.FC = () => {
+  return (
+    <footer className={styles.footerRoot}>
+      <div className="container">
+        <div className={styles.footerContent}>
+          <div className={styles.brand}>
+            <img src={logo} alt="Level-Up" />
+            <p>
+              Somos tu tienda gamer favorita. Hardware, periféricos, juegos y
+              comunidad en un solo lugar.
+            </p>
+          </div>
+
+          <div>
+            <h3 className={styles.footerTitle}>Secciones</h3>
+            <nav className={styles.linkList} aria-label="Secciones">
+              <Link to="/" className={styles.link}>
+                Inicio
+              </Link>
+              <Link to="/tienda" className={styles.link}>
+                Tienda
+              </Link>
+              <Link to="/carrito" className={styles.link}>
+                Carrito
+              </Link>
+              <Link to="/checkout" className={styles.link}>
+                Checkout
+              </Link>
+            </nav>
+          </div>
+
+          <div>
+            <h3 className={styles.footerTitle}>Cuenta</h3>
+            <nav className={styles.linkList} aria-label="Cuenta">
+              <Link to="/login" className={styles.link}>
+                Iniciar sesión
+              </Link>
+              <Link to="/registro" className={styles.link}>
+                Registrarse
+              </Link>
+              <Link to="/admin" className={styles.link}>
+                Panel Admin
+              </Link>
+            </nav>
+          </div>
+
+          <div>
+            <h3 className={styles.footerTitle}>Contacto</h3>
+            <ul className={styles.linkList}>
+              <li className={styles.link}>contacto@levelup.cl</li>
+              <li className={styles.link}>+56 9 1234 5678</li>
+              <li className={styles.link}>Santiago, Chile</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className={styles.bottomBar}>
+          <span>
+            © {new Date().getFullYear()} Level-Up Gamer. Todos los derechos
+            reservados.
+          </span>
+          <div className={styles.social}>
+            <a href="https://twitch.tv" target="_blank" rel="noreferrer">
+              Twitch
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer">
+              Instagram
+            </a>
+            <a href="https://discord.com" target="_blank" rel="noreferrer">
+              Discord
+            </a>
+          </div>
+        </div>
       </div>
-      <div className="nav mb-3 mb-md-0">
-        <a className="nav-link" href="#">Inicio</a>
-        <a className="nav-link" href="#">Categorias</a>
-        <a className="nav-link" href="#">Nosotros</a>
-        <a className="nav-link" href="#">Comunidad</a>
-        <a className="nav-link" href="#">Contacto</a>
-      </div>
-      <div className="d-flex gap-3">
-        <a href="#" className="nav-link fs-4"><i className="bi bi-twitch"></i></a>
-        <a href="#" className="nav-link fs-4"><i className="bi bi-instagram"></i></a>
-        <a href="#" className="nav-link fs-4"><i className="bi bi-discord"></i></a>
-      </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 export default Footer;

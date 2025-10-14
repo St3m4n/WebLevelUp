@@ -1,0 +1,139 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 6vw, 5rem);
+  margin-bottom: clamp(3rem, 8vw, 6rem);
+}
+
+.heroSection {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: clamp(3rem, 8vw, 5rem) clamp(2rem, 6vw, 4rem);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.55));
+  backdrop-filter: blur(6px);
+  z-index: 0;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.heroKicker {
+  text-transform: uppercase;
+  letter-spacing: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.heroAccent {
+  color: var(--color-accent-neon);
+  text-shadow: 0 0 14px rgba(199, 41, 242, 0.8);
+}
+
+.heroSubtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.ctaGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.primaryCta,
+.secondaryCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.primaryCta {
+  background: linear-gradient(135deg, rgba(199, 41, 242, 0.95), rgba(83, 58, 250, 0.95));
+  color: #fff;
+  box-shadow: 0 12px 35px rgba(83, 58, 250, 0.4);
+}
+
+.primaryCta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 45px rgba(83, 58, 250, 0.5);
+}
+
+.secondaryCta {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.secondaryCta:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.metrics {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.metricCard {
+  position: relative;
+  padding: 1.35rem 1.25rem;
+  border-radius: 20px;
+  background: rgba(18, 18, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+}
+
+.metricValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  color: var(--color-text-primary);
+}
+
+.metricLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .heroContent {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .ctaGroup {
+    justify-content: center;
+  }
+}

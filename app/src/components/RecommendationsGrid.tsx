@@ -1,31 +1,50 @@
-import React from 'react';
-import { productos } from '../data/productos';
-import './RecommendationsGrid.css';
+import { Link } from 'react-router-dom';
+import { productos } from '@/data/productos';
+import { formatPrice } from '@/utils/format';
+import styles from './RecommendationsGrid.module.css';
 
-// Selección simple: los primeros 4 productos del dataset
 const recomendados = productos.slice(0, 4);
 
 const RecommendationsGrid: React.FC = () => (
-  <div className="container my-5">
-    <h2 className="featured-categories-title">TE RECOMENDAMOS</h2>
-    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-      {recomendados.map(producto => (
-        <div className="col" key={producto.codigo}>
-          <div className="card h-100" data-producto>
-            <img src={producto.url} alt={producto.nombre} className="card-img-top" />
-            <div className="card-body">
-              <h5 className="card-title">{producto.nombre}</h5>
-              <p className="card-text">{producto.descripcion}</p>
-              <div className="d-flex justify-content-between align-items-center">
-                <span className="price-highlight">${producto.precio.toLocaleString()}</span>
-                <button className="btn btn-view-product">Ver producto</button>
+  <section className={styles.section}>
+    <div className="container">
+      <header className={styles.header}>
+        <h2 className={styles.title}>Te recomendamos</h2>
+        <p className={styles.subtitle}>
+          Selección curada según tendencias de la comunidad Level-Up.
+        </p>
+      </header>
+
+      <div className={styles.grid}>
+        {recomendados.map((producto) => (
+          <article className={styles.card} key={producto.codigo}>
+            <div className={styles.imageWrap}>
+              <img src={producto.url} alt={producto.nombre} loading="lazy" />
+            </div>
+
+            <div className={styles.body}>
+              <h3 className={styles.productName}>{producto.nombre}</h3>
+              <p className={styles.productDescription}>
+                {producto.descripcion}
+              </p>
+
+              <div className={styles.meta}>
+                <span className={styles.price}>
+                  {formatPrice(producto.precio)}
+                </span>
+                <Link
+                  to={`/tienda/${producto.codigo}`}
+                  className={styles.action}
+                >
+                  Ver detalle →
+                </Link>
               </div>
             </div>
-          </div>
-        </div>
-      ))}
+          </article>
+        ))}
+      </div>
     </div>
-  </div>
+  </section>
 );
 
 export default RecommendationsGrid;

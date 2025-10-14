@@ -1,0 +1,181 @@
+import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import styles from './Auth.module.css';
+
+type LoginForm = {
+  correo: string;
+  password: string;
+};
+
+type LoginErrors = Partial<LoginForm>;
+
+type LocationState = {
+  from?: string;
+} | null;
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const Login: React.FC = () => {
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = (location.state as LocationState) ?? null;
+  const fromPath =
+    locationState?.from && locationState.from !== '/login'
+      ? locationState.from
+      : '/';
+
+  const [form, setForm] = useState<LoginForm>({ correo: '', password: '' });
+  const [errors, setErrors] = useState<LoginErrors>({});
+  const [status, setStatus] = useState<{ type: 'error'; message: string }>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(fromPath, { replace: true });
+    }
+  }, [fromPath, isAuthenticated, navigate]);
+
+  const handleFieldChange =
+    (field: keyof LoginForm) => (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      setForm((prev) => ({ ...prev, [field]: value }));
+      if (errors[field]) {
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next[field];
+          return next;
+        });
+      }
+      setStatus(undefined);
+    };
+
+  const validateForm = (): LoginErrors => {
+    const nextErrors: LoginErrors = {};
+    if (!form.correo.trim()) {
+      nextErrors.correo = 'Ingresa tu correo electrónico.';
+    } else if (!emailRegex.test(form.correo.trim())) {
+      nextErrors.correo = 'El formato del correo no es válido.';
+    }
+
+    return nextErrors;
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatus(undefined);
+    try {
+      await login({ correo: form.correo.trim(), password: form.password });
+      navigate(fromPath, { replace: true });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'No se pudo iniciar sesión.';
+      setStatus({ type: 'error', message });
+      if (message.startsWith('Usuario no encontrado')) {
+        setErrors((prev) => ({ ...prev, correo: message }));
+      }
+      if (
+        message === 'Ingresa tu contraseña.' ||
+        message === 'Contraseña incorrecta.'
+      ) {
+        setErrors((prev) => ({ ...prev, password: message }));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const registerLinkState = locationState?.from
+    ? { from: locationState.from }
+    : undefined;
+
+  return (
+    <div className="container">
+      <div className={styles.page}>
+        <div className={styles.formCard}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Inicia sesión</h1>
+            <p className={styles.subtitle}>
+              Usa tu correo y contraseña para acceder a tus puntos Level-Up. Si
+              es una cuenta de prueba precargada, deja la contraseña en blanco.
+            </p>
+          </div>
+
+          {status && (
+            <div
+              role="status"
+              aria-live="polite"
+              className={styles.statusError}
+            >
+              {status.message}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
+            <div className={styles.fieldGroup}>
+              <label htmlFor="correo">Correo electrónico</label>
+              <input
+                id="correo"
+                type="email"
+                autoComplete="email"
+                value={form.correo}
+                onChange={handleFieldChange('correo')}
+                className={errors.correo ? styles.inputError : undefined}
+                required
+              />
+              {errors.correo && (
+                <span className={styles.errorMessage}>{errors.correo}</span>
+              )}
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label htmlFor="password">Contraseña</label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                value={form.password}
+                onChange={handleFieldChange('password')}
+                className={errors.password ? styles.inputError : undefined}
+                placeholder="Deja en blanco si es una cuenta precargada"
+              />
+              {errors.password && (
+                <span className={styles.errorMessage}>{errors.password}</span>
+              )}
+            </div>
+
+            <div className={styles.actions}>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Ingresando…' : 'Entrar'}
+              </button>
+              <p className={styles.switchText}>
+                ¿Aún no tienes cuenta?{' '}
+                <Link to="/registro" state={registerLinkState}>
+                  Regístrate aquí
+                </Link>
+              </p>
+              <p className={styles.helperLink}>
+                <Link to="/tienda">Volver a la tienda</Link>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

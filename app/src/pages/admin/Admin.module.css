@@ -1,0 +1,488 @@
+.page {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3rem);
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.metricsGrid {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.metricCard {
+  background: rgba(18, 18, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.metricLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.metricValue {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+}
+
+.metricDelta {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.sectionCard {
+  background: rgba(18, 18, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.table thead {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.table th,
+.table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: left;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(244, 63, 94, 0.18);
+  color: #fda4af;
+}
+
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+}
+
+.primaryAction {
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.94),
+    rgba(83, 58, 250, 0.94)
+  );
+  color: #fff;
+}
+
+.secondaryAction {
+  background: rgba(12, 12, 12, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-text-primary);
+}
+
+.emptyState {
+  display: grid;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.controlsBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.filtersForm {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.filtersForm input,
+.filtersForm select {
+  background: rgba(12, 12, 12, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  min-height: 42px;
+}
+
+.searchInput {
+  flex: 1 1 220px;
+  min-width: min(260px, 100%);
+}
+
+.selectInput {
+  flex: 0 1 180px;
+}
+
+.stockSelect {
+  flex: 0 1 200px;
+}
+
+.tabList {
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: rgba(12, 12, 12, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tabButton {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.tabButtonActive {
+  background: rgba(83, 58, 250, 0.18);
+  color: #ebe9ff;
+}
+
+.resultsSummary {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.resultsSummary strong {
+  color: var(--color-text-primary);
+}
+
+.tableRowDeleted {
+  opacity: 0.7;
+}
+
+.tableActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.tableActionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(12, 12, 12, 0.75);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.tableActionButton:hover {
+  opacity: 0.85;
+}
+
+.tableActionButtonDanger {
+  border-color: rgba(244, 63, 94, 0.35);
+  background: rgba(244, 63, 94, 0.16);
+  color: #fda4af;
+}
+
+.tableActionButtonSuccess {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.16);
+  color: #bbf7d0;
+}
+
+.statusBadgeHealthy {
+  background: rgba(34, 197, 94, 0.18);
+  color: #bbf7d0;
+}
+
+.statusBadgeCritical {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+}
+
+.statusBadgeOut {
+  background: rgba(244, 63, 94, 0.18);
+  color: #fda4af;
+}
+
+.stockWarning {
+  color: #fcd34d;
+}
+
+.stockOut {
+  color: #fda4af;
+}
+
+.productCell {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.productMeta {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.emptyResults {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 2.5rem 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+}
+
+.userCell {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.userName {
+  font-weight: 600;
+}
+
+.userMeta {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.userMetaItem {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.userBadges {
+  display: inline-flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.userBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(12, 12, 12, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-text-secondary);
+}
+
+.userBadgeAccent {
+  background: rgba(83, 58, 250, 0.2);
+  color: #cdd5ff;
+  border-color: rgba(83, 58, 250, 0.35);
+}
+
+.userBadgeSuccess {
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.userBadgeWarning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.tableActionButtonDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.statusBanner {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #bbf7d0;
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.85rem;
+}
+
+.inlineForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.inlineInput {
+  flex: 1 1 240px;
+  min-width: min(260px, 100%);
+  background: rgba(12, 12, 12, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  min-height: 42px;
+}
+
+.inlineInput[aria-invalid='true'] {
+  border-color: rgba(244, 63, 94, 0.45);
+}
+
+.formError {
+  color: #fda4af;
+  font-size: 0.75rem;
+}
+
+.tableSelect {
+  background: rgba(12, 12, 12, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.55rem;
+}
+
+.orderDetailsRow td {
+  background: rgba(12, 12, 12, 0.65);
+  border-bottom: none;
+}
+
+.orderDetails {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.orderMetaGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.orderDetailsTitle {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.orderItemsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.orderItemMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.orderItemTotal {
+  font-weight: 600;
+}

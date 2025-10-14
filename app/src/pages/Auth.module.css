@@ -1,0 +1,196 @@
+.page {
+  display: flex;
+  justify-content: center;
+  padding: clamp(3rem, 6vw, 5rem) 0 clamp(4rem, 8vw, 6rem);
+}
+
+.formCard {
+  width: min(520px, 100%);
+  background: rgba(18, 18, 18, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: clamp(2rem, 5vw, 2.75rem);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2rem);
+}
+
+.header {
+  text-align: center;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.statusSuccess,
+.statusError {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.statusSuccess {
+  background: rgba(34, 197, 94, 0.12);
+  color: #9ae6b4;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.statusError {
+  background: rgba(244, 63, 94, 0.12);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.fieldGroup label {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.fieldGroup input,
+.fieldGroup select,
+.fieldGroup textarea {
+  background: rgba(12, 12, 12, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  color: var(--color-text-primary);
+  font-family: inherit;
+}
+
+.fieldGroup textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.fieldGroup select {
+  appearance: none;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"%3E%3Cpath fill="%23ffffff" d="M6 8 0 0h12z"/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 1rem) center;
+}
+
+.inputError {
+  border-color: rgba(244, 63, 94, 0.6) !important;
+  box-shadow: 0 0 0 1px rgba(244, 63, 94, 0.4);
+}
+
+.errorMessage {
+  color: #fca5a5;
+  font-size: 0.75rem;
+}
+
+.hintRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.hint {
+  opacity: 0.8;
+}
+
+.formRow {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.submitButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem;
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.94),
+    rgba(83, 58, 250, 0.94)
+  );
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: none;
+  border-radius: 16px;
+  padding: 0.9rem 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primaryButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem;
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.94),
+    rgba(83, 58, 250, 0.94)
+  );
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: none;
+  border-radius: 16px;
+  padding: 0.9rem 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.switchText {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.switchText a {
+  color: var(--color-accent-neon);
+  font-weight: 600;
+}
+
+.helperLink {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.helperLink a {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}

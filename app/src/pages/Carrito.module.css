@@ -1,0 +1,246 @@
+.page {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.statusMessage {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-accent-neon);
+}
+
+.layout {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+@media (max-width: 992px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.table {
+  display: grid;
+  gap: 1rem;
+}
+
+.tableHeader,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) 120px 140px 40px;
+  align-items: center;
+  background: rgba(18, 18, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+}
+
+.tableHeader {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.12em;
+}
+
+@media (max-width: 768px) {
+  .tableHeader {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.productCell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.productCell img {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.productInfo {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.productName {
+  font-weight: 600;
+}
+
+.productMeta {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.stockInfo {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.quantityCell {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  align-items: center;
+}
+
+.quantityControl {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(18, 18, 18, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
+.quantityControl button {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  padding: 0.45rem 0.75rem;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.quantityControl input {
+  width: 3rem;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.quantityControl button:disabled {
+  color: rgba(255, 255, 255, 0.25);
+  cursor: not-allowed;
+}
+
+.quantityControl input::-webkit-outer-spin-button,
+.quantityControl input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.quantityControl input[type='number'] {
+  appearance: textfield;
+}
+
+.stockAlert {
+  font-size: 0.75rem;
+  color: var(--color-accent-neon);
+  text-align: center;
+}
+
+.priceCell {
+  font-weight: 600;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 1rem;
+  background: rgba(18, 18, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: clamp(1.5rem, 3vw, 2rem);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.totalRow {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.checkoutButton {
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.92),
+    rgba(83, 58, 250, 0.92)
+  );
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.summaryActions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.secondaryLink {
+  text-align: center;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clearButton {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.8rem 1rem;
+  border-radius: 14px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: clamp(3rem, 8vw, 5rem) 0;
+  color: var(--color-text-secondary);
+}
+
+.emptyState a {
+  color: var(--color-accent-neon);
+  font-weight: 600;
+}

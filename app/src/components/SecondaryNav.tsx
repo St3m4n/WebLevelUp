@@ -1,56 +1,93 @@
-import React, { useMemo } from 'react';
-import './SecondaryNav.css';
-import { productos } from '../data/productos';
+import { useMemo, useState } from 'react';
+import { NavLink, useSearchParams } from 'react-router-dom';
+import { productos } from '@/data/productos';
+import styles from './SecondaryNav.module.css';
 
-// Derivar categorías únicas (orden alfabético, sin vacíos)
-const useCategorias = () => useMemo(() => (
-  Array.from(new Set(productos.map(p => (p.categoria || '').trim()).filter(Boolean)))
-    .sort((a,b) => a.localeCompare(b))
-), []);
+const useCategorias = () =>
+  useMemo(
+    () =>
+      Array.from(
+        new Set(
+          productos
+            .map((producto) => producto.categoria?.trim())
+            .filter(Boolean)
+        )
+      ).sort((a, b) => (a ?? '').localeCompare(b ?? '')) as string[],
+    []
+  );
 
-interface SecondaryNavProps {
-  currentCategoria?: string; // Para resaltar activa si llega por props/ruta futura
-}
+type SecondaryNavProps = {
+  currentCategoria?: string;
+};
 
 const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
   const categorias = useCategorias();
-  const current = (currentCategoria || '').toLowerCase();
-  const collapseId = 'secNavCollapse';
+  const [searchParams] = useSearchParams();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const activeCategoria = (
+    currentCategoria ??
+    searchParams.get('categoria') ??
+    ''
+  ).toLowerCase();
+
+  const handleToggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const handleLinkClick = () => setIsMenuOpen(false);
+
+  const buildLinkClassName = (isActive: boolean, categoria: string) =>
+    [
+      styles.link,
+      isActive || categoria.toLowerCase() === activeCategoria
+        ? styles.linkActive
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark secondary-nav">
+    <nav className={styles.secondaryNav}>
       <div className="container">
-        {/* Contenedor colapsable controlado por el toggler definido en la barra principal (en mobile) */}
-        <div className="collapse navbar-collapse" id={collapseId}>
-          {/* Versión móvil: menú principal + acordeón de categorías */}
-          <ul className="navbar-nav w-100 d-lg-none mb-2">
-            <li className="nav-item"><a className="nav-link" href="#">Inicio</a></li>
-            <li className="nav-item">
-              <button className="nav-link w-100 text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#mobileCategories" aria-expanded="false" aria-controls="mobileCategories">
-                Categorías <i className="bi bi-chevron-down ms-2" />
-              </button>
-              <div className="collapse mobile-cats-collapse mt-2" id="mobileCategories">
-                <ul className="navbar-nav ps-3">
-                  {categorias.map(cat => (
-                    <li className="nav-item" key={cat}>
-                      <a className={"nav-link" + (cat.toLowerCase() === current ? ' active' : '')} href={`#/categoria/${encodeURIComponent(cat)}`}>{cat}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-            <li className="nav-item"><a className="nav-link" href="#/nosotros">Nosotros</a></li>
-            <li className="nav-item"><a className="nav-link" href="#/comunidad">Comunidad</a></li>
-            <li className="nav-item"><a className="nav-link" href="#/contacto">Contacto</a></li>
-          </ul>
-          {/* Desktop: tira horizontal de categorías */}
-          <ul className="navbar-nav justify-content-center w-100 secondary-nav-list d-none d-lg-flex">
-            {categorias.map(cat => (
-              <li className="nav-item" key={cat}>
-                <a className={"nav-link" + (cat.toLowerCase() === current ? ' active' : '')} href={`#/categoria/${encodeURIComponent(cat)}`}>{cat}</a>
-              </li>
+        <div className={styles.inner}>
+          <span className={styles.title}>Explora por categoría</span>
+
+          <button
+            type="button"
+            className={styles.toggleButton}
+            aria-expanded={isMenuOpen}
+            aria-controls="secondary-nav-links"
+            onClick={handleToggleMenu}
+          >
+            Categorías
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M6 9l6 6 6-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+
+          <div
+            id="secondary-nav-links"
+            className={[styles.links, isMenuOpen ? styles.linksOpen : '']
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {categorias.map((categoria) => (
+              <NavLink
+                key={categoria}
+                to={`/tienda?categoria=${encodeURIComponent(categoria)}`}
+                className={({ isActive }) =>
+                  buildLinkClassName(isActive, categoria)
+                }
+                onClick={handleLinkClick}
+              >
+                {categoria}
+              </NavLink>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </nav>
