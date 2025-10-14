@@ -21,7 +21,7 @@ import PP002 from '@/assets/PP002.png';
 import PG001 from '@/assets/PG001.png';
 import PG002 from '@/assets/PG002.png';
 
-export const productos: Producto[] = [
+export const seedProductos: Producto[] = [
   // --- Juegos de Mesa ---
   {
     codigo: 'JM001',
@@ -292,3 +292,5 @@ export const productos: Producto[] = [
       'Polerón con logo Level-Up, ideal para el día a día con estilo gamer.',
   },
 ];
+
+export const productos = seedProductos;

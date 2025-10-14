@@ -1,4 +1,4 @@
-import { productos } from '@/data/productos';
+import { loadProducts } from '@/utils/products';
 import type { Categoria } from '@/types';
 
 const CATEGORY_STORAGE_KEY = 'categorias';
@@ -8,7 +8,8 @@ const isBrowser = typeof window !== 'undefined';
 
 const fromProductos = (): Categoria[] => {
   const unique = new Map<string, Categoria>();
-  productos.forEach((producto) => {
+  const products = loadProducts();
+  products.forEach((producto) => {
     const raw = producto.categoria?.trim();
     if (!raw) return;
     const key = raw.toLowerCase();

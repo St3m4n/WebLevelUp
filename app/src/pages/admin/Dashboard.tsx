@@ -1,15 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { productos } from '@/data/productos';
+import { useProducts } from '@/hooks/useProducts';
 import { usuarios } from '@/data/usuarios';
-import type { Order } from '@/types';
+import type { ContactMessage, Order } from '@/types';
 import { formatPrice } from '@/utils/format';
 import {
   loadOrders,
   subscribeToOrders,
   ORDER_STORAGE_KEYS,
 } from '@/utils/orders';
+import {
+  loadMessages,
+  subscribeToMessages,
+  MESSAGE_STORAGE_KEYS,
+} from '@/utils/messages';
 import styles from './Admin.module.css';
 
 type Metric = {
@@ -21,7 +26,11 @@ type Metric = {
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const productos = useProducts();
   const [orders, setOrders] = useState<Order[]>(() => loadOrders());
+  const [messages, setMessages] = useState<ContactMessage[]>(() =>
+    loadMessages()
+  );
 
   useEffect(() => {
     const unsubscribe = subscribeToOrders(() => {
@@ -33,10 +42,30 @@ const Dashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const unsubscribe = subscribeToMessages(() => {
+      setMessages(loadMessages());
+    });
+    return () => {
+      unsubscribe?.();
+    };
+  }, []);
+
+  useEffect(() => {
     if (typeof window === 'undefined') return;
     const onStorage = (event: StorageEvent) => {
       if (event.key === ORDER_STORAGE_KEYS.global) {
         setOrders(loadOrders());
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === MESSAGE_STORAGE_KEYS.key) {
+        setMessages(loadMessages());
       }
     };
     window.addEventListener('storage', onStorage);
@@ -59,6 +88,10 @@ const Dashboard: React.FC = () => {
     ).length;
     const totalOrders = orders.length;
     const revenue = orders.reduce((sum, order) => sum + order.total, 0);
+    const pendingMessages = messages.filter(
+      (message) => message.status === 'pendiente'
+    ).length;
+    const respondedMessages = messages.length - pendingMessages;
 
     return [
       {
@@ -84,8 +117,16 @@ const Dashboard: React.FC = () => {
             ? `Ingresos acumulados ${formatPrice(revenue)}`
             : 'Aún sin pedidos registrados',
       },
+      {
+        label: 'Mensajes pendientes',
+        value: pendingMessages.toString(),
+        helper:
+          messages.length === 0
+            ? 'Sin consultas registradas'
+            : `${respondedMessages} respondidos`,
+      },
     ];
-  }, [orders]);
+  }, [messages, orders, productos]);
 
   const lowStockProducts = useMemo(
     () =>
@@ -93,7 +134,7 @@ const Dashboard: React.FC = () => {
         .filter((producto) => producto.stock <= producto.stockCritico)
         .sort((a, b) => a.stock - b.stock)
         .slice(0, 10),
-    []
+    [productos]
   );
 
   const categoriasPopulares = useMemo(() => {
@@ -108,7 +149,7 @@ const Dashboard: React.FC = () => {
       .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([categoria, cantidad]) => ({ categoria, cantidad }));
-  }, []);
+  }, [productos]);
 
   const recentOrders = useMemo(() => {
     return [...orders]
@@ -143,6 +184,44 @@ const Dashboard: React.FC = () => {
               )}
             </article>
           ))}
+        </section>
+
+        <section
+          className={styles.sectionCard}
+          aria-labelledby="admin-actions-heading"
+        >
+          <div className={styles.sectionHeader}>
+            <h2 id="admin-actions-heading" className={styles.sectionTitle}>
+              Accesos administrativos
+            </h2>
+            <span className={styles.metricDelta}>
+              Atajos rápidos para los paneles clave
+            </span>
+          </div>
+
+          <div className={styles.actionsRow}>
+            <button
+              type="button"
+              className={styles.primaryAction}
+              onClick={() => navigate('/admin/usuarios')}
+            >
+              Gestionar usuarios
+            </button>
+            <button
+              type="button"
+              className={styles.secondaryAction}
+              onClick={() => navigate('/admin/productos')}
+            >
+              Gestionar productos
+            </button>
+            <button
+              type="button"
+              className={styles.secondaryAction}
+              onClick={() => navigate('/admin/mensajes')}
+            >
+              Revisar mensajes
+            </button>
+          </div>
         </section>
 
         <section

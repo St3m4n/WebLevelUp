@@ -7,7 +7,8 @@ import {
   useReducer,
 } from 'react';
 import type { Producto } from '@/types';
-import { productos } from '@/data/productos';
+import type { ProductRecord } from '@/utils/products';
+import { loadProducts, subscribeToProducts } from '@/utils/products';
 
 export type CartItem = {
   id: string;
@@ -26,7 +27,8 @@ type CartAction =
   | { type: 'ADD_ITEM'; payload: Producto; cantidad?: number }
   | { type: 'REMOVE_ITEM'; payload: { id: string } }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; cantidad: number } }
-  | { type: 'CLEAR_CART' };
+  | { type: 'CLEAR_CART' }
+  | { type: 'SYNC_PRODUCTS'; payload: ProductRecord[] };
 
 type CartContextValue = {
   items: CartItem[];
@@ -101,6 +103,57 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     }
     case 'CLEAR_CART':
       return { items: [] };
+    case 'SYNC_PRODUCTS': {
+      const productMap = new Map(
+        action.payload.map((product) => [product.codigo, product])
+      );
+
+      const syncItems = state.items
+        .map((item) => {
+          const product = productMap.get(item.id);
+          if (!product || product.deletedAt || product.stock <= 0) {
+            return undefined;
+          }
+          const cantidad = Math.min(item.cantidad, product.stock);
+          if (cantidad <= 0) {
+            return undefined;
+          }
+          return {
+            ...item,
+            nombre: product.nombre,
+            precio: product.precio,
+            imagen: product.url,
+            stock: product.stock,
+            cantidad,
+          } satisfies CartItem;
+        })
+        .filter(Boolean) as CartItem[];
+
+      if (syncItems.length === state.items.length) {
+        let unchanged = true;
+        for (let index = 0; index < syncItems.length; index += 1) {
+          const prev = state.items[index];
+          const next = syncItems[index];
+          if (
+            prev.id !== next.id ||
+            prev.cantidad !== next.cantidad ||
+            prev.precio !== next.precio ||
+            prev.stock !== next.stock ||
+            prev.nombre !== next.nombre ||
+            prev.imagen !== next.imagen
+          ) {
+            unchanged = false;
+            break;
+          }
+        }
+
+        if (unchanged) {
+          return state;
+        }
+      }
+
+      return { items: syncItems };
+    }
     default:
       return state;
   }
@@ -115,10 +168,15 @@ const loadInitialState = (): CartState => {
       return { items: [] };
     }
 
+    const productosActuales = loadProducts();
+    const productMap = new Map(
+      productosActuales.map((producto) => [producto.codigo, producto])
+    );
+
     const sanitizedItems: CartItem[] = parsed.items
       .map((stored) => {
         if (!stored?.id) return undefined;
-        const producto = productos.find((item) => item.codigo === stored.id);
+        const producto = productMap.get(stored.id);
         const stock = producto?.stock ?? stored.stock ?? 0;
         if (stock <= 0) {
           return undefined;
@@ -159,6 +217,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
   }, [state]);
+
+  useEffect(() => {
+    const sync = () => {
+      dispatch({ type: 'SYNC_PRODUCTS', payload: loadProducts() });
+    };
+
+    sync();
+    const unsubscribe = subscribeToProducts(sync);
+
+    return () => {
+      unsubscribe?.();
+    };
+  }, []);
 
   const addItem = useCallback((producto: Producto, cantidad?: number) => {
     dispatch({ type: 'ADD_ITEM', payload: producto, cantidad });

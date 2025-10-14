@@ -1,16 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { productos } from '@/data/productos';
+import { useProducts } from '@/hooks/useProducts';
+import type { ProductRecord } from '@/utils/products';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/format';
 import styles from './Tienda.module.css';
-
-const buildCategorias = () =>
-  Array.from(
-    new Set(
-      productos.map((producto) => producto.categoria?.trim()).filter(Boolean)
-    )
-  ).sort((a, b) => (a ?? '').localeCompare(b ?? '')) as string[];
 
 const SORT_OPTIONS = [
   { value: 'populares', label: 'Más populares' },
@@ -19,7 +13,7 @@ const SORT_OPTIONS = [
   { value: 'nuevo', label: 'Nuevos ingresos' },
 ];
 
-const ordenarProductos = (sort: string, items: typeof productos) => {
+const ordenarProductos = (sort: string, items: ProductRecord[]) => {
   switch (sort) {
     case 'precio-asc':
       return [...items].sort((a, b) => a.precio - b.precio);
@@ -38,7 +32,18 @@ const Tienda: React.FC = () => {
     searchParams.get('orden') ?? 'populares'
   );
   const categoriaParam = searchParams.get('categoria') ?? undefined;
-  const categorias = useMemo(buildCategorias, []);
+  const productos = useProducts();
+  const categorias = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          productos
+            .map((producto) => producto.categoria?.trim())
+            .filter(Boolean)
+        )
+      ).sort((a, b) => (a ?? '').localeCompare(b ?? '')) as string[],
+    [productos]
+  );
   const { addItem } = useCart();
 
   const productosFiltrados = useMemo(() => {
@@ -49,7 +54,7 @@ const Tienda: React.FC = () => {
         )
       : productos;
     return ordenarProductos(activeSort, base);
-  }, [activeSort, categoriaParam]);
+  }, [activeSort, categoriaParam, productos]);
 
   const handleCategoriaClick = (categoria?: string) => {
     const next = new URLSearchParams(searchParams);

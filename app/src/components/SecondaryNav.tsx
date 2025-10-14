@@ -1,27 +1,26 @@
 import { useMemo, useState } from 'react';
 import { NavLink, useSearchParams } from 'react-router-dom';
-import { productos } from '@/data/productos';
+import { useProducts } from '@/hooks/useProducts';
 import styles from './SecondaryNav.module.css';
-
-const useCategorias = () =>
-  useMemo(
-    () =>
-      Array.from(
-        new Set(
-          productos
-            .map((producto) => producto.categoria?.trim())
-            .filter(Boolean)
-        )
-      ).sort((a, b) => (a ?? '').localeCompare(b ?? '')) as string[],
-    []
-  );
 
 type SecondaryNavProps = {
   currentCategoria?: string;
 };
 
 const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
-  const categorias = useCategorias();
+  const productos = useProducts();
+  const categorias = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          productos
+            .filter((producto) => !producto.deletedAt)
+            .map((producto) => producto.categoria?.trim())
+            .filter(Boolean)
+        )
+      ).sort((a, b) => (a ?? '').localeCompare(b ?? '')) as string[],
+    [productos]
+  );
   const [searchParams] = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

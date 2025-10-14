@@ -1,5 +1,6 @@
 import {
   type ChangeEvent,
+  type FormEvent,
   type ReactElement,
   useCallback,
   useEffect,
@@ -7,6 +8,7 @@ import {
   useState,
 } from 'react';
 import { usuarios } from '@/data/usuarios';
+import { regiones } from '@/data/regionesComunas';
 import type { Order, Usuario, UsuarioPerfil } from '@/types';
 import { formatPrice } from '@/utils/format';
 import {
@@ -18,6 +20,8 @@ import styles from './Admin.module.css';
 
 type ViewMode = 'active' | 'deleted';
 type BenefitFilter = 'all' | 'duoc' | 'vitalicio';
+
+type StatusState = { kind: 'success' | 'error'; message: string };
 
 type FiltersState = {
   query: string;
@@ -44,6 +48,43 @@ type AdminUsuario = Usuario & {
 
 const EXTRA_USERS_STORAGE_KEY = 'levelup-extra-users';
 const ADMIN_USER_STATES_KEY = 'levelup-admin-user-state';
+const EXTRA_USERS_EVENT = 'levelup:extra-users-updated';
+
+type UserFormValues = {
+  run: string;
+  nombre: string;
+  apellidos: string;
+  correo: string;
+  perfil: UsuarioPerfil;
+  fechaNacimiento: string;
+  region: string;
+  comuna: string;
+  direccion: string;
+  descuentoVitalicio: boolean;
+};
+
+type UserFormErrors = Partial<Record<keyof UserFormValues, string>>;
+
+type UserFormState = {
+  isOpen: boolean;
+  mode: 'create' | 'edit';
+  initial?: AdminUsuario;
+};
+
+const allowedRoles: UsuarioPerfil[] = ['Administrador', 'Vendedor', 'Cliente'];
+
+const defaultUserFormValues: UserFormValues = {
+  run: '',
+  nombre: '',
+  apellidos: '',
+  correo: '',
+  perfil: 'Cliente',
+  fechaNacimiento: '',
+  region: '',
+  comuna: '',
+  direccion: '',
+  descuentoVitalicio: false,
+};
 
 const normalizeRun = (run: string) =>
   run.replace(/[^0-9kK]/g, '').toUpperCase();
@@ -112,6 +153,12 @@ const loadExtraUsuarios = (): ExtraUsuario[] => {
     console.warn('No se pudieron cargar usuarios registrados', error);
     return [];
   }
+};
+
+const persistExtraUsuarios = (records: ExtraUsuario[]) => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(EXTRA_USERS_STORAGE_KEY, JSON.stringify(records));
+  window.dispatchEvent(new CustomEvent(EXTRA_USERS_EVENT));
 };
 
 const loadPersistedStates = (): Record<string, PersistedUserState> => {
@@ -205,9 +252,38 @@ const Usuarios: React.FC = () => {
     benefit: 'all',
     view: 'active',
   });
+  const [formState, setFormState] = useState<UserFormState>({
+    isOpen: false,
+    mode: 'create',
+  });
+  const [formValues, setFormValues] = useState<UserFormValues>(
+    defaultUserFormValues
+  );
+  const [formErrors, setFormErrors] = useState<UserFormErrors>({});
+  const [status, setStatus] = useState<StatusState | null>(null);
+
+  useEffect(() => {
+    if (!status || typeof window === 'undefined') return undefined;
+    const timeout = window.setTimeout(() => setStatus(null), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [status]);
+
+  const updateExtraUsuarios = useCallback(
+    (updater: (current: ExtraUsuario[]) => ExtraUsuario[]) => {
+      setExtraUsuarios((prev) => {
+        const next = updater(prev);
+        persistExtraUsuarios(next);
+        return next;
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const handleExtraUsersUpdate = () => {
+      setExtraUsuarios(loadExtraUsuarios());
+    };
     const onStorage = (event: StorageEvent) => {
       if (event.key === EXTRA_USERS_STORAGE_KEY) {
         setExtraUsuarios(loadExtraUsuarios());
@@ -219,8 +295,12 @@ const Usuarios: React.FC = () => {
         setOrders(loadOrders());
       }
     };
+    window.addEventListener(EXTRA_USERS_EVENT, handleExtraUsersUpdate);
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(EXTRA_USERS_EVENT, handleExtraUsersUpdate);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
   useEffect(() => {
@@ -255,6 +335,18 @@ const Usuarios: React.FC = () => {
     () => mergeUsuarios(usuarios, extraUsuarios, persistedStates),
     [extraUsuarios, persistedStates]
   );
+
+  const regionOptions = useMemo(
+    () => regiones.map((region) => region.nombre),
+    []
+  );
+  const comunasForRegion = useMemo(() => {
+    if (!formValues.region) return [];
+    const region = regiones.find(
+      (candidate) => candidate.nombre === formValues.region
+    );
+    return region ? region.comunas.map((comuna) => comuna.nombre) : [];
+  }, [formValues.region]);
 
   const roles = useMemo(() => {
     const unique = new Set(adminUsuarios.map((usuario) => usuario.perfil));
@@ -388,6 +480,192 @@ const Usuarios: React.FC = () => {
     }));
   };
 
+  const handleOpenCreate = () => {
+    setFormState({ isOpen: true, mode: 'create' });
+    setFormValues(defaultUserFormValues);
+    setFormErrors({});
+  };
+
+  const handleOpenEdit = (usuario: AdminUsuario) => {
+    if (usuario.isSystem) return;
+    setFormState({ isOpen: true, mode: 'edit', initial: usuario });
+    setFormValues({
+      run: formatRun(usuario.run),
+      nombre: usuario.nombre,
+      apellidos: usuario.apellidos,
+      correo: usuario.correo,
+      perfil: usuario.perfil,
+      fechaNacimiento: usuario.fechaNacimiento ?? '',
+      region: usuario.region,
+      comuna: usuario.comuna,
+      direccion: usuario.direccion,
+      descuentoVitalicio: usuario.descuentoVitalicio,
+    });
+    setFormErrors({});
+  };
+
+  const handleCloseForm = () => {
+    setFormState({ isOpen: false, mode: 'create' });
+    setFormValues(defaultUserFormValues);
+    setFormErrors({});
+  };
+
+  const validateForm = useCallback(
+    (values: UserFormValues): UserFormErrors => {
+      const errors: UserFormErrors = {};
+      const normalizedRun = normalizeRun(values.run);
+      const runIsValid = /^[0-9]{7,8}[0-9K]$/i.test(normalizedRun);
+      if (!runIsValid) {
+        errors.run = 'Ingresa un RUN válido.';
+      }
+
+      if (!values.nombre.trim()) {
+        errors.nombre = 'Ingresa un nombre.';
+      }
+
+      if (!values.apellidos.trim()) {
+        errors.apellidos = 'Ingresa los apellidos.';
+      }
+
+      if (!allowedRoles.includes(values.perfil)) {
+        errors.perfil = 'Selecciona un rol válido.';
+      }
+
+      const normalizedCorreo = normalizeCorreo(values.correo);
+      const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!correoRegex.test(normalizedCorreo)) {
+        errors.correo = 'Ingresa un correo válido.';
+      }
+
+      const initialRun = formState.initial?.run ?? null;
+      if (
+        runIsValid &&
+        adminUsuarios.some(
+          (usuario) =>
+            usuario.run === normalizedRun && usuario.run !== initialRun
+        )
+      ) {
+        errors.run = 'Ya existe un usuario con ese RUN.';
+      }
+
+      const initialCorreo = formState.initial?.correo ?? null;
+      if (
+        correoRegex.test(normalizedCorreo) &&
+        adminUsuarios.some(
+          (usuario) =>
+            usuario.correo === normalizedCorreo &&
+            usuario.correo !== initialCorreo
+        )
+      ) {
+        errors.correo = 'Ya existe un usuario con ese correo.';
+      }
+
+      if (values.comuna && !values.region) {
+        errors.region = 'Selecciona una región para la comuna elegida.';
+      }
+
+      if (values.fechaNacimiento) {
+        const parsed = new Date(values.fechaNacimiento);
+        if (Number.isNaN(parsed.getTime())) {
+          errors.fechaNacimiento = 'Ingresa una fecha válida.';
+        } else if (parsed.getTime() > Date.now()) {
+          errors.fechaNacimiento = 'La fecha no puede estar en el futuro.';
+        }
+      }
+
+      return errors;
+    },
+    [adminUsuarios, formState.initial]
+  );
+
+  const handleFormFieldChange = (
+    event: ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = event.target;
+    setFormValues((prev) => {
+      if (name === 'region') {
+        return { ...prev, region: value, comuna: '' };
+      }
+      return { ...prev, [name]: value };
+    });
+    setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setFormValues((prev) => ({ ...prev, [name]: checked }));
+    setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSubmitForm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const validation = validateForm(formValues);
+    if (Object.keys(validation).length > 0) {
+      setFormErrors(validation);
+      return;
+    }
+
+    const normalizedRun = normalizeRun(formValues.run);
+    const normalizedCorreo = normalizeCorreo(formValues.correo);
+    const existingExtra = extraUsuarios.find(
+      (usuario) => usuario.run === normalizedRun
+    );
+    const timestamp = new Date().toISOString();
+    const createdAt =
+      formState.mode === 'create'
+        ? timestamp
+        : (existingExtra?.createdAt ??
+          formState.initial?.createdAt ??
+          timestamp);
+
+    const record: ExtraUsuario = {
+      run: normalizedRun,
+      nombre: formValues.nombre.trim(),
+      apellidos: formValues.apellidos.trim(),
+      correo: normalizedCorreo,
+      perfil: formValues.perfil,
+      fechaNacimiento: formValues.fechaNacimiento || null,
+      region: formValues.region.trim(),
+      comuna: formValues.comuna.trim(),
+      direccion: formValues.direccion.trim(),
+      descuentoVitalicio: formValues.descuentoVitalicio,
+      isSystem: formState.initial?.isSystem ?? false,
+      passwordHash:
+        existingExtra?.passwordHash ??
+        formState.initial?.passwordHash ??
+        undefined,
+      passwordSalt:
+        existingExtra?.passwordSalt ??
+        formState.initial?.passwordSalt ??
+        undefined,
+      createdAt,
+    };
+
+    try {
+      updateExtraUsuarios((prev) => {
+        const next = prev.filter((usuario) => usuario.run !== normalizedRun);
+        next.push(record);
+        return next;
+      });
+      setStatus({
+        kind: 'success',
+        message:
+          formState.mode === 'create'
+            ? `Usuario "${record.nombre} ${record.apellidos}" registrado.`
+            : `Usuario "${record.nombre} ${record.apellidos}" actualizado.`,
+      });
+      handleCloseForm();
+    } catch (error) {
+      console.warn('No se pudo guardar el usuario', error);
+      setStatus({
+        kind: 'error',
+        message: 'No se pudo guardar el usuario. Inténtalo nuevamente.',
+      });
+    }
+  };
+
   const handleDelete = useCallback((usuario: AdminUsuario) => {
     if (usuario.isSystem) return;
     if (typeof window === 'undefined') return;
@@ -400,6 +678,10 @@ const Usuarios: React.FC = () => {
       ...prev,
       [runKey]: { deletedAt: new Date().toISOString() },
     }));
+    setStatus({
+      kind: 'success',
+      message: `Usuario "${usuario.nombre} ${usuario.apellidos}" marcado como eliminado.`,
+    });
   }, []);
 
   const handleRestore = useCallback((usuario: AdminUsuario) => {
@@ -414,6 +696,10 @@ const Usuarios: React.FC = () => {
       const next = { ...prev };
       delete next[runKey];
       return next;
+    });
+    setStatus({
+      kind: 'success',
+      message: `Usuario "${usuario.nombre} ${usuario.apellidos}" restaurado.`,
     });
   }, []);
 
@@ -529,6 +815,18 @@ const Usuarios: React.FC = () => {
           </p>
         </header>
 
+        {status && (
+          <div
+            className={
+              status.kind === 'error'
+                ? styles.statusBannerError
+                : styles.statusBanner
+            }
+          >
+            {status.message}
+          </div>
+        )}
+
         <section className={styles.sectionCard}>
           <div className={styles.controlsBar}>
             <form
@@ -627,6 +925,13 @@ const Usuarios: React.FC = () => {
                 Pedidos: <strong>{orders.length}</strong>
               </span>
             </div>
+            <button
+              type="button"
+              className={styles.primaryAction}
+              onClick={handleOpenCreate}
+            >
+              Nuevo usuario
+            </button>
           </div>
 
           {displayedUsuarios.length === 0 ? (
@@ -697,8 +1002,24 @@ const Usuarios: React.FC = () => {
                                 }
                                 onClick={() => {
                                   if (usuario.isSystem) return;
+                                  handleOpenEdit(usuario);
+                                }}
+                                disabled={usuario.isSystem}
+                              >
+                                Editar
+                              </button>
+                              <button
+                                type="button"
+                                className={
+                                  usuario.isSystem
+                                    ? `${styles.tableActionButton} ${styles.tableActionButtonDisabled}`.trim()
+                                    : styles.tableActionButton
+                                }
+                                onClick={() => {
+                                  if (usuario.isSystem) return;
                                   handleDelete(usuario);
                                 }}
+                                disabled={usuario.isSystem}
                               >
                                 {usuario.isSystem ? 'Protegido' : 'Eliminar'}
                               </button>
@@ -721,6 +1042,225 @@ const Usuarios: React.FC = () => {
             </div>
           )}
         </section>
+
+        {formState.isOpen && (
+          <div className={styles.detailOverlay} role="dialog" aria-modal="true">
+            <div className={styles.detailDialog} style={{ maxWidth: '720px' }}>
+              <header className={styles.detailHeader}>
+                <h2>
+                  {formState.mode === 'create'
+                    ? 'Registrar nuevo usuario'
+                    : `Editar "${formState.initial?.nombre ?? ''} ${
+                        formState.initial?.apellidos ?? ''
+                      }"`}
+                </h2>
+                <button
+                  type="button"
+                  className={styles.closeButton}
+                  onClick={handleCloseForm}
+                  aria-label="Cerrar"
+                >
+                  ×
+                </button>
+              </header>
+
+              <form className={styles.form} onSubmit={handleSubmitForm}>
+                <div className={styles.formGrid}>
+                  <label className={styles.formControl}>
+                    <span>RUN</span>
+                    <input
+                      name="run"
+                      value={formValues.run}
+                      onChange={handleFormFieldChange}
+                      placeholder="11222333-K"
+                      readOnly={formState.mode === 'edit'}
+                      required
+                      aria-invalid={Boolean(formErrors.run)}
+                    />
+                    {formErrors.run && (
+                      <span className={styles.formError}>{formErrors.run}</span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Nombre</span>
+                    <input
+                      name="nombre"
+                      value={formValues.nombre}
+                      onChange={handleFormFieldChange}
+                      required
+                      aria-invalid={Boolean(formErrors.nombre)}
+                    />
+                    {formErrors.nombre && (
+                      <span className={styles.formError}>
+                        {formErrors.nombre}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Apellidos</span>
+                    <input
+                      name="apellidos"
+                      value={formValues.apellidos}
+                      onChange={handleFormFieldChange}
+                      required
+                      aria-invalid={Boolean(formErrors.apellidos)}
+                    />
+                    {formErrors.apellidos && (
+                      <span className={styles.formError}>
+                        {formErrors.apellidos}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Correo</span>
+                    <input
+                      name="correo"
+                      type="email"
+                      value={formValues.correo}
+                      onChange={handleFormFieldChange}
+                      inputMode="email"
+                      required
+                      aria-invalid={Boolean(formErrors.correo)}
+                    />
+                    {formErrors.correo && (
+                      <span className={styles.formError}>
+                        {formErrors.correo}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Rol</span>
+                    <select
+                      name="perfil"
+                      value={formValues.perfil}
+                      onChange={handleFormFieldChange}
+                      required
+                      aria-invalid={Boolean(formErrors.perfil)}
+                    >
+                      {allowedRoles.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
+                    {formErrors.perfil && (
+                      <span className={styles.formError}>
+                        {formErrors.perfil}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Fecha de nacimiento</span>
+                    <input
+                      name="fechaNacimiento"
+                      type="date"
+                      value={formValues.fechaNacimiento}
+                      onChange={handleFormFieldChange}
+                      aria-invalid={Boolean(formErrors.fechaNacimiento)}
+                    />
+                    {formErrors.fechaNacimiento && (
+                      <span className={styles.formError}>
+                        {formErrors.fechaNacimiento}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Región</span>
+                    <select
+                      name="region"
+                      value={formValues.region}
+                      onChange={handleFormFieldChange}
+                      aria-invalid={Boolean(formErrors.region)}
+                    >
+                      <option value="">Selecciona una región</option>
+                      {regionOptions.map((region) => (
+                        <option key={region} value={region}>
+                          {region}
+                        </option>
+                      ))}
+                    </select>
+                    {formErrors.region && (
+                      <span className={styles.formError}>
+                        {formErrors.region}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Comuna</span>
+                    <select
+                      name="comuna"
+                      value={formValues.comuna}
+                      onChange={handleFormFieldChange}
+                      disabled={!formValues.region}
+                    >
+                      <option value="">
+                        {formValues.region
+                          ? 'Selecciona una comuna'
+                          : 'Elige una región primero'}
+                      </option>
+                      {comunasForRegion.map((comuna) => (
+                        <option key={comuna} value={comuna}>
+                          {comuna}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label
+                    className={styles.formControl}
+                    style={{ gridColumn: '1 / -1' }}
+                  >
+                    <span>Dirección</span>
+                    <textarea
+                      name="direccion"
+                      value={formValues.direccion}
+                      onChange={handleFormFieldChange}
+                      rows={3}
+                    />
+                  </label>
+
+                  <div
+                    className={styles.formControl}
+                    style={{ gridColumn: '1 / -1' }}
+                  >
+                    <span>Beneficios</span>
+                    <label className={styles.checkboxControl}>
+                      <input
+                        name="descuentoVitalicio"
+                        type="checkbox"
+                        checked={formValues.descuentoVitalicio}
+                        onChange={handleCheckboxChange}
+                      />
+                      <span>Aplicar descuento vitalicio permanente</span>
+                    </label>
+                  </div>
+                </div>
+
+                <footer className={styles.formFooter}>
+                  <button
+                    type="button"
+                    className={styles.secondaryAction}
+                    onClick={handleCloseForm}
+                  >
+                    Cancelar
+                  </button>
+                  <button type="submit" className={styles.primaryAction}>
+                    {formState.mode === 'create'
+                      ? 'Registrar usuario'
+                      : 'Guardar cambios'}
+                  </button>
+                </footer>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

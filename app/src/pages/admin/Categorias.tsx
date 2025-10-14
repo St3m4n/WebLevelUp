@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { productos } from '@/data/productos';
+import { useProducts } from '@/hooks/useProducts';
 import type { Categoria } from '@/types';
 import {
   CATEGORY_STORAGE_KEYS,
@@ -28,18 +28,6 @@ type ValidationResult = {
   message?: string;
 };
 
-const useProductUsage = () =>
-  useMemo(() => {
-    const counts = new Map<string, number>();
-    productos.forEach((producto) => {
-      const categoria = producto.categoria?.trim();
-      if (!categoria) return;
-      const key = categoria.toLowerCase();
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    });
-    return counts;
-  }, []);
-
 const Categorias: React.FC = () => {
   const [categorias, setCategorias] = useState<Categoria[]>(() =>
     loadCategories()
@@ -51,7 +39,20 @@ const Categorias: React.FC = () => {
   const [newCategoria, setNewCategoria] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const productUsage = useProductUsage();
+  const productos = useProducts();
+  const productUsage = useMemo(() => {
+    const counts = new Map<string, number>();
+    productos.forEach((producto) => {
+      if (producto.deletedAt) {
+        return;
+      }
+      const categoria = producto.categoria?.trim();
+      if (!categoria) return;
+      const key = categoria.toLowerCase();
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+    return counts;
+  }, [productos]);
 
   useEffect(() => {
     const unsubscribe = subscribeToCategories(() => {

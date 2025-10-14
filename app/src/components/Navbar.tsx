@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import logo from '@/assets/logo2.png';
 import styles from './Navbar.module.css';
 
-const navLinks = [
+const baseNavLinks = [
   { to: '/', label: 'Inicio' },
   { to: '/tienda', label: 'Tienda' },
   { to: '/comunidad', label: 'Comunidad', disabled: true },
@@ -17,8 +17,17 @@ const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { totalCantidad } = useCart();
 
+  const navLinks = useMemo(() => baseNavLinks, []);
+  const isAdminUser = Boolean(
+    user && (user.perfil === 'Administrador' || user.perfil === 'Vendedor')
+  );
+
   const handleToggleMenu = () => setIsMenuOpen((prev) => !prev);
   const handleLinkClick = () => setIsMenuOpen(false);
+  const handleLogout = () => {
+    logout();
+    handleLinkClick();
+  };
 
   return (
     <header className={styles.navbarRoot}>
@@ -62,8 +71,30 @@ const Navbar: React.FC = () => {
                 <span className={styles.cartCount}>{totalCantidad}</span>
               )}
             </NavLink>
+            {user && (
+              <NavLink
+                to="/perfil"
+                className={styles.navLink}
+                onClick={handleLinkClick}
+              >
+                Mi perfil
+              </NavLink>
+            )}
+            {isAdminUser && (
+              <NavLink
+                to="/admin"
+                className={styles.navLink}
+                onClick={handleLinkClick}
+              >
+                Panel admin
+              </NavLink>
+            )}
             {user ? (
-              <button type="button" className={styles.navLink} onClick={logout}>
+              <button
+                type="button"
+                className={styles.navLink}
+                onClick={handleLogout}
+              >
                 Cerrar sesión
               </button>
             ) : (
@@ -128,16 +159,31 @@ const Navbar: React.FC = () => {
               )}
             </NavLink>
             {user ? (
-              <button
-                type="button"
-                className={styles.mobileNavLink}
-                onClick={() => {
-                  logout();
-                  handleLinkClick();
-                }}
-              >
-                Cerrar sesión
-              </button>
+              <>
+                <NavLink
+                  to="/perfil"
+                  className={styles.mobileNavLink}
+                  onClick={handleLinkClick}
+                >
+                  Mi perfil
+                </NavLink>
+                {isAdminUser && (
+                  <NavLink
+                    to="/admin"
+                    className={styles.mobileNavLink}
+                    onClick={handleLinkClick}
+                  >
+                    Panel admin
+                  </NavLink>
+                )}
+                <button
+                  type="button"
+                  className={styles.mobileNavLink}
+                  onClick={handleLogout}
+                >
+                  Cerrar sesión
+                </button>
+              </>
             ) : (
               <NavLink
                 to="/login"

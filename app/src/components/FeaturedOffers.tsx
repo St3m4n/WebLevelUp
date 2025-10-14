@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { productos } from '@/data/productos';
+import { useProducts } from '@/hooks/useProducts';
 import { formatPrice } from '@/utils/format';
 import styles from './FeaturedOffers.module.css';
 
@@ -44,30 +44,34 @@ const featuredEntries: FeaturedEntry[] = [
   },
 ];
 
-const mapProducto = (entry: FeaturedEntry): FeaturedCardData => {
-  const producto = productos.find((item) => item.codigo === entry.codigo);
-  if (!producto) {
-    return {
-      nombre: entry.heading,
-      precio: entry.fallbackPrice,
-      url: '',
-      enlace: entry.href,
-    };
-  }
-
-  const categoriaLink = producto.categoria
-    ? `/tienda?categoria=${encodeURIComponent(producto.categoria)}`
-    : entry.href;
-
-  return {
-    nombre: producto.nombre ?? entry.heading,
-    precio: producto.precio ?? entry.fallbackPrice,
-    url: producto.url,
-    enlace: categoriaLink,
-  };
-};
-
 const FeaturedOffers: React.FC = () => {
+  const productos = useProducts();
+
+  const mapProducto = (entry: FeaturedEntry): FeaturedCardData => {
+    const producto = productos.find(
+      (item) => item.codigo === entry.codigo && !item.deletedAt
+    );
+    if (!producto) {
+      return {
+        nombre: entry.heading,
+        precio: entry.fallbackPrice,
+        url: '',
+        enlace: entry.href,
+      };
+    }
+
+    const categoriaLink = producto.categoria
+      ? `/tienda?categoria=${encodeURIComponent(producto.categoria)}`
+      : entry.href;
+
+    return {
+      nombre: producto.nombre ?? entry.heading,
+      precio: producto.precio ?? entry.fallbackPrice,
+      url: producto.url,
+      enlace: categoriaLink,
+    };
+  };
+
   const [principal, segundo, tercero, cuarto] =
     featuredEntries.map(mapProducto);
 

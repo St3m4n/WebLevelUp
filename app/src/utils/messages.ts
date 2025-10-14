@@ -65,10 +65,7 @@ export const loadMessages = (): ContactMessage[] => {
 const persistMessages = (messages: ContactMessage[]) => {
   if (!isBrowser) return;
   try {
-    window.localStorage.setItem(
-      MESSAGE_STORAGE_KEY,
-      JSON.stringify(messages)
-    );
+    window.localStorage.setItem(MESSAGE_STORAGE_KEY, JSON.stringify(messages));
     window.dispatchEvent(new Event(MESSAGE_UPDATED_EVENT));
   } catch (error) {
     console.warn('No se pudieron guardar los mensajes de contacto', error);

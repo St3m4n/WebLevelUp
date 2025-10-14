@@ -30,11 +30,7 @@ const validateEmail = (value: string) => {
   return '';
 };
 
-const validateLength = (
-  value: string,
-  field: string,
-  max: number
-): string => {
+const validateLength = (value: string, field: string, max: number): string => {
   const clean = trim(value);
   if (!clean) {
     return `Ingresa ${field}.`;
@@ -51,7 +47,10 @@ const Contacto: React.FC = () => {
   const [asunto, setAsunto] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string }>();
+  const [status, setStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const mensajeLength = useMemo(() => trim(mensaje).length, [mensaje]);
@@ -81,9 +80,7 @@ const Contacto: React.FC = () => {
     }
   };
 
-  const handleMensajeChange = (
-    event: ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleMensajeChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setMensaje(event.target.value);
     if (errors.mensaje) {
       setErrors((prev) => ({ ...prev, mensaje: '' }));

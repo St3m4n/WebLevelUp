@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { productos } from '@/data/productos';
+import { useProducts } from '@/hooks/useProducts';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/format';
 import styles from './ProductoDetalle.module.css';
@@ -9,15 +9,17 @@ const ProductoDetalle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const productos = useProducts();
   const [cantidad, setCantidad] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const producto = useMemo(() => {
     if (!id) return undefined;
     return productos.find(
-      (item) => item.codigo.toLowerCase() === id.toLowerCase()
+      (item) =>
+        item.codigo.toLowerCase() === id.toLowerCase() && !item.deletedAt
     );
-  }, [id]);
+  }, [id, productos]);
 
   const relacionados = useMemo(() => {
     if (!producto) return [];
@@ -25,10 +27,11 @@ const ProductoDetalle: React.FC = () => {
       .filter(
         (item) =>
           item.categoria === producto.categoria &&
-          item.codigo !== producto.codigo
+          item.codigo !== producto.codigo &&
+          !item.deletedAt
       )
       .slice(0, 3);
-  }, [producto]);
+  }, [producto, productos]);
 
   useEffect(() => {
     setCantidad(1);

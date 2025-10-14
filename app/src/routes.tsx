@@ -10,12 +10,15 @@ const Carrito = lazy(() => import('./pages/Carrito'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Login = lazy(() => import('./pages/Login'));
 const Registro = lazy(() => import('./pages/Registro'));
+const Perfil = lazy(() => import('./pages/Perfil'));
 const Contacto = lazy(() => import('./pages/Contacto'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminProductos = lazy(() => import('./pages/admin/Productos'));
 const AdminCategorias = lazy(() => import('./pages/admin/Categorias'));
 const AdminUsuarios = lazy(() => import('./pages/admin/Usuarios'));
 const AdminPedidos = lazy(() => import('./pages/admin/Pedidos'));
+const AdminMensajes = lazy(() => import('./pages/admin/Mensajes'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const router = createBrowserRouter([
@@ -30,48 +33,70 @@ const router = createBrowserRouter([
       { path: 'checkout', element: <Checkout /> },
       { path: 'login', element: <Login /> },
       { path: 'registro', element: <Registro /> },
-  { path: 'contacto', element: <Contacto /> },
+      {
+        path: 'contacto',
+        element: <Contacto />,
+      },
+      {
+        path: 'perfil',
+        element: (
+          <ProtectedRoute>
+            <Perfil />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: 'admin',
         element: (
           <ProtectedRoute roles={['Administrador', 'Vendedor']}>
-            <AdminDashboard />
+            <AdminLayout />
           </ProtectedRoute>
         ),
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          {
+            path: 'productos',
+            element: (
+              <ProtectedRoute roles={['Administrador']}>
+                <AdminProductos />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'categorias',
+            element: (
+              <ProtectedRoute roles={['Administrador']}>
+                <AdminCategorias />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'pedidos',
+            element: (
+              <ProtectedRoute roles={['Administrador', 'Vendedor']}>
+                <AdminPedidos />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'mensajes',
+            element: (
+              <ProtectedRoute roles={['Administrador', 'Vendedor']}>
+                <AdminMensajes />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'usuarios',
+            element: (
+              <ProtectedRoute roles={['Administrador']}>
+                <AdminUsuarios />
+              </ProtectedRoute>
+            ),
+          },
+          { path: '*', element: <Navigate to="/admin" replace /> },
+        ],
       },
-      {
-        path: 'admin/productos',
-        element: (
-          <ProtectedRoute roles={['Administrador']}>
-            <AdminProductos />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'admin/categorias',
-        element: (
-          <ProtectedRoute roles={['Administrador']}>
-            <AdminCategorias />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'admin/pedidos',
-        element: (
-          <ProtectedRoute roles={['Administrador', 'Vendedor']}>
-            <AdminPedidos />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'admin/usuarios',
-        element: (
-          <ProtectedRoute roles={['Administrador']}>
-            <AdminUsuarios />
-          </ProtectedRoute>
-        ),
-      },
-      { path: 'admin/*', element: <Navigate to="/admin" replace /> },
       { path: '*', element: <NotFound /> },
     ],
   },

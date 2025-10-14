@@ -30,6 +30,9 @@ const Footer: React.FC = () => {
               <Link to="/checkout" className={styles.link}>
                 Checkout
               </Link>
+              <Link to="/contacto" className={styles.link}>
+                Contacto
+              </Link>
             </nav>
           </div>
 

@@ -1,22 +1,25 @@
 import {
   type ChangeEvent,
-  useCallback,
+  type FormEvent,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { productos } from '@/data/productos';
 import type { Producto } from '@/types';
 import { formatPrice } from '@/utils/format';
+import { useProducts } from '@/hooks/useProducts';
+import {
+  addProduct,
+  restoreProduct,
+  softDeleteProduct,
+  updateProduct,
+  type ProductRecord,
+} from '@/utils/products';
 import styles from './Admin.module.css';
 
 type StockFilter = 'all' | 'healthy' | 'critical' | 'out';
 type ViewMode = 'active' | 'deleted';
-
-type PersistedState = {
-  deletedAt: string;
-};
 
 type FiltersState = {
   query: string;
@@ -25,16 +28,46 @@ type FiltersState = {
   view: ViewMode;
 };
 
-type AdminProduct = Producto & {
-  deletedAt?: string;
+type AdminProduct = ProductRecord;
+
+type ProductFormValues = {
+  codigo: string;
+  nombre: string;
+  categoria: string;
+  fabricante: string;
+  distribuidor: string;
+  precio: number;
+  stock: number;
+  stockCritico: number;
+  url: string;
+  descripcion: string;
 };
 
-const STORAGE_KEY = 'levelup-admin-product-state';
+type ProductFormErrors = Partial<Record<keyof ProductFormValues, string>>;
+
+type ProductFormState = {
+  isOpen: boolean;
+  mode: 'create' | 'edit';
+  initial?: ProductRecord;
+};
 
 const deletedAtFormatter = new Intl.DateTimeFormat('es-CL', {
   dateStyle: 'medium',
   timeStyle: 'short',
 });
+
+const defaultFormValues: ProductFormValues = {
+  codigo: '',
+  nombre: '',
+  categoria: '',
+  fabricante: '',
+  distribuidor: '',
+  precio: 0,
+  stock: 0,
+  stockCritico: 0,
+  url: '',
+  descripcion: '',
+};
 
 const getStockStatus = (
   product: Pick<Producto, 'stock' | 'stockCritico'>
@@ -48,80 +81,49 @@ const getStockStatus = (
   return 'healthy';
 };
 
-const loadPersistedState = (): Record<string, PersistedState> => {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return {};
-    return Object.entries(parsed).reduce<Record<string, PersistedState>>(
-      (acc, [codigo, value]) => {
-        if (
-          value &&
-          typeof value === 'object' &&
-          typeof (value as PersistedState).deletedAt === 'string'
-        ) {
-          acc[codigo] = {
-            deletedAt: (value as PersistedState).deletedAt,
-          };
-        }
-        return acc;
-      },
-      {}
-    );
-  } catch (error) {
-    console.warn('No se pudieron cargar los estados de productos', error);
-    return {};
-  }
-};
-
 const Productos: React.FC = () => {
   const navigate = useNavigate();
-  const [persistedState, setPersistedState] = useState<
-    Record<string, PersistedState>
-  >(() => loadPersistedState());
+  const productos = useProducts({ includeDeleted: true });
+
   const [filters, setFilters] = useState<FiltersState>({
     query: '',
     category: '',
     stock: 'all',
     view: 'active',
   });
+  const [formState, setFormState] = useState<ProductFormState>({
+    isOpen: false,
+    mode: 'create',
+  });
+  const [formValues, setFormValues] =
+    useState<ProductFormValues>(defaultFormValues);
+  const [formErrors, setFormErrors] = useState<ProductFormErrors>({});
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const entries = Object.entries(persistedState).filter(
-        ([, value]) => value && typeof value.deletedAt === 'string'
-      );
-      if (entries.length === 0) {
-        window.localStorage.removeItem(STORAGE_KEY);
-        return;
-      }
-      const payload = Object.fromEntries(entries);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    } catch (error) {
-      console.warn('No se pudieron guardar los estados de productos', error);
+    if (!statusMessage) {
+      return undefined;
     }
-  }, [persistedState]);
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+    const timeout = window.setTimeout(() => setStatusMessage(null), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [statusMessage]);
 
   const categories = useMemo(() => {
     const unique = new Set(
-      productos.map((producto) => producto.categoria).filter(Boolean)
+      productos
+        .filter((producto) => !producto.deletedAt)
+        .map((producto) => producto.categoria)
+        .filter(Boolean)
     );
     return Array.from(unique).sort((a, b) => a.localeCompare(b, 'es'));
-  }, []);
+  }, [productos]);
 
   const adminProducts = useMemo<AdminProduct[]>(
-    () =>
-      productos.map((producto) => {
-        const persisted = persistedState[producto.codigo];
-        if (persisted?.deletedAt) {
-          return { ...producto, deletedAt: persisted.deletedAt };
-        }
-        return { ...producto };
-      }),
-    [persistedState]
+    () => productos.map((producto) => ({ ...producto })),
+    [productos]
   );
 
   const totals = useMemo(() => {
@@ -147,10 +149,15 @@ const Productos: React.FC = () => {
 
   const filteredProducts = useMemo(() => {
     const query = filters.query.trim().toLowerCase();
+
     return adminProducts.filter((product) => {
       const isDeleted = Boolean(product.deletedAt);
-      if (filters.view === 'active' && isDeleted) return false;
-      if (filters.view === 'deleted' && !isDeleted) return false;
+      if (filters.view === 'active' && isDeleted) {
+        return false;
+      }
+      if (filters.view === 'deleted' && !isDeleted) {
+        return false;
+      }
 
       if (query) {
         const haystack =
@@ -221,32 +228,174 @@ const Productos: React.FC = () => {
     }));
   };
 
-  const handleDelete = useCallback((product: AdminProduct) => {
-    if (product.deletedAt) return;
-    if (typeof window === 'undefined') return;
+  const handleDelete = (product: AdminProduct) => {
+    if (product.deletedAt) {
+      return;
+    }
+    if (typeof window === 'undefined') {
+      return;
+    }
     const confirmed = window.confirm(
       `¿Eliminar el producto "${product.nombre}"? Podrás restaurarlo más adelante.`
     );
-    if (!confirmed) return;
-    setPersistedState((prev) => ({
-      ...prev,
-      [product.codigo]: { deletedAt: new Date().toISOString() },
-    }));
-  }, []);
+    if (!confirmed) {
+      return;
+    }
+    try {
+      softDeleteProduct(product.codigo);
+      setStatusMessage(`Producto "${product.nombre}" marcado como eliminado.`);
+    } catch (error) {
+      console.warn('No se pudo eliminar el producto', error);
+      setStatusMessage('No se pudo eliminar el producto. Intenta nuevamente.');
+    }
+  };
 
-  const handleRestore = useCallback((product: AdminProduct) => {
-    if (!product.deletedAt) return;
-    if (typeof window === 'undefined') return;
+  const handleRestore = (product: AdminProduct) => {
+    if (!product.deletedAt) {
+      return;
+    }
+    if (typeof window === 'undefined') {
+      return;
+    }
     const confirmed = window.confirm(
       `¿Restaurar el producto "${product.nombre}"?`
     );
-    if (!confirmed) return;
-    setPersistedState((prev) => {
-      const next = { ...prev };
-      delete next[product.codigo];
-      return next;
+    if (!confirmed) {
+      return;
+    }
+    try {
+      restoreProduct(product.codigo);
+      setStatusMessage(
+        `Producto "${product.nombre}" restaurado correctamente.`
+      );
+    } catch (error) {
+      console.warn('No se pudo restaurar el producto', error);
+      setStatusMessage('No se pudo restaurar el producto. Intenta nuevamente.');
+    }
+  };
+
+  const handleOpenCreate = () => {
+    setFormState({ isOpen: true, mode: 'create' });
+    setFormValues(defaultFormValues);
+    setFormErrors({});
+  };
+
+  const handleOpenEdit = (product: AdminProduct) => {
+    setFormState({ isOpen: true, mode: 'edit', initial: product });
+    setFormValues({
+      codigo: product.codigo,
+      nombre: product.nombre,
+      categoria: product.categoria,
+      fabricante: product.fabricante,
+      distribuidor: product.distribuidor,
+      precio: product.precio,
+      stock: product.stock,
+      stockCritico: product.stockCritico,
+      url: product.url,
+      descripcion: product.descripcion ?? '',
     });
-  }, []);
+    setFormErrors({});
+  };
+
+  const handleCloseForm = () => {
+    setFormState((prev) => ({ ...prev, isOpen: false, initial: undefined }));
+    setFormErrors({});
+  };
+
+  const validateForm = (values: ProductFormValues): ProductFormErrors => {
+    const errors: ProductFormErrors = {};
+
+    if (formState.mode === 'create' && values.codigo) {
+      if (!/^[a-z0-9-]+$/i.test(values.codigo.trim())) {
+        errors.codigo = 'Usa solo letras, números o guiones.';
+      }
+    }
+
+    if (!values.nombre.trim()) {
+      errors.nombre = 'Ingresa un nombre.';
+    }
+    if (!values.categoria.trim()) {
+      errors.categoria = 'Selecciona o ingresa una categoría.';
+    }
+    if (!values.fabricante.trim()) {
+      errors.fabricante = 'Ingresa un fabricante.';
+    }
+    if (!values.distribuidor.trim()) {
+      errors.distribuidor = 'Ingresa un distribuidor.';
+    }
+    if (!Number.isFinite(values.precio) || values.precio <= 0) {
+      errors.precio = 'Ingresa un precio válido.';
+    }
+    if (!Number.isFinite(values.stock) || values.stock < 0) {
+      errors.stock = 'El stock debe ser 0 o mayor.';
+    }
+    if (!Number.isFinite(values.stockCritico) || values.stockCritico < 0) {
+      errors.stockCritico = 'El stock crítico debe ser 0 o mayor.';
+    } else if (values.stockCritico > values.stock) {
+      errors.stockCritico = 'No puede superar el stock disponible.';
+    }
+    if (!values.url.trim()) {
+      errors.url = 'Ingresa una imagen o URL válida.';
+    }
+
+    return errors;
+  };
+
+  const handleFormInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setFormValues((prev) => {
+      if (name === 'precio' || name === 'stock' || name === 'stockCritico') {
+        const parsed = Number(value ?? '');
+        return { ...prev, [name]: Number.isNaN(parsed) ? 0 : parsed };
+      }
+      return { ...prev, [name]: value };
+    });
+    setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSubmitForm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const validation = validateForm(formValues);
+    if (Object.keys(validation).length > 0) {
+      setFormErrors(validation);
+      return;
+    }
+
+    const payload = {
+      nombre: formValues.nombre.trim(),
+      categoria: formValues.categoria.trim(),
+      fabricante: formValues.fabricante.trim(),
+      distribuidor: formValues.distribuidor.trim(),
+      precio: Number(formValues.precio),
+      stock: Number(formValues.stock),
+      stockCritico: Number(formValues.stockCritico),
+      url: formValues.url.trim(),
+      descripcion: formValues.descripcion.trim(),
+    } satisfies Omit<Producto, 'codigo'>;
+
+    try {
+      if (formState.mode === 'create') {
+        const created = addProduct({
+          ...payload,
+          codigo: formValues.codigo.trim() || undefined,
+        });
+        setStatusMessage(`Producto "${created.nombre}" agregado al catálogo.`);
+      } else if (formState.initial) {
+        updateProduct(formState.initial.codigo, payload);
+        setStatusMessage(
+          `Producto "${payload.nombre}" actualizado correctamente.`
+        );
+      }
+      handleCloseForm();
+    } catch (error) {
+      console.warn('No se pudo guardar el producto', error);
+      setStatusMessage(
+        'No se pudo guardar el producto. Revisa los datos e intenta nuevamente.'
+      );
+    }
+  };
 
   const renderStatusBadge = (product: AdminProduct) => {
     const status = getStockStatus(product);
@@ -279,6 +428,10 @@ const Productos: React.FC = () => {
             productos de prueba como inactivos cuando sea necesario.
           </p>
         </header>
+
+        {statusMessage && (
+          <div className={styles.statusBanner}>{statusMessage}</div>
+        )}
 
         <section className={styles.sectionCard}>
           <div className={styles.controlsBar}>
@@ -376,6 +529,13 @@ const Productos: React.FC = () => {
                 Eliminados: <strong>{totals.deleted}</strong>
               </span>
             </div>
+            <button
+              type="button"
+              className={styles.primaryAction}
+              onClick={handleOpenCreate}
+            >
+              Nuevo producto
+            </button>
           </div>
 
           {displayedProducts.length === 0 ? (
@@ -464,6 +624,13 @@ const Productos: React.FC = () => {
                                 </button>
                                 <button
                                   type="button"
+                                  className={styles.tableActionButton}
+                                  onClick={() => handleOpenEdit(product)}
+                                >
+                                  Editar
+                                </button>
+                                <button
+                                  type="button"
                                   className={`${styles.tableActionButton} ${styles.tableActionButtonDanger}`.trim()}
                                   onClick={() => handleDelete(product)}
                                 >
@@ -489,6 +656,213 @@ const Productos: React.FC = () => {
             </div>
           )}
         </section>
+
+        {formState.isOpen && (
+          <div className={styles.detailOverlay} role="dialog" aria-modal="true">
+            <div className={styles.detailDialog} style={{ maxWidth: '720px' }}>
+              <header className={styles.detailHeader}>
+                <h2>
+                  {formState.mode === 'create'
+                    ? 'Agregar nuevo producto'
+                    : `Editar "${formState.initial?.nombre ?? ''}"`}
+                </h2>
+                <button
+                  type="button"
+                  className={styles.closeButton}
+                  onClick={handleCloseForm}
+                  aria-label="Cerrar"
+                >
+                  ×
+                </button>
+              </header>
+
+              <form className={styles.form} onSubmit={handleSubmitForm}>
+                <div className={styles.formGrid}>
+                  <label className={styles.formControl}>
+                    <span>Código (SKU)</span>
+                    <input
+                      name="codigo"
+                      value={formValues.codigo}
+                      onChange={handleFormInputChange}
+                      placeholder="Se genera automáticamente si lo dejas vacío"
+                      readOnly={formState.mode === 'edit'}
+                      aria-invalid={Boolean(formErrors.codigo)}
+                    />
+                    {formErrors.codigo && (
+                      <span className={styles.formError}>
+                        {formErrors.codigo}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Nombre</span>
+                    <input
+                      name="nombre"
+                      value={formValues.nombre}
+                      onChange={handleFormInputChange}
+                      required
+                      aria-invalid={Boolean(formErrors.nombre)}
+                    />
+                    {formErrors.nombre && (
+                      <span className={styles.formError}>
+                        {formErrors.nombre}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Categoría</span>
+                    <input
+                      name="categoria"
+                      value={formValues.categoria}
+                      onChange={handleFormInputChange}
+                      list="catalog-categories"
+                      required
+                      aria-invalid={Boolean(formErrors.categoria)}
+                    />
+                    <datalist id="catalog-categories">
+                      {categories.map((categoria) => (
+                        <option key={categoria} value={categoria} />
+                      ))}
+                    </datalist>
+                    {formErrors.categoria && (
+                      <span className={styles.formError}>
+                        {formErrors.categoria}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Fabricante</span>
+                    <input
+                      name="fabricante"
+                      value={formValues.fabricante}
+                      onChange={handleFormInputChange}
+                      required
+                      aria-invalid={Boolean(formErrors.fabricante)}
+                    />
+                    {formErrors.fabricante && (
+                      <span className={styles.formError}>
+                        {formErrors.fabricante}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Distribuidor</span>
+                    <input
+                      name="distribuidor"
+                      value={formValues.distribuidor}
+                      onChange={handleFormInputChange}
+                      required
+                      aria-invalid={Boolean(formErrors.distribuidor)}
+                    />
+                    {formErrors.distribuidor && (
+                      <span className={styles.formError}>
+                        {formErrors.distribuidor}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Precio (CLP)</span>
+                    <input
+                      name="precio"
+                      type="number"
+                      min={0}
+                      step={100}
+                      value={formValues.precio}
+                      onChange={handleFormInputChange}
+                      required
+                      aria-invalid={Boolean(formErrors.precio)}
+                    />
+                    {formErrors.precio && (
+                      <span className={styles.formError}>
+                        {formErrors.precio}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Stock disponible</span>
+                    <input
+                      name="stock"
+                      type="number"
+                      min={0}
+                      value={formValues.stock}
+                      onChange={handleFormInputChange}
+                      required
+                      aria-invalid={Boolean(formErrors.stock)}
+                    />
+                    {formErrors.stock && (
+                      <span className={styles.formError}>
+                        {formErrors.stock}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Stock crítico</span>
+                    <input
+                      name="stockCritico"
+                      type="number"
+                      min={0}
+                      value={formValues.stockCritico}
+                      onChange={handleFormInputChange}
+                      required
+                      aria-invalid={Boolean(formErrors.stockCritico)}
+                    />
+                    {formErrors.stockCritico && (
+                      <span className={styles.formError}>
+                        {formErrors.stockCritico}
+                      </span>
+                    )}
+                  </label>
+
+                  <label className={styles.formControl}>
+                    <span>Imagen (URL)</span>
+                    <input
+                      name="url"
+                      value={formValues.url}
+                      onChange={handleFormInputChange}
+                      required
+                      aria-invalid={Boolean(formErrors.url)}
+                    />
+                    {formErrors.url && (
+                      <span className={styles.formError}>{formErrors.url}</span>
+                    )}
+                  </label>
+                </div>
+
+                <label className={styles.formControl}>
+                  <span>Descripción</span>
+                  <textarea
+                    name="descripcion"
+                    value={formValues.descripcion}
+                    onChange={handleFormInputChange}
+                    rows={4}
+                  />
+                </label>
+
+                <footer className={styles.formFooter}>
+                  <button
+                    type="button"
+                    className={styles.secondaryAction}
+                    onClick={handleCloseForm}
+                  >
+                    Cancelar
+                  </button>
+                  <button type="submit" className={styles.primaryAction}>
+                    {formState.mode === 'create'
+                      ? 'Agregar producto'
+                      : 'Guardar cambios'}
+                  </button>
+                </footer>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
