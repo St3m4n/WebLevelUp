@@ -211,12 +211,12 @@ export const updateProduct = (
   return next;
 };
 
-export const softDeleteProduct = (codigo: string) => {
+export const softDeleteProduct = (codigo: string): ProductRecord => {
   const now = new Date().toISOString();
-  updateProduct(codigo, { deletedAt: now });
+  return updateProduct(codigo, { deletedAt: now });
 };
 
-export const restoreProduct = (codigo: string) => {
+export const restoreProduct = (codigo: string): ProductRecord => {
   const current = mergeProducts(true).find(
     (product) => product.codigo === codigo
   );
@@ -226,14 +226,10 @@ export const restoreProduct = (codigo: string) => {
   }
 
   if (current.origin === 'seed' && !current.deletedAt) {
-    return;
+    return current;
   }
 
-  const next = updateProduct(codigo, { deletedAt: null });
-
-  if (next.origin === 'override' && isOverrideRedundant(next)) {
-    removeOverride(codigo);
-  }
+  return updateProduct(codigo, { deletedAt: null });
 };
 
 export const subscribeToProducts = (listener: () => void) => {

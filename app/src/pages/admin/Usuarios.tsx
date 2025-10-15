@@ -16,6 +16,17 @@ import {
   subscribeToOrders,
   ORDER_STORAGE_KEYS,
 } from '@/utils/orders';
+import {
+  ADMIN_USER_STATES_EVENT,
+  ADMIN_USER_STATES_KEY,
+  arePersistedUserStatesEqual,
+  loadAdminUserStates,
+  normalizeCorreo,
+  normalizeRun,
+  type PersistedUserState,
+} from '@/utils/users';
+import { useAuditActor } from '@/hooks/useAuditActor';
+import { recordAuditEvent } from '@/utils/audit';
 import styles from './Admin.module.css';
 
 type ViewMode = 'active' | 'deleted';
@@ -28,10 +39,6 @@ type FiltersState = {
   role: '' | UsuarioPerfil;
   benefit: BenefitFilter;
   view: ViewMode;
-};
-
-type PersistedUserState = {
-  deletedAt: string;
 };
 
 type ExtraUsuario = Usuario & {
@@ -47,7 +54,6 @@ type AdminUsuario = Usuario & {
 };
 
 const EXTRA_USERS_STORAGE_KEY = 'levelup-extra-users';
-const ADMIN_USER_STATES_KEY = 'levelup-admin-user-state';
 const EXTRA_USERS_EVENT = 'levelup:extra-users-updated';
 
 type UserFormValues = {
@@ -86,10 +92,65 @@ const defaultUserFormValues: UserFormValues = {
   descuentoVitalicio: false,
 };
 
-const normalizeRun = (run: string) =>
-  run.replace(/[^0-9kK]/g, '').toUpperCase();
+const USER_AUDIT_FIELDS = [
+  'nombre',
+  'apellidos',
+  'correo',
+  'perfil',
+  'region',
+  'comuna',
+  'direccion',
+  'descuentoVitalicio',
+  'fechaNacimiento',
+] as const;
 
-const normalizeCorreo = (correo: string) => correo.trim().toLowerCase();
+type UserAuditField = (typeof USER_AUDIT_FIELDS)[number];
+
+type UserDiffEntry = {
+  field: UserAuditField;
+  before: unknown;
+  after: unknown;
+};
+
+const composeAdminSnapshot = (
+  data: ExtraUsuario,
+  base?: AdminUsuario,
+  overrides?: Partial<Pick<AdminUsuario, 'origin' | 'deletedAt' | 'createdAt'>>
+): AdminUsuario => {
+  return {
+    run: data.run,
+    nombre: data.nombre,
+    apellidos: data.apellidos,
+    correo: data.correo,
+    perfil: data.perfil,
+    fechaNacimiento: data.fechaNacimiento ?? null,
+    region: data.region,
+    comuna: data.comuna,
+    direccion: data.direccion,
+    descuentoVitalicio: data.descuentoVitalicio,
+    isSystem: base?.isSystem ?? data.isSystem ?? false,
+    passwordHash: base?.passwordHash ?? data.passwordHash,
+    passwordSalt: base?.passwordSalt ?? data.passwordSalt,
+    origin: overrides?.origin ?? base?.origin ?? 'extra',
+    deletedAt: overrides?.deletedAt ?? base?.deletedAt,
+    createdAt:
+      overrides?.createdAt ?? base?.createdAt ?? data.createdAt ?? null,
+  } satisfies AdminUsuario;
+};
+
+const computeUserDiff = (
+  previous: AdminUsuario,
+  next: AdminUsuario
+): UserDiffEntry[] => {
+  return USER_AUDIT_FIELDS.reduce<UserDiffEntry[]>((acc, field) => {
+    const before = previous[field];
+    const after = next[field];
+    if (before === after) {
+      return acc;
+    }
+    return [...acc, { field, before, after }];
+  }, []);
+};
 
 const formatRun = (raw: string): string => {
   const clean = normalizeRun(raw);
@@ -161,34 +222,8 @@ const persistExtraUsuarios = (records: ExtraUsuario[]) => {
   window.dispatchEvent(new CustomEvent(EXTRA_USERS_EVENT));
 };
 
-const loadPersistedStates = (): Record<string, PersistedUserState> => {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = window.localStorage.getItem(ADMIN_USER_STATES_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return {};
-    return Object.entries(parsed).reduce<Record<string, PersistedUserState>>(
-      (acc, [run, value]) => {
-        if (
-          typeof run === 'string' &&
-          value &&
-          typeof value === 'object' &&
-          typeof (value as PersistedUserState).deletedAt === 'string'
-        ) {
-          acc[normalizeRun(run)] = {
-            deletedAt: (value as PersistedUserState).deletedAt,
-          };
-        }
-        return acc;
-      },
-      {}
-    );
-  } catch (error) {
-    console.warn('No se pudieron cargar los estados de usuarios', error);
-    return {};
-  }
-};
+const loadPersistedStates = (): Record<string, PersistedUserState> =>
+  loadAdminUserStates();
 
 const mergeUsuarios = (
   seed: Usuario[],
@@ -261,6 +296,30 @@ const Usuarios: React.FC = () => {
   );
   const [formErrors, setFormErrors] = useState<UserFormErrors>({});
   const [status, setStatus] = useState<StatusState | null>(null);
+  const auditActor = useAuditActor();
+
+  const logUserEvent = useCallback(
+    (
+      action: 'created' | 'updated' | 'deleted' | 'restored',
+      usuario: AdminUsuario,
+      summary: string,
+      metadata?: unknown
+    ) => {
+      recordAuditEvent({
+        action,
+        summary,
+        entity: {
+          type: 'usuario',
+          id: usuario.run,
+          name: usuario.correo,
+          context: usuario.perfil,
+        },
+        metadata,
+        actor: auditActor,
+      });
+    },
+    [auditActor]
+  );
 
   useEffect(() => {
     if (!status || typeof window === 'undefined') return undefined;
@@ -284,21 +343,35 @@ const Usuarios: React.FC = () => {
     const handleExtraUsersUpdate = () => {
       setExtraUsuarios(loadExtraUsuarios());
     };
+    const handleUserStatesUpdate = () => {
+      setPersistedStates((prev) => {
+        const next = loadPersistedStates();
+        return arePersistedUserStatesEqual(prev, next) ? prev : next;
+      });
+    };
     const onStorage = (event: StorageEvent) => {
       if (event.key === EXTRA_USERS_STORAGE_KEY) {
         setExtraUsuarios(loadExtraUsuarios());
       }
       if (event.key === ADMIN_USER_STATES_KEY) {
-        setPersistedStates(loadPersistedStates());
+        setPersistedStates((prev) => {
+          const next = loadPersistedStates();
+          return arePersistedUserStatesEqual(prev, next) ? prev : next;
+        });
       }
       if (event.key === ORDER_STORAGE_KEYS.global) {
         setOrders(loadOrders());
       }
     };
     window.addEventListener(EXTRA_USERS_EVENT, handleExtraUsersUpdate);
+    window.addEventListener(ADMIN_USER_STATES_EVENT, handleUserStatesUpdate);
     window.addEventListener('storage', onStorage);
     return () => {
       window.removeEventListener(EXTRA_USERS_EVENT, handleExtraUsersUpdate);
+      window.removeEventListener(
+        ADMIN_USER_STATES_EVENT,
+        handleUserStatesUpdate
+      );
       window.removeEventListener('storage', onStorage);
     };
   }, []);
@@ -320,12 +393,14 @@ const Usuarios: React.FC = () => {
       );
       if (entries.length === 0) {
         window.localStorage.removeItem(ADMIN_USER_STATES_KEY);
+        window.dispatchEvent(new CustomEvent(ADMIN_USER_STATES_EVENT));
         return;
       }
       window.localStorage.setItem(
         ADMIN_USER_STATES_KEY,
         JSON.stringify(Object.fromEntries(entries))
       );
+      window.dispatchEvent(new CustomEvent(ADMIN_USER_STATES_EVENT));
     } catch (error) {
       console.warn('No se pudieron guardar los estados de usuarios', error);
     }
@@ -656,6 +731,38 @@ const Usuarios: React.FC = () => {
             ? `Usuario "${record.nombre} ${record.apellidos}" registrado.`
             : `Usuario "${record.nombre} ${record.apellidos}" actualizado.`,
       });
+      const snapshot = composeAdminSnapshot(record, formState.initial, {
+        origin: formState.initial?.origin ?? 'extra',
+        deletedAt: formState.initial?.deletedAt,
+        createdAt,
+      });
+      const displayName = `${snapshot.nombre} ${snapshot.apellidos}`
+        .trim()
+        .replace(/\s+/g, ' ');
+      if (formState.mode === 'create') {
+        logUserEvent(
+          'created',
+          snapshot,
+          `Usuario "${displayName || snapshot.nombre}" registrado desde el panel`,
+          {
+            perfil: snapshot.perfil,
+            region: snapshot.region,
+            comuna: snapshot.comuna,
+            descuentoVitalicio: snapshot.descuentoVitalicio,
+            origen: snapshot.origin,
+          }
+        );
+      } else if (formState.initial) {
+        const diff = computeUserDiff(formState.initial, snapshot);
+        logUserEvent(
+          'updated',
+          snapshot,
+          `Usuario "${displayName || snapshot.nombre}" actualizado`,
+          {
+            cambios: diff,
+          }
+        );
+      }
       handleCloseForm();
     } catch (error) {
       console.warn('No se pudo guardar el usuario', error);
@@ -666,42 +773,74 @@ const Usuarios: React.FC = () => {
     }
   };
 
-  const handleDelete = useCallback((usuario: AdminUsuario) => {
-    if (usuario.isSystem) return;
-    if (typeof window === 'undefined') return;
-    const confirmed = window.confirm(
-      `¿Eliminar al usuario "${usuario.nombre} ${usuario.apellidos}"? Podrás restaurarlo más adelante.`
-    );
-    if (!confirmed) return;
-    const runKey = normalizeRun(usuario.run);
-    setPersistedStates((prev) => ({
-      ...prev,
-      [runKey]: { deletedAt: new Date().toISOString() },
-    }));
-    setStatus({
-      kind: 'success',
-      message: `Usuario "${usuario.nombre} ${usuario.apellidos}" marcado como eliminado.`,
-    });
-  }, []);
+  const handleDelete = useCallback(
+    (usuario: AdminUsuario) => {
+      if (usuario.isSystem) return;
+      if (typeof window === 'undefined') return;
+      const confirmed = window.confirm(
+        `¿Eliminar al usuario "${usuario.nombre} ${usuario.apellidos}"? Podrás restaurarlo más adelante.`
+      );
+      if (!confirmed) return;
+      const runKey = normalizeRun(usuario.run);
+      const deletedAt = new Date().toISOString();
+      setPersistedStates((prev) => ({
+        ...prev,
+        [runKey]: { deletedAt },
+      }));
+      const snapshot: AdminUsuario = { ...usuario, deletedAt };
+      setStatus({
+        kind: 'success',
+        message: `Usuario "${usuario.nombre} ${usuario.apellidos}" marcado como eliminado.`,
+      });
+      const displayName = `${snapshot.nombre} ${snapshot.apellidos}`
+        .trim()
+        .replace(/\s+/g, ' ');
+      logUserEvent(
+        'deleted',
+        snapshot,
+        `Usuario "${displayName || snapshot.nombre}" marcado como eliminado`,
+        {
+          motivo: 'acción manual',
+          eliminadoEn: deletedAt,
+        }
+      );
+    },
+    [logUserEvent]
+  );
 
-  const handleRestore = useCallback((usuario: AdminUsuario) => {
-    if (!usuario.deletedAt) return;
-    if (typeof window === 'undefined') return;
-    const confirmed = window.confirm(
-      `¿Restaurar al usuario "${usuario.nombre} ${usuario.apellidos}"?`
-    );
-    if (!confirmed) return;
-    const runKey = normalizeRun(usuario.run);
-    setPersistedStates((prev) => {
-      const next = { ...prev };
-      delete next[runKey];
-      return next;
-    });
-    setStatus({
-      kind: 'success',
-      message: `Usuario "${usuario.nombre} ${usuario.apellidos}" restaurado.`,
-    });
-  }, []);
+  const handleRestore = useCallback(
+    (usuario: AdminUsuario) => {
+      if (!usuario.deletedAt) return;
+      if (typeof window === 'undefined') return;
+      const confirmed = window.confirm(
+        `¿Restaurar al usuario "${usuario.nombre} ${usuario.apellidos}"?`
+      );
+      if (!confirmed) return;
+      const runKey = normalizeRun(usuario.run);
+      setPersistedStates((prev) => {
+        const next = { ...prev };
+        delete next[runKey];
+        return next;
+      });
+      setStatus({
+        kind: 'success',
+        message: `Usuario "${usuario.nombre} ${usuario.apellidos}" restaurado.`,
+      });
+      const snapshot: AdminUsuario = { ...usuario, deletedAt: undefined };
+      const displayName = `${snapshot.nombre} ${snapshot.apellidos}`
+        .trim()
+        .replace(/\s+/g, ' ');
+      logUserEvent(
+        'restored',
+        snapshot,
+        `Usuario "${displayName || snapshot.nombre}" restaurado`,
+        {
+          eliminadoAnteriormente: usuario.deletedAt,
+        }
+      );
+    },
+    [logUserEvent]
+  );
 
   const renderBenefitBadges = (usuario: AdminUsuario) => {
     const correoLower = usuario.correo.toLowerCase();

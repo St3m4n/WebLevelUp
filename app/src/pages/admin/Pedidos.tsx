@@ -1,6 +1,7 @@
 import {
   Fragment,
   type ChangeEvent,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -14,6 +15,8 @@ import {
   updateOrderStatus,
   removeOrder,
 } from '@/utils/orders';
+import { useAuditActor } from '@/hooks/useAuditActor';
+import { recordAuditEvent } from '@/utils/audit';
 import styles from './Admin.module.css';
 
 type StatusFilter = 'all' | Order['status'];
@@ -50,6 +53,30 @@ const Pedidos: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(() => loadOrders());
   const [filters, setFilters] = useState<FiltersState>(defaultFilters);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const auditActor = useAuditActor();
+
+  const logOrderEvent = useCallback(
+    (
+      action: 'status-changed' | 'deleted',
+      order: Order,
+      summary: string,
+      metadata?: unknown
+    ) => {
+      recordAuditEvent({
+        action,
+        summary,
+        entity: {
+          type: 'orden',
+          id: order.id,
+          name: order.userEmail,
+          context: order.userName,
+        },
+        metadata,
+        actor: auditActor,
+      });
+    },
+    [auditActor]
+  );
 
   useEffect(() => {
     const unsubscribe = subscribeToOrders(() => {
@@ -176,8 +203,21 @@ const Pedidos: React.FC = () => {
 
   const handleStatusChange = (order: Order, status: Order['status']) => {
     if (order.status === status) return;
-    updateOrderStatus(order.id, status);
+    const updated = updateOrderStatus(order.id, status);
+    if (!updated) {
+      console.warn('No se pudo actualizar el estado del pedido', order.id);
+      return;
+    }
     setOrders(loadOrders());
+    logOrderEvent(
+      'status-changed',
+      updated,
+      `Estado del pedido ${updated.id} actualizado a ${status}`,
+      {
+        estadoAnterior: order.status,
+        estadoNuevo: status,
+      }
+    );
   };
 
   const handleRemoveOrder = (order: Order) => {
@@ -186,9 +226,23 @@ const Pedidos: React.FC = () => {
       `¿Eliminar el pedido ${order.id}? Esta acción no se puede deshacer.`
     );
     if (!confirmed) return;
-    removeOrder(order.id);
+    const removed = removeOrder(order.id);
+    if (!removed) {
+      console.warn('No se encontró el pedido para eliminar', order.id);
+      return;
+    }
     setOrders(loadOrders());
     setExpandedOrder((prev) => (prev === order.id ? null : prev));
+    logOrderEvent(
+      'deleted',
+      removed,
+      `Pedido ${removed.id} eliminado del registro`,
+      {
+        total: removed.total,
+        estado: removed.status,
+        articulos: removed.items.length,
+      }
+    );
   };
 
   const toggleExpanded = (orderId: string) => {

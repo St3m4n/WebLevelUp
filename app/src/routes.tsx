@@ -22,6 +22,7 @@ const AdminCategorias = lazy(() => import('./pages/admin/Categorias'));
 const AdminUsuarios = lazy(() => import('./pages/admin/Usuarios'));
 const AdminPedidos = lazy(() => import('./pages/admin/Pedidos'));
 const AdminMensajes = lazy(() => import('./pages/admin/Mensajes'));
+const AdminAuditoria = lazy(() => import('./pages/admin/Auditoria'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const router = createBrowserRouter([
@@ -89,6 +90,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute roles={['Administrador', 'Vendedor']}>
                 <AdminMensajes />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'auditoria',
+            element: (
+              <ProtectedRoute roles={['Administrador']}>
+                <AdminAuditoria />
               </ProtectedRoute>
             ),
           },

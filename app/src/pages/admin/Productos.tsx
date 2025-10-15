@@ -1,6 +1,7 @@
 import {
   type ChangeEvent,
   type FormEvent,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -9,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Producto } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { useProducts } from '@/hooks/useProducts';
+import { useAuditActor } from '@/hooks/useAuditActor';
 import {
   addProduct,
   restoreProduct,
@@ -16,6 +18,7 @@ import {
   updateProduct,
   type ProductRecord,
 } from '@/utils/products';
+import { recordAuditEvent } from '@/utils/audit';
 import styles from './Admin.module.css';
 
 type StockFilter = 'all' | 'healthy' | 'critical' | 'out';
@@ -81,9 +84,44 @@ const getStockStatus = (
   return 'healthy';
 };
 
+const PRODUCT_AUDIT_FIELDS = [
+  'nombre',
+  'categoria',
+  'fabricante',
+  'distribuidor',
+  'precio',
+  'stock',
+  'stockCritico',
+  'url',
+  'descripcion',
+] as const;
+
+type ProductAuditField = (typeof PRODUCT_AUDIT_FIELDS)[number];
+
+type ProductDiffEntry = {
+  field: ProductAuditField;
+  before: unknown;
+  after: unknown;
+};
+
+const computeProductDiff = (
+  previous: ProductRecord,
+  next: ProductRecord
+): ProductDiffEntry[] => {
+  return PRODUCT_AUDIT_FIELDS.reduce<ProductDiffEntry[]>((acc, field) => {
+    const before = previous[field];
+    const after = next[field];
+    if (before === after) {
+      return acc;
+    }
+    return [...acc, { field, before, after }];
+  }, []);
+};
+
 const Productos: React.FC = () => {
   const navigate = useNavigate();
   const productos = useProducts({ includeDeleted: true });
+  const auditActor = useAuditActor();
 
   const [filters, setFilters] = useState<FiltersState>({
     query: '',
@@ -99,6 +137,29 @@ const Productos: React.FC = () => {
     useState<ProductFormValues>(defaultFormValues);
   const [formErrors, setFormErrors] = useState<ProductFormErrors>({});
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const logProductEvent = useCallback(
+    (
+      action: 'created' | 'updated' | 'deleted' | 'restored',
+      product: ProductRecord,
+      summary: string,
+      metadata?: unknown
+    ) => {
+      recordAuditEvent({
+        action,
+        summary,
+        entity: {
+          type: 'producto',
+          id: product.codigo,
+          name: product.nombre,
+          context: product.categoria,
+        },
+        metadata,
+        actor: auditActor,
+      });
+    },
+    [auditActor]
+  );
 
   useEffect(() => {
     if (!statusMessage) {
@@ -242,8 +303,18 @@ const Productos: React.FC = () => {
       return;
     }
     try {
-      softDeleteProduct(product.codigo);
+      const deleted = softDeleteProduct(product.codigo);
       setStatusMessage(`Producto "${product.nombre}" marcado como eliminado.`);
+      logProductEvent(
+        'deleted',
+        deleted,
+        `Producto "${product.nombre}" marcado como eliminado`,
+        {
+          stockAnterior: product.stock,
+          categoria: product.categoria,
+          deletedAt: deleted.deletedAt ?? null,
+        }
+      );
     } catch (error) {
       console.warn('No se pudo eliminar el producto', error);
       setStatusMessage('No se pudo eliminar el producto. Intenta nuevamente.');
@@ -264,9 +335,19 @@ const Productos: React.FC = () => {
       return;
     }
     try {
-      restoreProduct(product.codigo);
+      const restored = restoreProduct(product.codigo);
       setStatusMessage(
         `Producto "${product.nombre}" restaurado correctamente.`
+      );
+      logProductEvent(
+        'restored',
+        restored,
+        `Producto "${product.nombre}" restaurado`,
+        {
+          stock: restored.stock,
+          stockCritico: restored.stockCritico,
+          deletedAt: restored.deletedAt ?? null,
+        }
       );
     } catch (error) {
       console.warn('No se pudo restaurar el producto', error);
@@ -382,10 +463,30 @@ const Productos: React.FC = () => {
           codigo: formValues.codigo.trim() || undefined,
         });
         setStatusMessage(`Producto "${created.nombre}" agregado al catálogo.`);
+        logProductEvent(
+          'created',
+          created,
+          `Producto "${created.nombre}" creado`,
+          {
+            categoria: created.categoria,
+            precio: created.precio,
+            stock: created.stock,
+            stockCritico: created.stockCritico,
+          }
+        );
       } else if (formState.initial) {
-        updateProduct(formState.initial.codigo, payload);
+        const updated = updateProduct(formState.initial.codigo, payload);
+        const changes = computeProductDiff(formState.initial, updated);
         setStatusMessage(
-          `Producto "${payload.nombre}" actualizado correctamente.`
+          `Producto "${updated.nombre}" actualizado correctamente.`
+        );
+        logProductEvent(
+          'updated',
+          updated,
+          `Producto "${updated.nombre}" actualizado`,
+          {
+            cambios: changes,
+          }
         );
       }
       handleCloseForm();

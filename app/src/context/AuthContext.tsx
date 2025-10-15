@@ -7,7 +7,17 @@ import {
   useState,
 } from 'react';
 import { usuarios } from '@/data/usuarios';
-import type { Usuario } from '@/types';
+import type { AuditAction, Usuario } from '@/types';
+import { createAuditActorFromUser, recordAuditEvent } from '@/utils/audit';
+import {
+  ADMIN_USER_STATES_EVENT,
+  ADMIN_USER_STATES_KEY,
+  arePersistedUserStatesEqual,
+  loadAdminUserStates,
+  normalizeCorreo,
+  normalizeRun,
+  type PersistedUserState,
+} from '@/utils/users';
 
 type AuthUser = Pick<
   Usuario,
@@ -63,10 +73,9 @@ const EXTRA_USERS_STORAGE_KEY = 'levelup-extra-users';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const normalizarRun = (run: string) =>
-  run.replace(/[^0-9kK]/g, '').toUpperCase();
+const normalizarRun = normalizeRun;
 
-const normalizarCorreo = (correo: string) => correo.trim().toLowerCase();
+const normalizarCorreo = normalizeCorreo;
 
 const getGlobalCrypto = () => {
   if (typeof globalThis !== 'undefined' && globalThis.crypto) {
@@ -252,10 +261,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     loadExtraUsers()
   );
 
+  const [persistedUserStates, setPersistedUserStates] = useState<
+    Record<string, PersistedUserState>
+  >(() => loadAdminUserStates());
+
   const usuariosFusionados = useMemo(
     () => mergeUsuarios(usuarios, extraUsers),
     [extraUsers]
   );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const refreshStates = () => {
+      setPersistedUserStates((previous) => {
+        const next = loadAdminUserStates();
+        return arePersistedUserStatesEqual(previous, next) ? previous : next;
+      });
+    };
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === ADMIN_USER_STATES_KEY) {
+        refreshStates();
+      }
+    };
+    window.addEventListener(ADMIN_USER_STATES_EVENT, refreshStates);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener(ADMIN_USER_STATES_EVENT, refreshStates);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -282,6 +316,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [extraUsers]);
 
+  const emitAuthAuditEvent = useCallback(
+    (
+      action: AuditAction,
+      usuario: {
+        run: string;
+        nombre: string;
+        apellidos: string;
+        correo: string;
+        perfil: Usuario['perfil'];
+      },
+      summary: string,
+      options?: {
+        entityType?: 'auth' | 'usuario';
+        metadata?: unknown;
+        severity?: 'low' | 'medium' | 'high';
+      }
+    ) => {
+      recordAuditEvent({
+        action,
+        summary,
+        entity: {
+          type: options?.entityType ?? 'auth',
+          id: usuario.run,
+          name: usuario.correo,
+          context: usuario.perfil,
+        },
+        metadata: options?.metadata,
+        severity: options?.severity,
+        actor: createAuditActorFromUser(usuario),
+      });
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    const runKey = normalizarRun(user.run);
+    const state = persistedUserStates[runKey];
+    if (!state?.deletedAt) return;
+    emitAuthAuditEvent(
+      'logout',
+      {
+        run: user.run,
+        nombre: user.nombre,
+        apellidos: user.apellidos,
+        correo: user.correo,
+        perfil: user.perfil,
+      },
+      'Sesión finalizada automáticamente por desactivación de la cuenta',
+      {
+        metadata: {
+          reason: 'account-disabled',
+          deletedAt: state.deletedAt,
+        },
+        severity: 'medium',
+      }
+    );
+    setUser(null);
+  }, [emitAuthAuditEvent, persistedUserStates, user]);
+
   const login = useCallback(
     async ({ correo, password }: Credentials) => {
       const correoKey = normalizarCorreo(correo);
@@ -293,24 +387,70 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error('Usuario no encontrado. ¿Aún no te registras?');
       }
 
-      if (usuario.passwordHash && usuario.passwordSalt) {
+      const actorPayload = {
+        run: usuario.run,
+        nombre: usuario.nombre,
+        apellidos: usuario.apellidos,
+        correo: usuario.correo,
+        perfil: usuario.perfil,
+      };
+
+      const authMethod =
+        usuario.passwordHash && usuario.passwordSalt ? 'password' : 'legacy';
+
+      const runKey = normalizarRun(usuario.run);
+      const persistedState = persistedUserStates[runKey];
+      if (persistedState?.deletedAt) {
+        emitAuthAuditEvent(
+          'login',
+          actorPayload,
+          'Intento de inicio de sesión bloqueado: cuenta deshabilitada',
+          {
+            entityType: 'usuario',
+            metadata: {
+              origin: usuario.origin,
+              method: authMethod,
+              deletedAt: persistedState.deletedAt,
+              outcome: 'blocked',
+            },
+            severity: 'medium',
+          }
+        );
+        throw new Error(
+          'Esta cuenta está deshabilitada. Contacta al soporte para más información.'
+        );
+      }
+
+      if (authMethod === 'password') {
         if (!password) {
           throw new Error('Ingresa tu contraseña.');
         }
         const computed = await hashPasswordWithSalt(
-          usuario.passwordSalt,
+          usuario.passwordSalt!,
           password
         );
         if (computed !== usuario.passwordHash) {
           throw new Error('Contraseña incorrecta.');
         }
         setUser(createAuthUser(usuario));
+        emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
+          metadata: {
+            origin: usuario.origin,
+            method: authMethod,
+          },
+        });
         return;
       }
 
       setUser(createAuthUser(usuario));
+      emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
+        metadata: {
+          origin: usuario.origin,
+          method: authMethod,
+        },
+      });
     },
-    [usuariosFusionados]
+    [emitAuthAuditEvent, persistedUserStates, usuariosFusionados]
   );
 
   const register = useCallback(
@@ -350,13 +490,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       usuarios.push(nuevoUsuario);
       setExtraUsers((prev) => [...prev, nuevoUsuario]);
       setUser(createAuthUser({ ...nuevoUsuario, origin: 'extra' }));
+      emitAuthAuditEvent(
+        'registered',
+        {
+          run: nuevoUsuario.run,
+          nombre: nuevoUsuario.nombre,
+          apellidos: nuevoUsuario.apellidos,
+          correo: nuevoUsuario.correo,
+          perfil: nuevoUsuario.perfil,
+        },
+        'Registro de nuevo usuario',
+        {
+          entityType: 'usuario',
+          metadata: {
+            region: nuevoUsuario.region,
+            comuna: nuevoUsuario.comuna,
+          },
+        }
+      );
     },
-    [usuariosFusionados]
+    [emitAuthAuditEvent, usuariosFusionados]
   );
 
   const logout = useCallback(() => {
-    setUser(null);
-  }, []);
+    setUser((previous) => {
+      if (previous) {
+        emitAuthAuditEvent(
+          'logout',
+          {
+            run: previous.run,
+            nombre: previous.nombre,
+            apellidos: previous.apellidos,
+            correo: previous.correo,
+            perfil: previous.perfil,
+          },
+          'Cierre de sesión'
+        );
+      }
+      return null;
+    });
+  }, [emitAuthAuditEvent]);
 
   const value = useMemo(
     () => ({

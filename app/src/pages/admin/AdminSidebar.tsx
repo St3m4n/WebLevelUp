@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
     label: 'Mensajes',
     roles: ['Administrador', 'Vendedor'],
   },
+  { to: '/admin/auditoria', label: 'Auditoría', roles: ['Administrador'] },
   { to: '/admin/usuarios', label: 'Usuarios', roles: ['Administrador'] },
 ];
 

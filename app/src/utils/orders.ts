@@ -115,32 +115,36 @@ export const subscribeToOrders = (listener: () => void) => {
 export const updateOrderStatus = (
   orderId: string,
   status: Order['status']
-): boolean => {
+): Order | null => {
   const current = loadOrders();
   const index = current.findIndex((order) => order.id === orderId);
   if (index === -1) {
-    return false;
+    return null;
   }
   if (current[index].status === status) {
-    return true;
+    return current[index];
   }
   const next = [...current];
-  next[index] = {
+  const updated: Order = {
     ...current[index],
     status,
-  } satisfies Order;
+  };
+  next[index] = updated;
   persistOrders(next);
-  return true;
+  return updated;
 };
 
-export const removeOrder = (orderId: string): boolean => {
+export const removeOrder = (orderId: string): Order | null => {
   const current = loadOrders();
-  const next = current.filter((order) => order.id !== orderId);
-  if (next.length === current.length) {
-    return false;
+  const index = current.findIndex((order) => order.id === orderId);
+  if (index === -1) {
+    return null;
   }
+  const removed = current[index];
+  const next = [...current];
+  next.splice(index, 1);
   persistOrders(next);
-  return true;
+  return removed;
 };
 
 export const ORDER_STORAGE_KEYS = {

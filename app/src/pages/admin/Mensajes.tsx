@@ -13,6 +13,8 @@ import {
   updateMessage,
   updateMessageStatus,
 } from '@/utils/messages';
+import { useAuditActor } from '@/hooks/useAuditActor';
+import { recordAuditEvent } from '@/utils/audit';
 import styles from './Admin.module.css';
 
 type StatusFilter = 'all' | ContactMessageStatus;
@@ -56,6 +58,30 @@ const Mensajes: React.FC = () => {
   const [responseDraft, setResponseDraft] = useState('');
   const [feedback, setFeedback] = useState<Feedback>();
   const [isSaving, setIsSaving] = useState(false);
+  const auditActor = useAuditActor();
+
+  const logMessageEvent = useCallback(
+    (
+      action: 'updated' | 'responded' | 'status-changed',
+      message: ContactMessage,
+      summary: string,
+      metadata?: unknown
+    ) => {
+      recordAuditEvent({
+        action,
+        summary,
+        entity: {
+          type: 'mensaje',
+          id: message.id,
+          name: message.email,
+          context: message.asunto,
+        },
+        metadata,
+        actor: auditActor,
+      });
+    },
+    [auditActor]
+  );
 
   useEffect(() => {
     const unsubscribe = subscribeToMessages(() => {
@@ -204,6 +230,14 @@ const Mensajes: React.FC = () => {
         type: 'success',
         message: 'Respuesta guardada en el registro del mensaje.',
       });
+      logMessageEvent(
+        'updated',
+        updated,
+        `Respuesta actualizada para "${updated.asunto}"`,
+        {
+          longitudRespuesta: trimmed.length,
+        }
+      );
     } catch (error) {
       console.error('No se pudo guardar la respuesta del mensaje', error);
       setFeedback({
@@ -236,6 +270,14 @@ const Mensajes: React.FC = () => {
         type: 'success',
         message: 'Mensaje marcado como respondido.',
       });
+      logMessageEvent(
+        'responded',
+        updated,
+        `Mensaje "${updated.asunto}" marcado como respondido`,
+        {
+          respuesta: trimmed || null,
+        }
+      );
       if (statusFilter === 'pendiente') {
         handleCloseDetail();
       }
@@ -265,6 +307,11 @@ const Mensajes: React.FC = () => {
         type: 'success',
         message: 'El mensaje volvió al estado pendiente.',
       });
+      logMessageEvent(
+        'status-changed',
+        updated,
+        `Mensaje "${updated.asunto}" regresó a pendiente`
+      );
       if (statusFilter === 'respondido') {
         handleCloseDetail();
       }

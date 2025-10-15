@@ -14,6 +14,8 @@ import {
   seedCategoriesFromProducts,
   subscribeToCategories,
 } from '@/utils/categories';
+import { useAuditActor } from '@/hooks/useAuditActor';
+import { recordAuditEvent } from '@/utils/audit';
 import styles from './Admin.module.css';
 
 type ViewMode = 'active' | 'deleted';
@@ -40,6 +42,25 @@ const Categorias: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const productos = useProducts();
+  const auditActor = useAuditActor();
+  const logCategoryEvent = (
+    action: 'created' | 'deleted' | 'restored' | 'updated',
+    nombre: string,
+    summary: string,
+    metadata?: unknown
+  ) => {
+    recordAuditEvent({
+      action,
+      summary,
+      entity: {
+        type: 'categoria',
+        id: nombre.toLowerCase(),
+        name: nombre,
+      },
+      metadata,
+      actor: auditActor,
+    });
+  };
   const productUsage = useMemo(() => {
     const counts = new Map<string, number>();
     productos.forEach((producto) => {
@@ -116,6 +137,14 @@ const Categorias: React.FC = () => {
     setNewCategoria('');
     setFormError(null);
     setStatusMessage(`Categoría "${clean}" agregada correctamente.`);
+    logCategoryEvent(
+      'created',
+      clean,
+      `Categoría "${clean}" creada manualmente`,
+      {
+        origen: 'panel',
+      }
+    );
   };
 
   const handleSeedFromCatalog = () => {
@@ -132,6 +161,18 @@ const Categorias: React.FC = () => {
           added === 1 ? '' : 's'
         } desde el catálogo.`
       );
+      recordAuditEvent({
+        action: 'updated',
+        summary: 'Sincronización de categorías desde catálogo de productos',
+        entity: {
+          type: 'sistema',
+          context: 'categorias',
+        },
+        metadata: {
+          agregadas: added,
+        },
+        actor: auditActor,
+      });
     } else {
       setStatusMessage('No hay nuevas categorías para sincronizar.');
     }
@@ -143,14 +184,25 @@ const Categorias: React.FC = () => {
       `¿Eliminar la categoría "${categoria.name}"? Podrás restaurarla luego.`
     );
     if (!confirmed) return;
+    const deletedAt = new Date().toISOString();
     updateCategorias((prev) =>
       prev.map((item) =>
         item.name.toLowerCase() === categoria.name.toLowerCase()
-          ? { ...item, deletedAt: new Date().toISOString() }
+          ? { ...item, deletedAt }
           : item
       )
     );
     setStatusMessage(`Categoría "${categoria.name}" eliminada.`);
+    const usage = productUsage.get(categoria.name.toLowerCase()) ?? 0;
+    logCategoryEvent(
+      'deleted',
+      categoria.name,
+      `Categoría "${categoria.name}" eliminada`,
+      {
+        deletedAt,
+        productosAsociados: usage,
+      }
+    );
   };
 
   const handleRestore = (categoria: Categoria) => {
@@ -167,6 +219,14 @@ const Categorias: React.FC = () => {
       )
     );
     setStatusMessage(`Categoría "${categoria.name}" restaurada.`);
+    logCategoryEvent(
+      'restored',
+      categoria.name,
+      `Categoría "${categoria.name}" restaurada`,
+      {
+        eliminadoAnteriormente: categoria.deletedAt ?? null,
+      }
+    );
   };
 
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {

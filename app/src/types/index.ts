@@ -131,3 +131,50 @@ export interface CommunityEvent {
   startTime: string;
   content: string[];
 }
+
+export type AuditAction =
+  | 'created'
+  | 'updated'
+  | 'deleted'
+  | 'restored'
+  | 'login'
+  | 'logout'
+  | 'registered'
+  | 'status-changed'
+  | 'responded';
+
+export type AuditEntityType =
+  | 'producto'
+  | 'usuario'
+  | 'orden'
+  | 'mensaje'
+  | 'categoria'
+  | 'auth'
+  | 'sistema';
+
+export type AuditSeverity = 'low' | 'medium' | 'high';
+
+export type AuditActor = {
+  id: string;
+  name: string;
+  email?: string;
+  role?: string;
+};
+
+export type AuditEntityRef = {
+  type: AuditEntityType;
+  id?: string;
+  name?: string;
+  context?: string;
+};
+
+export type AuditEvent<TMetadata = unknown> = {
+  id: string;
+  timestamp: string;
+  action: AuditAction;
+  actor: AuditActor;
+  entity: AuditEntityRef;
+  summary: string;
+  metadata?: TMetadata;
+  severity?: AuditSeverity;
+};

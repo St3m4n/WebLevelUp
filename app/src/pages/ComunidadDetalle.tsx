@@ -118,41 +118,47 @@ const ComunidadDetalle: React.FC = () => {
         return communityNews
           .filter((item) => item.slug !== entry.slug)
           .slice(0, 3)
-          .map((item): RelatedItem => ({
-            slug: item.slug,
-            title: item.title,
-            excerpt: item.excerpt,
-            meta: `Publicado el ${formatDateTime(item.publishedAt)}`,
-            badge: item.category,
-            image: item.image,
-            icon: undefined,
-          }));
+          .map(
+            (item): RelatedItem => ({
+              slug: item.slug,
+              title: item.title,
+              excerpt: item.excerpt,
+              meta: `Publicado el ${formatDateTime(item.publishedAt)}`,
+              badge: item.category,
+              image: item.image,
+              icon: undefined,
+            })
+          );
       case 'blog':
         return communityBlogPosts
           .filter((item) => item.slug !== entry.slug)
           .slice(0, 3)
-          .map((item): RelatedItem => ({
-            slug: item.slug,
-            title: item.title,
-            excerpt: item.excerpt,
-            meta: `Publicado el ${formatDateTime(item.publishedAt)}`,
-            badge: 'Blog',
-            image: item.image,
-            icon: undefined,
-          }));
+          .map(
+            (item): RelatedItem => ({
+              slug: item.slug,
+              title: item.title,
+              excerpt: item.excerpt,
+              meta: `Publicado el ${formatDateTime(item.publishedAt)}`,
+              badge: 'Blog',
+              image: item.image,
+              icon: undefined,
+            })
+          );
       case 'event':
         return communityEvents
           .filter((item) => item.slug !== entry.slug)
           .slice(0, 3)
-          .map((item): RelatedItem => ({
-            slug: item.slug,
-            title: item.title,
-            excerpt: item.description,
-            meta: `${formatDateTime(item.date)}, ${item.location} · ${item.startTime} hrs`,
-            badge: 'Evento',
-            image: undefined,
-            icon: undefined,
-          }));
+          .map(
+            (item): RelatedItem => ({
+              slug: item.slug,
+              title: item.title,
+              excerpt: item.description,
+              meta: `${formatDateTime(item.date)}, ${item.location} · ${item.startTime} hrs`,
+              badge: 'Evento',
+              image: undefined,
+              icon: undefined,
+            })
+          );
       case 'guide':
         return communityGuides
           .filter((item) => item.slug !== entry.slug)
@@ -160,7 +166,9 @@ const ComunidadDetalle: React.FC = () => {
           .map((item): RelatedItem => {
             const metaParts: string[] = [];
             if (item.updatedAt) {
-              metaParts.push(`Actualizado el ${formatDateTime(item.updatedAt)}`);
+              metaParts.push(
+                `Actualizado el ${formatDateTime(item.updatedAt)}`
+              );
             }
             if (item.readTime) {
               metaParts.push(`${item.readTime} de lectura`);

@@ -174,10 +174,18 @@
   background: rgba(12, 12, 12, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
+  .dateInput {
+    flex: 0 1 160px;
+    min-width: 140px;
+  }
   padding: 0.6rem 0.85rem;
   color: var(--color-text-primary);
   font-family: inherit;
   min-height: 42px;
+}
+.dangerOutline {
+  border-color: rgba(244, 63, 94, 0.35);
+  color: #fda4af;
 }
 
 .searchInput {
@@ -519,15 +527,16 @@
   background: rgba(18, 18, 18, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 22px;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: clamp(1rem, 3vw, 1.25rem);
-  padding: clamp(1.25rem, 4vw, 2rem);
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
 }
 
 .detailHeader {
   display: flex;
+  .dateInput {
+    flex: 0 1 160px;
+    min-width: 140px;
+  }
+
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.75rem;
@@ -840,6 +849,68 @@
 
 .sidebarSecondary {
   border-color: rgba(255, 255, 255, 0.12);
+}
+
+.auditActor {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.auditActorName {
+  font-weight: 600;
+}
+
+.auditActorMeta {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.auditBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(83, 58, 250, 0.22);
+  border: 1px solid rgba(83, 58, 250, 0.35);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #d8dcff;
+  font-weight: 600;
+}
+
+.auditEntity {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.auditEntityType {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.auditEntityName {
+  font-size: 0.82rem;
+}
+
+.auditEntityMeta {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.auditMetadata {
+  max-width: clamp(220px, 32vw, 420px);
+  background: rgba(12, 12, 12, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.6rem;
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 @media (max-width: 960px) {
