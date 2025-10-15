@@ -1,4 +1,7 @@
 .navbarRoot {
+  position: sticky;
+  top: 0;
+  z-index: 1200;
   background: rgba(18, 18, 18, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -34,6 +37,52 @@
   gap: 1rem;
 }
 
+.searchForm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 260px;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.searchButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(199, 41, 242, 0.18);
+  color: var(--color-text-primary);
+  transition: background 0.2s ease;
+}
+
+.searchButton:hover {
+  background: rgba(199, 41, 242, 0.28);
+}
+
+.searchButton svg {
+  width: 18px;
+  height: 18px;
+}
+
 .navLink {
   color: var(--color-text-secondary);
   font-weight: 600;
@@ -54,21 +103,116 @@
 .ctaLinks {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
-.cartCount {
-  min-width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 999px;
-  background: var(--color-accent-neon);
+.iconButton {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.iconButton svg {
+  width: 22px;
+  height: 22px;
+}
+
+.iconButton:hover,
+.iconButtonActive {
+  color: var(--color-text-primary);
+  border-color: rgba(199, 41, 242, 0.45);
+  background: rgba(199, 41, 242, 0.15);
+}
+
+.iconBadge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: var(--color-accent-neon);
   color: #111;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.35rem;
+  box-shadow: 0 6px 16px rgba(199, 41, 242, 0.25);
+}
+
+.cartCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: var(--color-accent-neon);
+  color: #111;
+  font-size: 0.7rem;
+  font-weight: 700;
   margin-left: 0.35rem;
+  padding: 0 0.3rem;
+}
+
+.profileWrapper {
+  position: relative;
+  z-index: 45;
+}
+
+.profileMenu {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem;
+  width: 210px;
+  background: rgba(18, 18, 18, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45);
+  z-index: 1300;
+}
+
+.profileMenuItem,
+.profileMenuItemButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.4px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.profileMenuItem:hover,
+.profileMenuItemButton:hover {
+  background: rgba(199, 41, 242, 0.15);
+  color: var(--color-text-primary);
+}
+
+.profileMenuItemButton {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
 }
 
 .mobileMenuButton {
@@ -92,6 +236,50 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.mobileSearchForm {
+  padding: 0.25rem 0.5rem;
+}
+
+.mobileSearchGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mobileSearchGroup input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.mobileSearchGroup input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.mobileSearchGroup button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(199, 41, 242, 0.18);
+  color: var(--color-text-primary);
+}
+
+.mobileSearchGroup button svg {
+  width: 18px;
+  height: 18px;
+}
+
 .mobileNavLink {
   color: var(--color-text-secondary);
   font-weight: 600;
@@ -104,7 +292,8 @@
 
 @media (max-width: 991px) {
   .desktopLinks,
-  .ctaLinks {
+  .ctaLinks,
+  .searchForm {
     display: none;
   }
 

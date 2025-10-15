@@ -42,6 +42,79 @@
   justify-content: center;
 }
 
+.moreWrapper {
+  position: relative;
+}
+
+.moreButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.moreButton svg {
+  transform: translateY(1px);
+}
+
+.moreButton[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.overflowMenu {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.6rem;
+  min-width: 220px;
+  background: rgba(18, 18, 18, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  z-index: 15;
+}
+
+.overflowItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.overflowItem:hover {
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.emptyMessage {
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.75rem;
+}
+
 .link {
   display: inline-flex;
   align-items: center;

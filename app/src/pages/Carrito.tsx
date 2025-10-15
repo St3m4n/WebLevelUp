@@ -5,8 +5,19 @@ import { formatPrice } from '@/utils/format';
 import styles from './Carrito.module.css';
 
 const Carrito: React.FC = () => {
-  const { items, totalCantidad, total, updateCantidad, removeItem, clearCart } =
-    useCart();
+  const {
+    items,
+    totalCantidad,
+    subtotal,
+    total,
+    totalSavings,
+    hasDuocDiscount,
+    discountRate,
+    getItemPricing,
+    updateCantidad,
+    removeItem,
+    clearCart,
+  } = useCart();
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const handleChangeCantidad = (
@@ -93,106 +104,153 @@ const Carrito: React.FC = () => {
               </span>
             </div>
 
-            {items.map((item) => (
-              <article key={item.id} className={styles.row}>
-                <div className={styles.productCell}>
-                  <img src={item.imagen} alt={item.nombre} loading="lazy" />
-                  <div className={styles.productInfo}>
-                    <span className={styles.productName}>{item.nombre}</span>
-                    <span className={styles.productMeta}>
-                      Código: {item.id}
-                    </span>
-                    <span className={styles.productMeta}>
-                      Precio unitario: {formatPrice(item.precio)}
-                    </span>
-                    <span className={styles.stockInfo}>
-                      Stock disponible: {item.stock}
-                    </span>
+            {items.map((item) => {
+              const pricing = getItemPricing(item);
+              return (
+                <article key={item.id} className={styles.row}>
+                  <div className={styles.productCell}>
+                    <img src={item.imagen} alt={item.nombre} loading="lazy" />
+                    <div className={styles.productInfo}>
+                      <span className={styles.productName}>{item.nombre}</span>
+                      <span className={styles.productMeta}>
+                        Código: {item.id}
+                      </span>
+                      <span className={styles.productMeta}>
+                        Precio unitario:{' '}
+                        {pricing.hasDiscount ? (
+                          <span className={styles.priceWithDiscount}>
+                            <span className={styles.priceOriginal}>
+                              {formatPrice(pricing.unitBase)}
+                            </span>
+                            <span className={styles.priceFinal}>
+                              {formatPrice(pricing.unitFinal)}
+                            </span>
+                            <span className={styles.discountBadge}>
+                              −{Math.round(discountRate * 100)}% DUOC
+                            </span>
+                          </span>
+                        ) : (
+                          <span className={styles.priceFinal}>
+                            {formatPrice(pricing.unitFinal)}
+                          </span>
+                        )}
+                      </span>
+                      <span className={styles.stockInfo}>
+                        Stock disponible: {item.stock}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <div className={styles.quantityCell}>
-                  <div className={styles.quantityControl}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleChangeCantidad(
-                          item.id,
-                          item.cantidad - 1,
-                          item.stock,
-                          item.nombre
-                        )
-                      }
-                      disabled={item.cantidad <= 1}
-                      aria-label={`Reducir cantidad de ${item.nombre}`}
-                    >
-                      −
-                    </button>
-                    <input
-                      type="number"
-                      min={1}
-                      max={item.stock}
-                      value={item.cantidad}
-                      onChange={(event) =>
-                        handleChangeCantidad(
-                          item.id,
-                          Number(event.target.value),
-                          item.stock,
-                          item.nombre
-                        )
-                      }
-                      aria-label={`Cantidad para ${item.nombre}`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleChangeCantidad(
-                          item.id,
-                          item.cantidad + 1,
-                          item.stock,
-                          item.nombre
-                        )
-                      }
-                      disabled={item.cantidad >= item.stock}
-                      aria-label={`Aumentar cantidad de ${item.nombre}`}
-                    >
-                      +
-                    </button>
+                  <div className={styles.quantityCell}>
+                    <div className={styles.quantityControl}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleChangeCantidad(
+                            item.id,
+                            item.cantidad - 1,
+                            item.stock,
+                            item.nombre
+                          )
+                        }
+                        disabled={item.cantidad <= 1}
+                        aria-label={`Reducir cantidad de ${item.nombre}`}
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={item.stock}
+                        value={item.cantidad}
+                        onChange={(event) =>
+                          handleChangeCantidad(
+                            item.id,
+                            Number(event.target.value),
+                            item.stock,
+                            item.nombre
+                          )
+                        }
+                        aria-label={`Cantidad para ${item.nombre}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleChangeCantidad(
+                            item.id,
+                            item.cantidad + 1,
+                            item.stock,
+                            item.nombre
+                          )
+                        }
+                        disabled={item.cantidad >= item.stock}
+                        aria-label={`Aumentar cantidad de ${item.nombre}`}
+                      >
+                        +
+                      </button>
+                    </div>
+                    {item.cantidad >= item.stock && (
+                      <span className={styles.stockAlert}>
+                        Alcanzaste el stock disponible para este producto.
+                      </span>
+                    )}
                   </div>
-                  {item.cantidad >= item.stock && (
-                    <span className={styles.stockAlert}>
-                      Alcanzaste el stock disponible para este producto.
-                    </span>
-                  )}
-                </div>
 
-                <span className={styles.priceCell}>
-                  {formatPrice(item.precio * item.cantidad)}
-                </span>
+                  <span className={styles.priceCell}>
+                    {pricing.hasDiscount ? (
+                      <span className={styles.priceWithDiscount}>
+                        <span className={styles.priceOriginal}>
+                          {formatPrice(pricing.subtotalBase)}
+                        </span>
+                        <span className={styles.priceFinal}>
+                          {formatPrice(pricing.subtotalFinal)}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className={styles.priceFinal}>
+                        {formatPrice(pricing.subtotalFinal)}
+                      </span>
+                    )}
+                  </span>
 
-                <button
-                  type="button"
-                  className={styles.removeButton}
-                  onClick={() => handleRemoveItem(item.id, item.nombre)}
-                >
-                  ×<span className="visually-hidden">Eliminar producto</span>
-                </button>
-              </article>
-            ))}
+                  <button
+                    type="button"
+                    className={styles.removeButton}
+                    onClick={() => handleRemoveItem(item.id, item.nombre)}
+                  >
+                    ×<span className="visually-hidden">Eliminar producto</span>
+                  </button>
+                </article>
+              );
+            })}
           </section>
 
           <aside className={styles.summaryCard}>
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
-              <span>{formatPrice(total)}</span>
+              <span
+                className={
+                  hasDuocDiscount ? styles.priceOriginal : styles.priceFinal
+                }
+              >
+                {formatPrice(subtotal)}
+              </span>
             </div>
+            {hasDuocDiscount && totalSavings > 0 && (
+              <div className={styles.summaryRow}>
+                <span>Descuento DUOC</span>
+                <span className={styles.savingsAmount}>
+                  −{formatPrice(totalSavings)}
+                </span>
+              </div>
+            )}
             <div className={styles.summaryRow}>
               <span>Envío</span>
               <span>Calculado en el checkout</span>
             </div>
             <div className={styles.totalRow}>
               <span>Total</span>
-              <span>{formatPrice(total)}</span>
+              <span className={styles.priceFinal}>{formatPrice(total)}</span>
             </div>
             <div className={styles.summaryActions}>
               <Link to="/checkout" className={styles.checkoutButton}>

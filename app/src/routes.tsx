@@ -12,6 +12,9 @@ const Login = lazy(() => import('./pages/Login'));
 const Registro = lazy(() => import('./pages/Registro'));
 const Perfil = lazy(() => import('./pages/Perfil'));
 const Contacto = lazy(() => import('./pages/Contacto'));
+const Nosotros = lazy(() => import('./pages/Nosotros'));
+const Comunidad = lazy(() => import('./pages/Comunidad'));
+const ComunidadDetalle = lazy(() => import('./pages/ComunidadDetalle'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminProductos = lazy(() => import('./pages/admin/Productos'));
@@ -33,6 +36,9 @@ const router = createBrowserRouter([
       { path: 'checkout', element: <Checkout /> },
       { path: 'login', element: <Login /> },
       { path: 'registro', element: <Registro /> },
+      { path: 'nosotros', element: <Nosotros /> },
+      { path: 'comunidad', element: <Comunidad /> },
+      { path: 'comunidad/:slug', element: <ComunidadDetalle /> },
       {
         path: 'contacto',
         element: <Contacto />,

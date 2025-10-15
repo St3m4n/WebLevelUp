@@ -4,6 +4,7 @@ import { useProducts } from '@/hooks/useProducts';
 import type { ProductRecord } from '@/utils/products';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/format';
+import { usePricing } from '@/hooks/usePricing';
 import styles from './Tienda.module.css';
 
 const SORT_OPTIONS = [
@@ -32,18 +33,9 @@ const Tienda: React.FC = () => {
     searchParams.get('orden') ?? 'populares'
   );
   const categoriaParam = searchParams.get('categoria') ?? undefined;
+  const searchQuery = (searchParams.get('q') ?? '').trim();
   const productos = useProducts();
-  const categorias = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          productos
-            .map((producto) => producto.categoria?.trim())
-            .filter(Boolean)
-        )
-      ).sort((a, b) => (a ?? '').localeCompare(b ?? '')) as string[],
-    [productos]
-  );
+  const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
 
   const productosFiltrados = useMemo(() => {
@@ -53,18 +45,21 @@ const Tienda: React.FC = () => {
             producto.categoria?.toLowerCase() === categoriaParam.toLowerCase()
         )
       : productos;
-    return ordenarProductos(activeSort, base);
-  }, [activeSort, categoriaParam, productos]);
-
-  const handleCategoriaClick = (categoria?: string) => {
-    const next = new URLSearchParams(searchParams);
-    if (categoria) {
-      next.set('categoria', categoria);
-    } else {
-      next.delete('categoria');
-    }
-    setSearchParams(next, { replace: true });
-  };
+    const queryLower = searchQuery.toLowerCase();
+    const filtrados = queryLower
+      ? base.filter((producto) => {
+          const nombre = producto.nombre?.toLowerCase() ?? '';
+          const descripcion = producto.descripcion?.toLowerCase() ?? '';
+          const categoria = producto.categoria?.toLowerCase() ?? '';
+          return (
+            nombre.includes(queryLower) ||
+            descripcion.includes(queryLower) ||
+            categoria.includes(queryLower)
+          );
+        })
+      : base;
+    return ordenarProductos(activeSort, filtrados);
+  }, [activeSort, categoriaParam, productos, searchQuery]);
 
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
@@ -89,33 +84,14 @@ const Tienda: React.FC = () => {
             <span className={styles.badge}>
               {productosFiltrados.length} productos
             </span>
+            {searchQuery && (
+              <span className={styles.searchTag}>
+                Resultado para &quot;{searchQuery}&quot;
+              </span>
+            )}
           </div>
 
           <div className={styles.controls}>
-            <div className={styles.filterGroup}>
-              <button
-                type="button"
-                className={`${styles.filterButton} ${categoriaParam ? '' : styles.filterButtonActive}`}
-                onClick={() => handleCategoriaClick(undefined)}
-              >
-                Todos
-              </button>
-              {categorias.map((categoria) => (
-                <button
-                  key={categoria}
-                  type="button"
-                  className={`${styles.filterButton} ${
-                    categoriaParam?.toLowerCase() === categoria.toLowerCase()
-                      ? styles.filterButtonActive
-                      : ''
-                  }`}
-                  onClick={() => handleCategoriaClick(categoria)}
-                >
-                  {categoria}
-                </button>
-              ))}
-            </div>
-
             <div className={styles.select}>
               <label htmlFor="orden" className="visually-hidden">
                 Ordenar productos
@@ -138,37 +114,58 @@ const Tienda: React.FC = () => {
           </div>
         ) : (
           <div className={styles.grid}>
-            {productosFiltrados.map((producto) => (
-              <article key={producto.codigo} className={styles.card}>
-                <img src={producto.url} alt={producto.nombre} loading="lazy" />
-                <div className={styles.cardBody}>
-                  <h3 className={styles.productName}>{producto.nombre}</h3>
-                  <p className={styles.productDescription}>
-                    {producto.descripcion}
-                  </p>
+            {productosFiltrados.map((producto) => {
+              const pricing = getPriceBreakdown(producto.precio);
+              return (
+                <article key={producto.codigo} className={styles.card}>
+                  <img
+                    src={producto.url}
+                    alt={producto.nombre}
+                    loading="lazy"
+                  />
+                  <div className={styles.cardBody}>
+                    <h3 className={styles.productName}>{producto.nombre}</h3>
+                    <p className={styles.productDescription}>
+                      {producto.descripcion}
+                    </p>
 
-                  <div className={styles.priceSection}>
-                    <span className={styles.price}>
-                      {formatPrice(producto.precio)}
-                    </span>
-                    <Link
-                      to={`/tienda/${producto.codigo}`}
-                      className={styles.detailLink}
+                    <div className={styles.priceSection}>
+                      {pricing.hasDiscount ? (
+                        <span className={styles.priceWithDiscount}>
+                          <span className={styles.priceOriginal}>
+                            {formatPrice(pricing.basePrice)}
+                          </span>
+                          <span className={styles.priceFinal}>
+                            {formatPrice(pricing.finalPrice)}
+                          </span>
+                          <span className={styles.discountBadge}>
+                            −{Math.round(discountRate * 100)}% DUOC
+                          </span>
+                        </span>
+                      ) : (
+                        <span className={styles.priceFinal}>
+                          {formatPrice(pricing.finalPrice)}
+                        </span>
+                      )}
+                      <Link
+                        to={`/tienda/${producto.codigo}`}
+                        className={styles.detailLink}
+                      >
+                        Ver detalle →
+                      </Link>
+                    </div>
+
+                    <button
+                      type="button"
+                      className={styles.addButton}
+                      onClick={() => addItem(producto)}
                     >
-                      Ver detalle →
-                    </Link>
+                      Agregar al carrito
+                    </button>
                   </div>
-
-                  <button
-                    type="button"
-                    className={styles.addButton}
-                    onClick={() => addItem(producto)}
-                  >
-                    Agregar al carrito
-                  </button>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>

@@ -9,6 +9,7 @@ import {
 import type { Producto } from '@/types';
 import type { ProductRecord } from '@/utils/products';
 import { loadProducts, subscribeToProducts } from '@/utils/products';
+import { usePricing, type PriceBreakdown } from '@/hooks/usePricing';
 
 export type CartItem = {
   id: string;
@@ -23,6 +24,17 @@ type CartState = {
   items: CartItem[];
 };
 
+export type CartItemPricing = {
+  unitBase: number;
+  unitFinal: number;
+  subtotalBase: number;
+  subtotalFinal: number;
+  savingsUnit: number;
+  savingsSubtotal: number;
+  hasDiscount: boolean;
+  discountRate: number;
+};
+
 type CartAction =
   | { type: 'ADD_ITEM'; payload: Producto; cantidad?: number }
   | { type: 'REMOVE_ITEM'; payload: { id: string } }
@@ -33,7 +45,12 @@ type CartAction =
 type CartContextValue = {
   items: CartItem[];
   totalCantidad: number;
+  subtotal: number;
   total: number;
+  totalSavings: number;
+  hasDuocDiscount: boolean;
+  discountRate: number;
+  getItemPricing: (item: CartItem) => CartItemPricing;
   addItem: (producto: Producto, cantidad?: number) => void;
   removeItem: (id: string) => void;
   updateCantidad: (id: string, cantidad: number) => void;
@@ -213,6 +230,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     undefined,
     loadInitialState
   );
+  const { hasDuocDiscount, discountRate, applyDiscount, getPriceBreakdown } =
+    usePricing();
 
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
@@ -252,17 +271,56 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     [state.items]
   );
 
-  const total = useMemo(
+  const subtotal = useMemo(
     () =>
       state.items.reduce((sum, item) => sum + item.cantidad * item.precio, 0),
     [state.items]
+  );
+
+  const total = useMemo(
+    () =>
+      state.items.reduce(
+        (sum, item) => sum + item.cantidad * applyDiscount(item.precio),
+        0
+      ),
+    [applyDiscount, state.items]
+  );
+
+  const totalSavings = useMemo(
+    () => Math.max(0, subtotal - total),
+    [subtotal, total]
+  );
+
+  const getItemPricing = useCallback(
+    (item: CartItem): CartItemPricing => {
+      const breakdown: PriceBreakdown = getPriceBreakdown(item.precio);
+      const subtotalBase = breakdown.basePrice * item.cantidad;
+      const subtotalFinal = breakdown.finalPrice * item.cantidad;
+      const savingsSubtotal = Math.max(0, subtotalBase - subtotalFinal);
+      return {
+        unitBase: breakdown.basePrice,
+        unitFinal: breakdown.finalPrice,
+        subtotalBase,
+        subtotalFinal,
+        savingsUnit: breakdown.savings,
+        savingsSubtotal,
+        hasDiscount: breakdown.hasDiscount,
+        discountRate: breakdown.discountRate,
+      };
+    },
+    [getPriceBreakdown]
   );
 
   const value = useMemo(
     () => ({
       items: state.items,
       totalCantidad,
+      subtotal,
       total,
+      totalSavings,
+      hasDuocDiscount,
+      discountRate,
+      getItemPricing,
       addItem,
       removeItem,
       updateCantidad,
@@ -271,7 +329,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     [
       state.items,
       totalCantidad,
+      subtotal,
       total,
+      totalSavings,
+      hasDuocDiscount,
+      discountRate,
+      getItemPricing,
       addItem,
       removeItem,
       updateCantidad,

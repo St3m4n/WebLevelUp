@@ -150,100 +150,132 @@ const Contacto: React.FC = () => {
   return (
     <div className="container">
       <div className={styles.page}>
-        <div className={styles.formCard}>
-          <div className={styles.header}>
-            <h1 className={styles.title}>Comunícate con nosotros</h1>
-            <p className={styles.subtitle}>
-              Rellena el formulario y nuestro equipo te responderá dentro de las
-              próximas 24 horas hábiles.
-            </p>
+        <div className={styles.contactLayout}>
+          <div className={styles.formCard}>
+            <div className={styles.header}>
+              <h1 className={styles.title}>Comunícate con nosotros</h1>
+              <p className={styles.subtitle}>
+                Rellena el formulario y nuestro equipo te responderá dentro de
+                las próximas 24 horas hábiles.
+              </p>
+            </div>
+
+            {status && (
+              <div
+                role="status"
+                aria-live="polite"
+                className={
+                  status.type === 'success'
+                    ? styles.statusSuccess
+                    : styles.statusError
+                }
+              >
+                {status.message}
+              </div>
+            )}
+
+            <form className={styles.form} onSubmit={handleSubmit} noValidate>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="nombre">Nombre completo</label>
+                <input
+                  id="nombre"
+                  value={nombre}
+                  onChange={handleNombreChange}
+                  className={errors.nombre ? styles.inputError : undefined}
+                  required
+                />
+                {errors.nombre && (
+                  <span className={styles.errorMessage}>{errors.nombre}</span>
+                )}
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="email">Correo electrónico</label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  className={errors.email ? styles.inputError : undefined}
+                  required
+                />
+                {errors.email && (
+                  <span className={styles.errorMessage}>{errors.email}</span>
+                )}
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="asunto">Asunto</label>
+                <input
+                  id="asunto"
+                  value={asunto}
+                  onChange={handleAsuntoChange}
+                  className={errors.asunto ? styles.inputError : undefined}
+                  required
+                />
+                {errors.asunto && (
+                  <span className={styles.errorMessage}>{errors.asunto}</span>
+                )}
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="mensaje">Mensaje</label>
+                <textarea
+                  id="mensaje"
+                  rows={5}
+                  value={mensaje}
+                  onChange={handleMensajeChange}
+                  className={errors.mensaje ? styles.inputError : undefined}
+                  required
+                />
+                <div className={styles.hintRow}>
+                  <span className={styles.hint}>Máximo 500 caracteres.</span>
+                  <span className={styles.hint}>{mensajeLength}/500</span>
+                </div>
+                {errors.mensaje && (
+                  <span className={styles.errorMessage}>{errors.mensaje}</span>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className={styles.primaryButton}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Enviando…' : 'Enviar mensaje'}
+              </button>
+            </form>
           </div>
 
-          {status && (
-            <div
-              role="status"
-              aria-live="polite"
-              className={
-                status.type === 'success'
-                  ? styles.statusSuccess
-                  : styles.statusError
-              }
-            >
-              {status.message}
+          <aside className={styles.mapCard} aria-labelledby="mapa-contacto">
+            <div className={styles.mapHeading}>
+              <h2 id="mapa-contacto">Visítanos en Santiago</h2>
+              <p>
+                Talleres, retiros programados y demostraciones en nuestra base
+                gamer de Las Condes.
+              </p>
             </div>
-          )}
-
-          <form className={styles.form} onSubmit={handleSubmit} noValidate>
-            <div className={styles.fieldGroup}>
-              <label htmlFor="nombre">Nombre completo</label>
-              <input
-                id="nombre"
-                value={nombre}
-                onChange={handleNombreChange}
-                className={errors.nombre ? styles.inputError : undefined}
-                required
+            <ul className={styles.infoList}>
+              <li>
+                <strong>Horario atención:</strong> Lunes a viernes 10:00 a 18:30
+              </li>
+              <li>
+                <strong>Teléfono:</strong> +56 9 1234 5678
+              </li>
+              <li>
+                <strong>Correo soporte:</strong> contacto@levelup.cl
+              </li>
+            </ul>
+            <div className={styles.mapFrameWrapper}>
+              <iframe
+                title="Ubicación Level-Up Gamer"
+                src="https://maps.google.com/maps?q=Duoc%20UC%20San%20Carlos%20de%20Apoquindo&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className={styles.mapFrame}
               />
-              {errors.nombre && (
-                <span className={styles.errorMessage}>{errors.nombre}</span>
-              )}
             </div>
-
-            <div className={styles.fieldGroup}>
-              <label htmlFor="email">Correo electrónico</label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={handleEmailChange}
-                className={errors.email ? styles.inputError : undefined}
-                required
-              />
-              {errors.email && (
-                <span className={styles.errorMessage}>{errors.email}</span>
-              )}
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <label htmlFor="asunto">Asunto</label>
-              <input
-                id="asunto"
-                value={asunto}
-                onChange={handleAsuntoChange}
-                className={errors.asunto ? styles.inputError : undefined}
-                required
-              />
-              {errors.asunto && (
-                <span className={styles.errorMessage}>{errors.asunto}</span>
-              )}
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <label htmlFor="mensaje">Mensaje</label>
-              <textarea
-                id="mensaje"
-                rows={5}
-                value={mensaje}
-                onChange={handleMensajeChange}
-                className={errors.mensaje ? styles.inputError : undefined}
-                required
-              />
-              <div className={styles.hintRow}>
-                <span className={styles.hint}>Máximo 500 caracteres.</span>
-                <span className={styles.hint}>{mensajeLength}/500</span>
-              </div>
-              {errors.mensaje && (
-                <span className={styles.errorMessage}>{errors.mensaje}</span>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className={styles.primaryButton}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Enviando…' : 'Enviar mensaje'}
-            </button>
-          </form>
+          </aside>
         </div>
       </div>
     </div>

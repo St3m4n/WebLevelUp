@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/format';
+import { usePricing } from '@/hooks/usePricing';
 import styles from './ProductoDetalle.module.css';
 
 const ProductoDetalle: React.FC = () => {
@@ -10,6 +11,7 @@ const ProductoDetalle: React.FC = () => {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const productos = useProducts();
+  const { getPriceBreakdown, discountRate } = usePricing();
   const [cantidad, setCantidad] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -69,6 +71,8 @@ const ProductoDetalle: React.FC = () => {
     );
   };
 
+  const precioProducto = getPriceBreakdown(producto.precio);
+
   return (
     <div className="container">
       <div className={styles.page}>
@@ -103,9 +107,25 @@ const ProductoDetalle: React.FC = () => {
 
             <div className={styles.pricePanel}>
               <div className={styles.priceRow}>
-                <span className={styles.price}>
-                  {formatPrice(producto.precio)}
-                </span>
+                <div className={styles.priceGroup}>
+                  {precioProducto.hasDiscount ? (
+                    <>
+                      <span className={styles.priceOriginal}>
+                        {formatPrice(precioProducto.basePrice)}
+                      </span>
+                      <span className={styles.priceFinal}>
+                        {formatPrice(precioProducto.finalPrice)}
+                      </span>
+                      <span className={styles.discountBadge}>
+                        −{Math.round(discountRate * 100)}% DUOC
+                      </span>
+                    </>
+                  ) : (
+                    <span className={styles.priceFinal}>
+                      {formatPrice(precioProducto.finalPrice)}
+                    </span>
+                  )}
+                </div>
                 <span className={styles.stockTag}>
                   {producto.stock > 5
                     ? 'Stock disponible'
@@ -213,7 +233,23 @@ const ProductoDetalle: React.FC = () => {
                   <img src={item.url} alt={item.nombre} loading="lazy" />
                   <h3>{item.nombre}</h3>
                   <footer>
-                    <span>{formatPrice(item.precio)}</span>
+                    {(() => {
+                      const relatedPricing = getPriceBreakdown(item.precio);
+                      return relatedPricing.hasDiscount ? (
+                        <span className={styles.relatedPriceWithDiscount}>
+                          <span className={styles.relatedPriceOriginal}>
+                            {formatPrice(relatedPricing.basePrice)}
+                          </span>
+                          <span className={styles.relatedPriceFinal}>
+                            {formatPrice(relatedPricing.finalPrice)}
+                          </span>
+                        </span>
+                      ) : (
+                        <span className={styles.relatedPriceFinal}>
+                          {formatPrice(relatedPricing.finalPrice)}
+                        </span>
+                      );
+                    })()}
                     <span>{item.categoria}</span>
                   </footer>
                 </Link>

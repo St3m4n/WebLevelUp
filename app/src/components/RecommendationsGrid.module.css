@@ -85,6 +85,36 @@
   font-weight: 600;
 }
 
+.priceWithDiscount {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.priceOriginal {
+  color: var(--color-text-secondary);
+  text-decoration: line-through;
+  font-size: 0.85rem;
+}
+
+.priceFinal {
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.discountBadge {
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #54f297;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .action {
   display: inline-flex;
   align-items: center;

@@ -45,7 +45,15 @@ const buildInitialForm = (usuario: AuthUserValue): CheckoutForm => ({
 });
 
 const Checkout: React.FC = () => {
-  const { items, total, clearCart } = useCart();
+  const {
+    items,
+    subtotal,
+    total,
+    totalSavings,
+    hasDuocDiscount,
+    getItemPricing,
+    clearCart,
+  } = useCart();
   const { user } = useAuth();
   const [form, setForm] = useState<CheckoutForm>(() => buildInitialForm(user));
   const [errors, setErrors] = useState<FormErrors>({});
@@ -175,13 +183,16 @@ const Checkout: React.FC = () => {
       userName: form.nombre.trim(),
       total,
       createdAt: new Date().toISOString(),
-      items: items.map((item) => ({
-        codigo: item.id,
-        nombre: item.nombre,
-        cantidad: item.cantidad,
-        precioUnitario: item.precio,
-        subtotal: item.precio * item.cantidad,
-      })),
+      items: items.map((item) => {
+        const pricing = getItemPricing(item);
+        return {
+          codigo: item.id,
+          nombre: item.nombre,
+          cantidad: item.cantidad,
+          precioUnitario: pricing.unitFinal,
+          subtotal: pricing.subtotalFinal,
+        };
+      }),
       paymentMethod: form.metodo,
       direccion: form.direccion.trim(),
       region: form.region,
@@ -438,26 +449,58 @@ const Checkout: React.FC = () => {
               </p>
             ) : (
               <div className={styles.summaryList}>
-                {items.map((item) => (
-                  <div key={item.id} className={styles.summaryRow}>
-                    <div>
-                      <p>{item.nombre}</p>
-                      <span>Cantidad: {item.cantidad}</span>
+                {items.map((item) => {
+                  const pricing = getItemPricing(item);
+                  return (
+                    <div key={item.id} className={styles.summaryRow}>
+                      <div>
+                        <p>{item.nombre}</p>
+                        <span>Cantidad: {item.cantidad}</span>
+                      </div>
+                      {pricing.hasDiscount ? (
+                        <span className={styles.priceWithDiscount}>
+                          <span className={styles.priceOriginal}>
+                            {formatPrice(pricing.subtotalBase)}
+                          </span>
+                          <strong className={styles.priceFinal}>
+                            {formatPrice(pricing.subtotalFinal)}
+                          </strong>
+                        </span>
+                      ) : (
+                        <strong className={styles.priceFinal}>
+                          {formatPrice(pricing.subtotalFinal)}
+                        </strong>
+                      )}
                     </div>
-                    <strong>{formatPrice(item.precio * item.cantidad)}</strong>
-                  </div>
-                ))}
+                  );
+                })}
                 <div className={styles.summaryRow}>
                   <span>Subtotal</span>
-                  <strong>{formatPrice(total)}</strong>
+                  <span
+                    className={
+                      hasDuocDiscount ? styles.priceOriginal : styles.priceFinal
+                    }
+                  >
+                    {formatPrice(subtotal)}
+                  </span>
                 </div>
+                {hasDuocDiscount && totalSavings > 0 && (
+                  <div className={styles.summaryRow}>
+                    <span>Descuento DUOC</span>
+                    <span className={styles.savingsAmount}>
+                      −{formatPrice(totalSavings)}
+                    </span>
+                  </div>
+                )}
                 <div className={styles.summaryRow}>
                   <span>Envío</span>
                   <strong>Por calcular</strong>
                 </div>
                 <div className={styles.totalRow}>
                   <span>Total a pagar</span>
-                  <strong>{formatPrice(total)}</strong>
+                  <strong className={styles.priceFinal}>
+                    {formatPrice(total)}
+                  </strong>
                 </div>
               </div>
             )}

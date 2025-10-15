@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { formatPrice } from '@/utils/format';
+import { usePricing } from '@/hooks/usePricing';
 import styles from './FeaturedOffers.module.css';
 
 type FeaturedEntry = {
@@ -12,7 +13,9 @@ type FeaturedEntry = {
 
 type FeaturedCardData = {
   nombre: string;
-  precio: number;
+  precioBase: number;
+  precioFinal: number;
+  hasDiscount: boolean;
   url: string;
   enlace: string;
 };
@@ -46,15 +49,19 @@ const featuredEntries: FeaturedEntry[] = [
 
 const FeaturedOffers: React.FC = () => {
   const productos = useProducts();
+  const { getPriceBreakdown, discountRate } = usePricing();
 
   const mapProducto = (entry: FeaturedEntry): FeaturedCardData => {
     const producto = productos.find(
       (item) => item.codigo === entry.codigo && !item.deletedAt
     );
     if (!producto) {
+      const breakdown = getPriceBreakdown(entry.fallbackPrice);
       return {
         nombre: entry.heading,
-        precio: entry.fallbackPrice,
+        precioBase: breakdown.basePrice,
+        precioFinal: breakdown.finalPrice,
+        hasDiscount: breakdown.hasDiscount,
         url: '',
         enlace: entry.href,
       };
@@ -64,9 +71,13 @@ const FeaturedOffers: React.FC = () => {
       ? `/tienda?categoria=${encodeURIComponent(producto.categoria)}`
       : entry.href;
 
+    const breakdown = getPriceBreakdown(producto.precio ?? entry.fallbackPrice);
+
     return {
       nombre: producto.nombre ?? entry.heading,
-      precio: producto.precio ?? entry.fallbackPrice,
+      precioBase: breakdown.basePrice,
+      precioFinal: breakdown.finalPrice,
+      hasDiscount: breakdown.hasDiscount,
       url: producto.url,
       enlace: categoriaLink,
     };
@@ -99,10 +110,28 @@ const FeaturedOffers: React.FC = () => {
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>{principal.nombre}</h3>
               <div className={styles.priceBadge}>
-                <span className={styles.priceLabel}>desde</span>
-                <span className={styles.priceValue}>
-                  {formatPrice(principal.precio)}
+                <span className={styles.priceLabel}>
+                  {principal.hasDiscount ? 'precio DUOC' : 'desde'}
                 </span>
+                {principal.hasDiscount ? (
+                  <span className={styles.priceValueWithDiscount}>
+                    <span className={styles.priceOriginal}>
+                      {formatPrice(principal.precioBase)}
+                    </span>
+                    <span className={styles.priceValue}>
+                      {formatPrice(principal.precioFinal)}
+                    </span>
+                  </span>
+                ) : (
+                  <span className={styles.priceValue}>
+                    {formatPrice(principal.precioFinal)}
+                  </span>
+                )}
+                {principal.hasDiscount && (
+                  <span className={styles.discountBadge}>
+                    −{Math.round(discountRate * 100)}% DUOC
+                  </span>
+                )}
               </div>
               <span className={styles.cta}>Ver categoría →</span>
             </div>
@@ -122,10 +151,28 @@ const FeaturedOffers: React.FC = () => {
                 <div className={styles.cardContent}>
                   <h3 className={styles.cardTitle}>{item.nombre}</h3>
                   <div className={styles.priceBadge}>
-                    <span className={styles.priceLabel}>desde</span>
-                    <span className={styles.priceValue}>
-                      {formatPrice(item.precio)}
+                    <span className={styles.priceLabel}>
+                      {item.hasDiscount ? 'precio DUOC' : 'desde'}
                     </span>
+                    {item.hasDiscount ? (
+                      <span className={styles.priceValueWithDiscount}>
+                        <span className={styles.priceOriginal}>
+                          {formatPrice(item.precioBase)}
+                        </span>
+                        <span className={styles.priceValue}>
+                          {formatPrice(item.precioFinal)}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className={styles.priceValue}>
+                        {formatPrice(item.precioFinal)}
+                      </span>
+                    )}
+                    {item.hasDiscount && (
+                      <span className={styles.discountBadge}>
+                        −{Math.round(discountRate * 100)}% DUOC
+                      </span>
+                    )}
                   </div>
                   <span className={styles.cta}>Ver categoría →</span>
                 </div>
@@ -144,10 +191,28 @@ const FeaturedOffers: React.FC = () => {
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>{cuarto.nombre}</h3>
               <div className={styles.priceBadge}>
-                <span className={styles.priceLabel}>desde</span>
-                <span className={styles.priceValue}>
-                  {formatPrice(cuarto.precio)}
+                <span className={styles.priceLabel}>
+                  {cuarto.hasDiscount ? 'precio DUOC' : 'desde'}
                 </span>
+                {cuarto.hasDiscount ? (
+                  <span className={styles.priceValueWithDiscount}>
+                    <span className={styles.priceOriginal}>
+                      {formatPrice(cuarto.precioBase)}
+                    </span>
+                    <span className={styles.priceValue}>
+                      {formatPrice(cuarto.precioFinal)}
+                    </span>
+                  </span>
+                ) : (
+                  <span className={styles.priceValue}>
+                    {formatPrice(cuarto.precioFinal)}
+                  </span>
+                )}
+                {cuarto.hasDiscount && (
+                  <span className={styles.discountBadge}>
+                    −{Math.round(discountRate * 100)}% DUOC
+                  </span>
+                )}
               </div>
               <span className={styles.cta}>Ver categoría →</span>
             </div>

@@ -80,3 +80,54 @@ export interface ContactMessage {
   createdAt: string;
   updatedAt?: string;
 }
+
+export interface CommunityNewsItem {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  excerpt: string;
+  content: string[];
+  publishedAt: string;
+  image: string;
+  accent?: 'neon' | 'default';
+  highlight?: boolean;
+}
+
+export interface CommunityBlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string[];
+  publishedAt: string;
+  image: string;
+}
+
+export type CommunityGuideIcon =
+  | 'controller'
+  | 'motherboard'
+  | 'tools'
+  | 'camera';
+
+export interface CommunityGuide {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  icon: CommunityGuideIcon;
+  content: string[];
+  updatedAt?: string;
+  readTime?: string;
+}
+
+export interface CommunityEvent {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  startTime: string;
+  content: string[];
+}

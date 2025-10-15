@@ -24,6 +24,12 @@ const Footer: React.FC = () => {
               <Link to="/tienda" className={styles.link}>
                 Tienda
               </Link>
+              <Link to="/nosotros" className={styles.link}>
+                Nosotros
+              </Link>
+              <Link to="/comunidad" className={styles.link}>
+                Comunidad
+              </Link>
               <Link to="/carrito" className={styles.link}>
                 Carrito
               </Link>

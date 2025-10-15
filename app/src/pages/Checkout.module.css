@@ -202,6 +202,29 @@
   color: var(--color-text-primary);
 }
 
+.priceWithDiscount {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.priceOriginal {
+  color: var(--color-text-secondary);
+  text-decoration: line-through;
+  font-size: 0.85rem;
+}
+
+.priceFinal {
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.savingsAmount {
+  color: #54f297;
+  font-weight: 600;
+}
+
 .totalRow {
   display: flex;
   justify-content: space-between;
