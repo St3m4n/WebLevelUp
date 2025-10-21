@@ -151,6 +151,21 @@
   box-shadow: 0 6px 16px rgba(199, 41, 242, 0.25);
 }
 
+.profileLevelBadge {
+  position: absolute;
+  bottom: -0.35rem;
+  right: -0.4rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: var(--color-accent-neon);
+  color: #111;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: 0 6px 16px rgba(199, 41, 242, 0.25);
+}
+
 .cartCount {
   display: inline-flex;
   align-items: center;

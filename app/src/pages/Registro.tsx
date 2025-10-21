@@ -21,6 +21,7 @@ type RegisterForm = {
   direccion: string;
   password: string;
   confirmPassword: string;
+  referralCode: string;
 };
 
 type RegisterErrors = Partial<RegisterForm>;
@@ -33,6 +34,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const normalizeRun = (run: string) =>
   run.replace(/[^0-9kK]/g, '').toUpperCase();
 const allowedEmailDomains = ['duoc.cl', 'profesor.duoc.cl', 'gmail.com'];
+const referralCodeRegex = /^LUG-[A-Z0-9]{6}$/;
 
 const computeDv = (digits: string): string => {
   const cleanDigits = digits.replace(/\D/g, '');
@@ -94,6 +96,7 @@ const Registro: React.FC = () => {
     direccion: '',
     password: '',
     confirmPassword: '',
+    referralCode: '',
   });
   const [errors, setErrors] = useState<RegisterErrors>({});
   const [status, setStatus] = useState<{ type: 'error'; message: string }>();
@@ -118,6 +121,12 @@ const Registro: React.FC = () => {
       let value = event.target.value;
       if (field === 'run') {
         value = normalizeRun(value).slice(0, 9);
+      }
+      if (field === 'referralCode') {
+        value = value
+          .toUpperCase()
+          .replace(/[^A-Z0-9-]/g, '')
+          .slice(0, 10);
       }
       setForm((prev) => {
         if (field === 'region') {
@@ -146,6 +155,21 @@ const Registro: React.FC = () => {
     const formatted = formatRun(event.target.value);
     setForm((prev) => ({ ...prev, run: formatted }));
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const referralParam = params.get('ref');
+    if (!referralParam) return;
+    setForm((prev) => {
+      if (prev.referralCode === referralParam.toUpperCase()) {
+        return prev;
+      }
+      return {
+        ...prev,
+        referralCode: referralParam.toUpperCase(),
+      };
+    });
+  }, [location.search]);
 
   const validateForm = (): RegisterErrors => {
     const validationErrors: RegisterErrors = {};
@@ -214,6 +238,12 @@ const Registro: React.FC = () => {
       validationErrors.confirmPassword = 'Las contraseñas no coinciden.';
     }
 
+    const referralCodeValue = form.referralCode.trim().toUpperCase();
+    if (referralCodeValue && !referralCodeRegex.test(referralCodeValue)) {
+      validationErrors.referralCode =
+        'El código de referido debe tener el formato LUG-XXXXXX.';
+    }
+
     return validationErrors;
   };
 
@@ -238,6 +268,9 @@ const Registro: React.FC = () => {
         comuna: form.comuna,
         direccion: form.direccion.trim(),
         password: form.password,
+        referralCode: form.referralCode
+          ? form.referralCode.trim().toUpperCase()
+          : undefined,
       });
     } catch (error) {
       const message =
@@ -374,6 +407,31 @@ const Registro: React.FC = () => {
               />
               {errors.run && (
                 <span className={styles.errorMessage}>{errors.run}</span>
+              )}
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label htmlFor="referralCode">
+                Código de referido (opcional)
+              </label>
+              <input
+                id="referralCode"
+                value={form.referralCode}
+                onChange={handleFieldChange('referralCode')}
+                className={errors.referralCode ? styles.inputError : undefined}
+                placeholder="LUG-XXXXXX"
+                inputMode="text"
+                autoComplete="off"
+                aria-describedby="referralCodeHelper"
+              />
+              <span id="referralCodeHelper" className={styles.helperText}>
+                Si alguien te invitó, ingresa su código para desbloquear puntos
+                extra.
+              </span>
+              {errors.referralCode && (
+                <span className={styles.errorMessage}>
+                  {errors.referralCode}
+                </span>
               )}
             </div>
 

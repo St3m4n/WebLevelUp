@@ -195,6 +195,47 @@
   gap: 1rem;
 }
 
+.loyaltyInfo {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.85rem 1.1rem;
+  border-radius: 16px;
+  background: rgba(83, 58, 250, 0.16);
+  border: 1px solid rgba(199, 41, 242, 0.35);
+}
+
+.loyaltyBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(199, 41, 242, 0.35);
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  box-shadow: 0 12px 28px rgba(199, 41, 242, 0.18);
+}
+
+.loyaltyCopy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.loyaltyLead {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.loyaltyDetails {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
 .primaryCta,
 .secondaryCta {
   display: inline-flex;
@@ -209,7 +250,11 @@
 }
 
 .primaryCta {
-  background: linear-gradient(135deg, rgba(199, 41, 242, 0.92), rgba(83, 58, 250, 0.92));
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.92),
+    rgba(83, 58, 250, 0.92)
+  );
   color: #fff;
   border: none;
 }
@@ -270,7 +315,9 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .relatedCard:hover {

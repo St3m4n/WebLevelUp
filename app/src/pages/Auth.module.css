@@ -157,6 +157,11 @@
   font-size: 0.75rem;
 }
 
+.helperText {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
 .hintRow {
   display: flex;
   justify-content: space-between;

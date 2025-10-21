@@ -10,6 +10,11 @@ import { usuarios } from '@/data/usuarios';
 import type { AuditAction, Usuario } from '@/types';
 import { createAuditActorFromUser, recordAuditEvent } from '@/utils/audit';
 import {
+  applyReferralOnRegistration,
+  ensureReferralCode,
+  ensureUserStats,
+} from '@/utils/levelup';
+import {
   ADMIN_USER_STATES_EVENT,
   ADMIN_USER_STATES_KEY,
   arePersistedUserStatesEqual,
@@ -46,6 +51,7 @@ type RegisterPayload = {
   comuna: string;
   direccion: string;
   password: string;
+  referralCode?: string;
 };
 
 type ExtraUsuario = Usuario & {
@@ -432,6 +438,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (computed !== usuario.passwordHash) {
           throw new Error('Contraseña incorrecta.');
         }
+        ensureUserStats(usuario.run);
+        ensureReferralCode(usuario.run);
         setUser(createAuthUser(usuario));
         emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
           metadata: {
@@ -442,6 +450,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
+      ensureUserStats(usuario.run);
+      ensureReferralCode(usuario.run);
       setUser(createAuthUser(usuario));
       emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
         metadata: {
@@ -486,6 +496,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         passwordSalt: salt,
         createdAt: new Date().toISOString(),
       };
+
+      ensureUserStats(runKey);
+      ensureReferralCode(runKey);
+
+      const referralCodeToApply = payload.referralCode
+        ? payload.referralCode.trim().toUpperCase()
+        : '';
+      if (referralCodeToApply) {
+        const referralResult = applyReferralOnRegistration({
+          newUserRun: runKey,
+          newUserEmail: correoKey,
+          referralCode: referralCodeToApply,
+        });
+        if (!referralResult.ok) {
+          let message = 'No se pudo aplicar el código de referido.';
+          switch (referralResult.reason) {
+            case 'code-not-found':
+              message = 'El código de referido ingresado no existe.';
+              break;
+            case 'self-ref':
+              message = 'No puedes usar tu propio código de referido.';
+              break;
+            case 'already-referred':
+              message = 'Ya registraste un código de referido previamente.';
+              break;
+            case 'invalid-run':
+            case 'no-code':
+            default:
+              message = 'No se pudo aplicar el código de referido.';
+              break;
+          }
+          throw new Error(message);
+        }
+      }
 
       usuarios.push(nuevoUsuario);
       setExtraUsers((prev) => [...prev, nuevoUsuario]);

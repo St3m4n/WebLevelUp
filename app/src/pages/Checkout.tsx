@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { regiones } from '@/data/regionesComunas';
 import { formatPrice } from '@/utils/format';
 import { addOrder } from '@/utils/orders';
+import { addPurchasePoints } from '@/utils/levelup';
 import styles from './Checkout.module.css';
 
 type PagoMetodo = 'tarjeta' | 'transferencia';
@@ -199,6 +200,10 @@ const Checkout: React.FC = () => {
       comuna: form.comuna,
       status: paymentStatus,
     });
+
+    if (user?.run) {
+      addPurchasePoints({ run: user.run, totalCLP: total });
+    }
 
     clearCart();
     setStatus({

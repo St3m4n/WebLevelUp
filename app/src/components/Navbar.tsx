@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useLevelUpStats } from '@/hooks/useLevelUpStats';
 import logo from '@/assets/logo2.png';
 import styles from './Navbar.module.css';
 
@@ -19,6 +20,7 @@ const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { user, logout } = useAuth();
   const { totalCantidad } = useCart();
+  const { level: userLevel } = useLevelUpStats();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -183,6 +185,11 @@ const Navbar: React.FC = () => {
                     d="M12 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 11c4.14 0 7.5 2.53 7.5 5.65V22a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-1.85C4.5 17.03 7.86 14.5 12 14.5z"
                   />
                 </svg>
+                {user && (
+                  <span className={styles.profileLevelBadge} aria-hidden="true">
+                    Lv. {userLevel}
+                  </span>
+                )}
                 <span className="visually-hidden">
                   {user ? 'Abrir menú de cuenta' : 'Abrir menú de acceso'}
                 </span>

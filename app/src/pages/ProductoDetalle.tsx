@@ -4,6 +4,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
+import { LevelUpConfig } from '@/utils/levelup';
 import styles from './ProductoDetalle.module.css';
 
 const ProductoDetalle: React.FC = () => {
@@ -40,6 +41,46 @@ const ProductoDetalle: React.FC = () => {
     setFeedback(null);
   }, [producto]);
 
+  const maxCantidad = producto?.stock ?? 0;
+  const hayStock = maxCantidad > 0;
+
+  const handleChangeCantidad = (value: number) => {
+    if (Number.isNaN(value)) return;
+    const next = Math.min(Math.max(value, 1), maxCantidad || 1);
+    setCantidad(next);
+  };
+
+  const handleAddToCart = () => {
+    if (!producto || !hayStock) return;
+    addItem(producto, cantidad);
+    setFeedback(
+      `${cantidad} ${cantidad === 1 ? 'producto' : 'productos'} añadidos al carrito`
+    );
+  };
+
+  const precioProducto = getPriceBreakdown(producto?.precio ?? 0);
+  const purchaseMultiplier = LevelUpConfig.COMPRA_POR_1000;
+  const pointsFormatter = useMemo(() => new Intl.NumberFormat('es-CL'), []);
+  const pointsPerUnit = useMemo(() => {
+    if (!hayStock || !purchaseMultiplier) return 0;
+    const unitFinal = Math.max(0, precioProducto.finalPrice);
+    return Math.floor(unitFinal / 1000) * purchaseMultiplier;
+  }, [hayStock, precioProducto.finalPrice, purchaseMultiplier]);
+  const totalPoints = useMemo(() => {
+    if (!hayStock || !purchaseMultiplier) return 0;
+    const totalCLP = Math.max(0, precioProducto.finalPrice * cantidad);
+    return Math.floor(totalCLP / 1000) * purchaseMultiplier;
+  }, [cantidad, hayStock, precioProducto.finalPrice, purchaseMultiplier]);
+  const formattedRule = useMemo(() => {
+    if (!purchaseMultiplier) {
+      return 'Sin EXP por compras actualmente.';
+    }
+    if (purchaseMultiplier === 1) {
+      return '1 EXP por cada $1.000 CLP';
+    }
+    return `${pointsFormatter.format(purchaseMultiplier)} EXP por cada $1.000 CLP`;
+  }, [pointsFormatter, purchaseMultiplier]);
+
   if (!producto) {
     return (
       <div className="container">
@@ -53,25 +94,6 @@ const ProductoDetalle: React.FC = () => {
       </div>
     );
   }
-
-  const maxCantidad = producto.stock;
-  const hayStock = maxCantidad > 0;
-
-  const handleChangeCantidad = (value: number) => {
-    if (Number.isNaN(value)) return;
-    const next = Math.min(Math.max(value, 1), maxCantidad || 1);
-    setCantidad(next);
-  };
-
-  const handleAddToCart = () => {
-    if (!hayStock) return;
-    addItem(producto, cantidad);
-    setFeedback(
-      `${cantidad} ${cantidad === 1 ? 'producto' : 'productos'} añadidos al carrito`
-    );
-  };
-
-  const precioProducto = getPriceBreakdown(producto.precio);
 
   return (
     <div className="container">
@@ -177,6 +199,33 @@ const ProductoDetalle: React.FC = () => {
                   </span>
                 </div>
               )}
+              <div
+                className={styles.loyaltyInfo}
+                role="status"
+                aria-live="polite"
+              >
+                <span className={styles.loyaltyBadge}>
+                  +{pointsFormatter.format(totalPoints)} EXP
+                </span>
+                <div className={styles.loyaltyCopy}>
+                  {hayStock ? (
+                    <>
+                      <span className={styles.loyaltyLead}>
+                        Obtendrás {pointsFormatter.format(totalPoints)} EXP
+                        Level-Up con esta compra.
+                      </span>
+                      <span className={styles.loyaltyDetails}>
+                        ≈ {pointsFormatter.format(pointsPerUnit)} EXP por unidad
+                        · {formattedRule}.
+                      </span>
+                    </>
+                  ) : (
+                    <span className={styles.loyaltyLead}>
+                      Producto sin stock disponible, no acumula EXP por ahora.
+                    </span>
+                  )}
+                </div>
+              </div>
               <div className={styles.ctaGroup}>
                 <button
                   type="button"
