@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import CommunityComments from '@/components/CommunityComments';
 import GuideIcon from '@/components/GuideIcon';
 import {
   communityBlogPosts,
@@ -244,6 +245,22 @@ const ComunidadDetalle: React.FC = () => {
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>
+
+        {entry.type === 'blog' && (
+          <section
+            className={styles.commentSection}
+            aria-labelledby="comments-title"
+          >
+            <h2 id="comments-title" className={styles.commentTitle}>
+              Conversación de la comunidad
+            </h2>
+            <p className={styles.commentIntro}>
+              Únete a la discusión y comparte tus impresiones sobre este
+              artículo.
+            </p>
+            <CommunityComments postKey={entry.slug} seedDemo />
+          </section>
+        )}
 
         {relatedItems.length > 0 ? (
           <section
