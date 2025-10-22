@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { regiones } from '@/data/regionesComunas';
 import { formatPrice } from '@/utils/format';
 import { addOrder } from '@/utils/orders';
@@ -56,12 +57,14 @@ const Checkout: React.FC = () => {
     clearCart,
   } = useCart();
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [form, setForm] = useState<CheckoutForm>(() => buildInitialForm(user));
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<{
     type: 'success' | 'error';
     message: string;
   }>();
+  const pointsFormatter = useMemo(() => new Intl.NumberFormat('es-CL'), []);
 
   useEffect(() => {
     setForm((prev) => ({
@@ -201,17 +204,34 @@ const Checkout: React.FC = () => {
       status: paymentStatus,
     });
 
+    let expEarned = 0;
     if (user?.run) {
-      addPurchasePoints({ run: user.run, totalCLP: total });
+      const result = addPurchasePoints({ run: user.run, totalCLP: total });
+      expEarned = result.pointsAdded ?? 0;
     }
+
+    const loyaltySnippet =
+      expEarned > 0
+        ? ` Además, sumaste +${pointsFormatter.format(expEarned)} EXP Level-Up.`
+        : user?.run
+          ? ' Cada $1.000 en compras acumula EXP Level-Up.'
+          : '';
 
     clearCart();
     setStatus({
       type: 'success',
       message:
         form.metodo === 'transferencia'
-          ? `Pedido ${orderId} registrado. Recuerda enviar el comprobante a pagos@levelup.cl.`
-          : `Pedido ${orderId} confirmado. Te enviaremos un correo con los detalles en unos instantes.`,
+          ? `Pedido ${orderId} registrado. Recuerda enviar el comprobante a pagos@levelup.cl.${loyaltySnippet}`
+          : `Pedido ${orderId} confirmado. Te enviaremos un correo con los detalles en unos instantes.${loyaltySnippet}`,
+    });
+    addToast({
+      title: 'Pedido confirmado',
+      description:
+        expEarned > 0
+          ? `ID ${orderId}. Sumaste ${pointsFormatter.format(expEarned)} EXP.`
+          : `ID ${orderId} registrado correctamente.`,
+      variant: 'success',
     });
     setErrors({});
     setForm((prev) => ({

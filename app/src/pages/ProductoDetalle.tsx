@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
 import { LevelUpConfig } from '@/utils/levelup';
@@ -11,6 +12,7 @@ const ProductoDetalle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const { addToast } = useToast();
   const productos = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const [cantidad, setCantidad] = useState(1);
@@ -56,6 +58,11 @@ const ProductoDetalle: React.FC = () => {
     setFeedback(
       `${cantidad} ${cantidad === 1 ? 'producto' : 'productos'} añadidos al carrito`
     );
+    addToast({
+      title: 'Producto añadido',
+      description: `${producto.nombre} x${cantidad}`,
+      variant: 'success',
+    });
   };
 
   const precioProducto = getPriceBreakdown(producto?.precio ?? 0);

@@ -21,6 +21,18 @@
   font-size: 0.95rem;
 }
 
+.layout {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.sidebar {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2rem);
+}
+
 .contentGrid {
   display: grid;
   gap: clamp(1.5rem, 5vw, 2rem);
@@ -34,6 +46,221 @@
   padding: clamp(1.5rem, 4vw, 2rem);
   display: grid;
   gap: 1.25rem;
+}
+
+.summaryCard {
+  gap: 1.5rem;
+}
+
+.summaryStats {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  text-align: center;
+}
+
+.tabCard {
+  gap: clamp(1.5rem, 4vw, 2rem);
+}
+
+.tabList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  background: rgba(12, 12, 12, 0.55);
+  padding: 0.75rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tabButton {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(18, 18, 18, 0.7);
+  color: var(--color-text-secondary);
+  padding: 0.6rem 1.1rem;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tabButton:hover {
+  border-color: rgba(199, 41, 242, 0.4);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+.tabButtonActive {
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.28),
+    rgba(83, 58, 250, 0.28)
+  );
+  color: var(--color-text-primary);
+  border-color: rgba(199, 41, 242, 0.55);
+}
+
+.tabPanels {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2rem);
+}
+
+.tabPanel {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.tabTitle {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.tabDescription {
+  margin: 0;
+  max-width: 720px;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.detailGroup {
+  display: grid;
+  gap: 1rem;
+}
+
+.detailRow {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  background: rgba(12, 12, 12, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.detailContent {
+  display: grid;
+  gap: 0.35rem;
+  min-width: min(360px, 100%);
+}
+
+.detailLabel {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+}
+
+.detailValue {
+  font-size: 0.95rem;
+}
+
+.detailActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.inlineInput,
+.inlineTextarea,
+.inlineSelect {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 8, 8, 0.85);
+  color: var(--color-text-primary);
+  padding: 0.55rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.inlineInput:focus,
+.inlineTextarea:focus,
+.inlineSelect:focus {
+  outline: none;
+  border-color: rgba(199, 41, 242, 0.45);
+}
+
+.inlineTextarea {
+  min-height: 64px;
+  resize: vertical;
+}
+
+.inlineSelect {
+  appearance: none;
+}
+
+.inlineEditor {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.inlineButton,
+.inlineButtonPrimary {
+  padding: 0.5rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(12, 12, 12, 0.75);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.inlineButtonPrimary {
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.94),
+    rgba(83, 58, 250, 0.94)
+  );
+  border-color: transparent;
+  color: #fff;
+}
+
+.inlineButton:hover {
+  color: var(--color-text-primary);
+  border-color: rgba(199, 41, 242, 0.45);
+}
+
+.inlineButton:disabled,
+.inlineButtonPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detailHint {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.detailFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preferenceSection {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 440px;
 }
 
 .profileMeta {
@@ -62,6 +289,21 @@
   font-size: 0.8rem;
 }
 
+.metaEmail {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.memberSince {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.memberSince strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
 .metaValue {
   font-weight: 600;
 }
@@ -87,6 +329,99 @@
   font-size: 0.95rem;
 }
 
+.profileForm {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.formSectionTitle {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.formHint {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--color-text-secondary);
+}
+
+.formGrid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.formField {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.formLabel {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 12, 12, 0.82);
+  color: var(--color-text-primary);
+  padding: 0.65rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: rgba(199, 41, 242, 0.45);
+}
+
+.select {
+  appearance: none;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.helperText {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.paymentSection {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(12, 12, 12, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .ordersTableWrapper {
   overflow-x: auto;
 }
@@ -95,19 +430,6 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-}
-
-.ordersTable th,
-.ordersTable td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.8rem 1rem;
-  text-align: left;
-}
-
-.ordersEmpty {
-  text-align: center;
-  padding: 1.5rem;
-  color: var(--color-text-secondary);
 }
 
 .actions {
@@ -388,9 +710,174 @@
   color: var(--color-text-secondary);
 }
 
+.addressForm {
+  display: grid;
+  gap: 1rem;
+}
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.checkboxField input {
+  width: 16px;
+  height: 16px;
+}
+
+.addressListSection {
+  display: grid;
+  gap: 1rem;
+}
+
+.addressList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.addressListItem {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: rgba(12, 12, 12, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.addressDetails {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 220px;
+}
+
+.addressDetails span,
+.addressDetails strong {
+  font-size: 0.85rem;
+}
+
+.addressActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.addressBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(83, 58, 250, 0.16);
+  color: #cdd5ff;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ghostButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.ghostButton:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.dangerButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 99, 132, 0.45);
+  background: rgba(255, 99, 132, 0.14);
+  color: #ff99a8;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.dangerButton:hover {
+  border-color: rgba(255, 99, 132, 0.65);
+  background: rgba(255, 99, 132, 0.2);
+}
+
+.ghostButton:disabled,
+.dangerButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
   .ordersTable th,
   .ordersTable td {
     padding: 0.65rem 0.75rem;
+  }
+}
+
+@media (max-width: 1080px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    order: 2;
+  }
+
+  .tabCard {
+    order: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .detailRow {
+    align-items: stretch;
+  }
+
+  .detailActions {
+    justify-content: flex-start;
+  }
+
+  .tabList {
+    gap: 0.5rem;
+  }
+
+  .tabButton {
+    flex: 1 1 calc(50% - 0.5rem);
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabButton {
+    flex: 1 1 100%;
+  }
+
+  .detailContent {
+    min-width: 0;
   }
 }

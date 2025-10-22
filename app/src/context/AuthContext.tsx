@@ -7,13 +7,35 @@ import {
   useState,
 } from 'react';
 import { usuarios } from '@/data/usuarios';
-import type { AuditAction, Usuario } from '@/types';
+import type {
+  AuditAction,
+  ProfileOverrides,
+  UserAddress,
+  Usuario,
+} from '@/types';
 import { createAuditActorFromUser, recordAuditEvent } from '@/utils/audit';
 import {
   applyReferralOnRegistration,
   ensureReferralCode,
   ensureUserStats,
 } from '@/utils/levelup';
+import {
+  clearProfileOverrides as removeStoredProfileOverrides,
+  getProfileOverrides,
+  subscribeToProfileOverrides,
+  updateProfileOverrides as persistProfileOverrides,
+  type OverridePatch,
+} from '@/utils/profileOverrides';
+import {
+  addUserAddress as persistAddUserAddress,
+  getUserAddresses,
+  removeUserAddress as persistRemoveUserAddress,
+  setPrimaryUserAddress as persistSetPrimaryUserAddress,
+  subscribeToUserAddresses,
+  updateUserAddress as persistUpdateUserAddress,
+  type AddressInput,
+  type AddressPatch,
+} from '@/utils/profileAddresses';
 import {
   ADMIN_USER_STATES_EVENT,
   ADMIN_USER_STATES_KEY,
@@ -31,6 +53,7 @@ type AuthUser = Pick<
   | 'apellidos'
   | 'correo'
   | 'perfil'
+  | 'fechaNacimiento'
   | 'region'
   | 'comuna'
   | 'direccion'
@@ -47,6 +70,7 @@ type RegisterPayload = {
   nombre: string;
   apellidos: string;
   correo: string;
+  fechaNacimiento: string;
   region: string;
   comuna: string;
   direccion: string;
@@ -72,6 +96,14 @@ type AuthContextValue = {
   login: (credentials: Credentials) => Promise<void>;
   logout: () => void;
   register: (payload: RegisterPayload) => Promise<void>;
+  profileOverrides: ProfileOverrides;
+  updateProfile: (patch: OverridePatch) => ProfileOverrides;
+  clearProfileOverrides: () => void;
+  addresses: UserAddress[];
+  addAddress: (input: AddressInput) => UserAddress | undefined;
+  updateAddress: (id: string, patch: AddressPatch) => UserAddress | undefined;
+  removeAddress: (id: string) => void;
+  setPrimaryAddress: (id: string) => UserAddress | undefined;
 };
 
 const AUTH_STORAGE_KEY = 'levelup-auth-user';
@@ -240,6 +272,7 @@ const createAuthUser = (usuario: AuthUsuario): AuthUser => ({
   apellidos: usuario.apellidos,
   correo: usuario.correo,
   perfil: usuario.perfil,
+  fechaNacimiento: usuario.fechaNacimiento ?? null,
   region: usuario.region,
   comuna: usuario.comuna,
   direccion: usuario.direccion,
@@ -270,6 +303,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [persistedUserStates, setPersistedUserStates] = useState<
     Record<string, PersistedUserState>
   >(() => loadAdminUserStates());
+
+  const [profileOverrides, setProfileOverrides] = useState<ProfileOverrides>(
+    {}
+  );
+  const [addresses, setAddresses] = useState<UserAddress[]>([]);
 
   const usuariosFusionados = useMemo(
     () => mergeUsuarios(usuarios, extraUsers),
@@ -305,6 +343,113 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       window.localStorage.removeItem(AUTH_STORAGE_KEY);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setProfileOverrides({});
+      setAddresses([]);
+      return undefined;
+    }
+    const correoKey = normalizeCorreo(user.correo);
+    setProfileOverrides(getProfileOverrides(correoKey));
+    setAddresses(getUserAddresses(correoKey));
+
+    const unsubscribeOverrides = subscribeToProfileOverrides((event) => {
+      if (normalizeCorreo(event.correo) !== correoKey) return;
+      setProfileOverrides(event.overrides ?? {});
+    });
+
+    const unsubscribeAddresses = subscribeToUserAddresses((event) => {
+      if (normalizeCorreo(event.correo) !== correoKey) return;
+      setAddresses(event.addresses ?? []);
+    });
+
+    return () => {
+      unsubscribeOverrides?.();
+      unsubscribeAddresses?.();
+    };
+  }, [user]);
+
+  const effectiveUser = useMemo(() => {
+    if (!user) return null;
+    const overrides = profileOverrides ?? {};
+    const normalizeValue = (value?: string) =>
+      value && value.trim().length > 0 ? value.trim() : undefined;
+
+    return {
+      ...user,
+      nombre: normalizeValue(overrides.nombre) ?? user.nombre,
+      apellidos: normalizeValue(overrides.apellidos) ?? user.apellidos,
+      region: normalizeValue(overrides.region) ?? user.region,
+      comuna: normalizeValue(overrides.comuna) ?? user.comuna,
+      direccion: normalizeValue(overrides.direccion) ?? user.direccion,
+    };
+  }, [profileOverrides, user]);
+
+  const updateProfile = useCallback(
+    (patch: OverridePatch) => {
+      if (!user) {
+        throw new Error('Debes iniciar sesión para actualizar tu perfil.');
+      }
+      const updated = persistProfileOverrides(user.correo, patch);
+      setProfileOverrides(updated);
+      return updated;
+    },
+    [user]
+  );
+
+  const clearProfileOverrides = useCallback(() => {
+    if (!user) return;
+    removeStoredProfileOverrides(user.correo);
+    setProfileOverrides({});
+  }, [user]);
+
+  const addAddress = useCallback(
+    (input: AddressInput) => {
+      if (!user) {
+        throw new Error('Debes iniciar sesión para gestionar direcciones.');
+      }
+      const created = persistAddUserAddress(user.correo, input);
+      setAddresses(getUserAddresses(user.correo));
+      return created;
+    },
+    [user]
+  );
+
+  const updateAddress = useCallback(
+    (id: string, patch: AddressPatch) => {
+      if (!user) {
+        throw new Error('Debes iniciar sesión para actualizar direcciones.');
+      }
+      const updated = persistUpdateUserAddress(user.correo, id, patch);
+      setAddresses(getUserAddresses(user.correo));
+      return updated;
+    },
+    [user]
+  );
+
+  const removeAddress = useCallback(
+    (id: string) => {
+      if (!user) {
+        throw new Error('Debes iniciar sesión para eliminar direcciones.');
+      }
+      persistRemoveUserAddress(user.correo, id);
+      setAddresses(getUserAddresses(user.correo));
+    },
+    [user]
+  );
+
+  const setPrimaryAddress = useCallback(
+    (id: string) => {
+      if (!user) {
+        throw new Error('Debes iniciar sesión para gestionar direcciones.');
+      }
+      const updated = persistSetPrimaryUserAddress(user.correo, id);
+      setAddresses(getUserAddresses(user.correo));
+      return updated;
+    },
+    [user]
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -441,6 +586,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         ensureUserStats(usuario.run);
         ensureReferralCode(usuario.run);
         setUser(createAuthUser(usuario));
+        setProfileOverrides(getProfileOverrides(usuario.correo));
+        setAddresses(getUserAddresses(usuario.correo));
         emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
           metadata: {
             origin: usuario.origin,
@@ -453,6 +600,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       ensureUserStats(usuario.run);
       ensureReferralCode(usuario.run);
       setUser(createAuthUser(usuario));
+      setProfileOverrides(getProfileOverrides(usuario.correo));
+      setAddresses(getUserAddresses(usuario.correo));
       emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
         metadata: {
           origin: usuario.origin,
@@ -480,6 +629,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const salt = generateSalt();
       const passwordHash = await hashPasswordWithSalt(salt, payload.password);
+      const birthDate = payload.fechaNacimiento.trim();
 
       const nuevoUsuario: ExtraUsuario = {
         run: runKey,
@@ -496,6 +646,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         passwordSalt: salt,
         createdAt: new Date().toISOString(),
       };
+      if (birthDate) {
+        nuevoUsuario.fechaNacimiento = birthDate;
+      }
 
       ensureUserStats(runKey);
       ensureReferralCode(runKey);
@@ -534,6 +687,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       usuarios.push(nuevoUsuario);
       setExtraUsers((prev) => [...prev, nuevoUsuario]);
       setUser(createAuthUser({ ...nuevoUsuario, origin: 'extra' }));
+      setProfileOverrides(getProfileOverrides(nuevoUsuario.correo));
+      setAddresses(getUserAddresses(nuevoUsuario.correo));
       emitAuthAuditEvent(
         'registered',
         {
@@ -573,17 +728,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       return null;
     });
+    setProfileOverrides({});
+    setAddresses([]);
   }, [emitAuthAuditEvent]);
 
   const value = useMemo(
     () => ({
-      user,
-      isAuthenticated: Boolean(user),
+      user: effectiveUser,
+      isAuthenticated: Boolean(effectiveUser),
       login,
       logout,
       register,
+      profileOverrides,
+      updateProfile,
+      clearProfileOverrides,
+      addresses,
+      addAddress,
+      updateAddress,
+      removeAddress,
+      setPrimaryAddress,
     }),
-    [login, logout, register, user]
+    [
+      addAddress,
+      addresses,
+      clearProfileOverrides,
+      effectiveUser,
+      login,
+      logout,
+      register,
+      profileOverrides,
+      removeAddress,
+      setPrimaryAddress,
+      updateAddress,
+      updateProfile,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import type { ProductRecord } from '@/utils/products';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
 import styles from './Tienda.module.css';
@@ -37,6 +38,7 @@ const Tienda: React.FC = () => {
   const productos = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
+  const { addToast } = useToast();
 
   const productosFiltrados = useMemo(() => {
     const base = categoriaParam
@@ -158,7 +160,14 @@ const Tienda: React.FC = () => {
                     <button
                       type="button"
                       className={styles.addButton}
-                      onClick={() => addItem(producto)}
+                      onClick={() => {
+                        addItem(producto);
+                        addToast({
+                          title: 'Producto añadido',
+                          description: producto.nombre,
+                          variant: 'success',
+                        });
+                      }}
                     >
                       Agregar al carrito
                     </button>

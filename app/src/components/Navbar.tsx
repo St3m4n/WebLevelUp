@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -20,7 +20,25 @@ const Navbar: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { user, logout } = useAuth();
   const { totalCantidad } = useCart();
-  const { level: userLevel } = useLevelUpStats();
+  const { level: userLevel, totalExp } = useLevelUpStats();
+  const [isPulsing, setIsPulsing] = useState(false);
+  const prevExpRef = useRef<number>(0);
+
+  useEffect(() => {
+    const prev = prevExpRef.current ?? 0;
+    if (typeof totalExp === 'number') {
+      if (totalExp > prev) {
+        setIsPulsing(true);
+        const timeout = window.setTimeout(() => {
+          setIsPulsing(false);
+        }, 900);
+        prevExpRef.current = totalExp;
+        return () => window.clearTimeout(timeout);
+      }
+      prevExpRef.current = totalExp;
+    }
+    return undefined;
+  }, [totalExp]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -186,7 +204,16 @@ const Navbar: React.FC = () => {
                   />
                 </svg>
                 {user && (
-                  <span className={styles.profileLevelBadge} aria-hidden="true">
+                  <span
+                    className={[
+                      styles.profileLevelBadge,
+                      isPulsing ? styles.pulse : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-hidden="true"
+                    title={`${totalExp} EXP acumulados`}
+                  >
                     Lv. {userLevel}
                   </span>
                 )}

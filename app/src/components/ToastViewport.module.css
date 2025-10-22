@@ -1,0 +1,136 @@
+.viewport {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 1600;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 260px;
+  max-width: 320px;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+  background: rgba(24, 24, 24, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f5f5f5;
+  pointer-events: auto;
+  animation: toast-enter 200ms ease-out;
+}
+
+.body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(199, 41, 242, 0.18);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.copy strong {
+  font-size: 0.95rem;
+}
+
+.copy p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.info {
+  border: 1px solid rgba(199, 41, 242, 0.35);
+}
+
+.info .badge {
+  background: rgba(199, 41, 242, 0.2);
+  color: var(--color-accent-neon);
+}
+
+.success {
+  border: 1px solid rgba(46, 213, 115, 0.38);
+}
+
+.success .badge {
+  background: rgba(46, 213, 115, 0.2);
+  color: #2ed573;
+}
+
+.warning {
+  border: 1px solid rgba(249, 202, 36, 0.28);
+}
+
+.warning .badge {
+  background: rgba(249, 202, 36, 0.15);
+  color: #f9ca24;
+}
+
+.error {
+  border: 1px solid rgba(255, 71, 87, 0.32);
+}
+
+.error .badge {
+  background: rgba(255, 71, 87, 0.18);
+  color: #ff4757;
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .viewport {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1.25rem;
+  }
+
+  .toast {
+    max-width: none;
+  }
+}

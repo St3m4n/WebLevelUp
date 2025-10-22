@@ -45,6 +45,34 @@ export interface Categoria {
 
 export type OrderStatus = 'Pagado' | 'Pendiente' | 'Cancelado';
 
+export type PaymentPreferenceMethod = 'tarjeta' | 'transferencia' | 'efectivo';
+
+export interface UserPreferences {
+  defaultPaymentMethod?: PaymentPreferenceMethod;
+}
+
+export interface UserAddress {
+  id: string;
+  fullName: string;
+  line1: string;
+  city: string;
+  region: string;
+  country: string;
+  isPrimary: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ProfileOverrides {
+  nombre?: string;
+  apellidos?: string;
+  region?: string;
+  comuna?: string;
+  direccion?: string;
+  preferencias?: UserPreferences;
+  updatedAt?: string;
+}
+
 export interface OrderItem {
   codigo: string;
   nombre: string;
@@ -60,7 +88,7 @@ export interface Order {
   total: number;
   createdAt: string;
   items: OrderItem[];
-  paymentMethod: 'tarjeta' | 'transferencia' | 'efectivo';
+  paymentMethod: PaymentPreferenceMethod;
   direccion: string;
   region: string;
   comuna: string;

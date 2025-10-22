@@ -166,6 +166,18 @@
   box-shadow: 0 6px 16px rgba(199, 41, 242, 0.25);
 }
 
+/* Pulse animation when EXP increases */
+.pulse {
+  animation: lug-pulse 0.9s ease-in-out;
+}
+
+@keyframes lug-pulse {
+  0% { transform: scale(1); box-shadow: 0 6px 16px rgba(199,41,242,0.25); }
+  30% { transform: scale(1.25); box-shadow: 0 12px 28px rgba(199,41,242,0.35); }
+  60% { transform: scale(0.98); box-shadow: 0 8px 18px rgba(199,41,242,0.28); }
+  100% { transform: scale(1); box-shadow: 0 6px 16px rgba(199,41,242,0.25); }
+}
+
 .cartCount {
   display: inline-flex;
   align-items: center;
