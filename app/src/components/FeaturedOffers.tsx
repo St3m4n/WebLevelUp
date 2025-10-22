@@ -2,6 +2,10 @@ import { Link } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
+import Card1 from '@/assets/1gamer.png';
+import Card2 from '@/assets/2gamer.png';
+import Card3 from '@/assets/3gamer.png';
+import Card4 from '@/assets/4gamer.png';
 import styles from './FeaturedOffers.module.css';
 
 type FeaturedEntry = {
@@ -47,6 +51,13 @@ const featuredEntries: FeaturedEntry[] = [
   },
 ];
 
+const FALLBACK_IMAGES: Record<string, string> = {
+  '1gamer': Card1,
+  '2gamer': Card2,
+  '3gamer': Card3,
+  '4gamer': Card4,
+};
+
 const FeaturedOffers: React.FC = () => {
   const productos = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
@@ -62,7 +73,7 @@ const FeaturedOffers: React.FC = () => {
         precioBase: breakdown.basePrice,
         precioFinal: breakdown.finalPrice,
         hasDiscount: breakdown.hasDiscount,
-        url: '',
+        url: FALLBACK_IMAGES[entry.codigo] ?? '',
         enlace: entry.href,
       };
     }
@@ -78,7 +89,7 @@ const FeaturedOffers: React.FC = () => {
       precioBase: breakdown.basePrice,
       precioFinal: breakdown.finalPrice,
       hasDiscount: breakdown.hasDiscount,
-      url: producto.url,
+      url: producto.url ?? FALLBACK_IMAGES[entry.codigo] ?? '',
       enlace: categoriaLink,
     };
   };

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import type { ProductRecord } from '@/utils/products';
@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
+import { truncateText } from '@/utils/text';
 import styles from './Tienda.module.css';
 
 const SORT_OPTIONS = [
@@ -14,6 +15,27 @@ const SORT_OPTIONS = [
   { value: 'precio-desc', label: 'Precio: mayor a menor' },
   { value: 'nuevo', label: 'Nuevos ingresos' },
 ];
+
+const PAGE_SIZE_OPTIONS = [12, 24] as const;
+const MAX_DESCRIPTION_LENGTH = 90;
+
+const normalizePageSize = (
+  value: string | null
+): (typeof PAGE_SIZE_OPTIONS)[number] => {
+  const parsed = Number(value);
+  if (
+    Number.isFinite(parsed) &&
+    PAGE_SIZE_OPTIONS.includes(parsed as (typeof PAGE_SIZE_OPTIONS)[number])
+  ) {
+    return parsed as (typeof PAGE_SIZE_OPTIONS)[number];
+  }
+  return PAGE_SIZE_OPTIONS[0];
+};
+
+const normalizePage = (value: string | null): number => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 1;
+};
 
 const ordenarProductos = (sort: string, items: ProductRecord[]) => {
   switch (sort) {
@@ -39,6 +61,23 @@ const Tienda: React.FC = () => {
   const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
   const { addToast } = useToast();
+  const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(
+    () => normalizePageSize(searchParams.get('porPagina'))
+  );
+  const [currentPage, setCurrentPage] = useState<number>(() =>
+    normalizePage(searchParams.get('pagina'))
+  );
+
+  useEffect(() => {
+    const sizeFromParams = normalizePageSize(searchParams.get('porPagina'));
+    if (sizeFromParams !== pageSize) {
+      setPageSize(sizeFromParams);
+    }
+    const pageFromParams = normalizePage(searchParams.get('pagina'));
+    if (pageFromParams !== currentPage) {
+      setCurrentPage(pageFromParams);
+    }
+  }, [searchParams, pageSize, currentPage]);
 
   const productosFiltrados = useMemo(() => {
     const base = categoriaParam
@@ -63,6 +102,43 @@ const Tienda: React.FC = () => {
     return ordenarProductos(activeSort, filtrados);
   }, [activeSort, categoriaParam, productos, searchQuery]);
 
+  const totalPages = useMemo(() => {
+    const total = Math.ceil(productosFiltrados.length / pageSize);
+    return total > 0 ? total : 1;
+  }, [pageSize, productosFiltrados.length]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return productosFiltrados.slice(startIndex, endIndex);
+  }, [currentPage, pageSize, productosFiltrados]);
+
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+      const next = new URLSearchParams(searchParams);
+      next.set('pagina', '1');
+      setSearchParams(next, { replace: true });
+    }
+  }, [
+    activeSort,
+    categoriaParam,
+    searchQuery,
+    currentPage,
+    searchParams,
+    setSearchParams,
+  ]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      const safePage = totalPages;
+      setCurrentPage(safePage);
+      const next = new URLSearchParams(searchParams);
+      next.set('pagina', String(safePage));
+      setSearchParams(next, { replace: true });
+    }
+  }, [currentPage, totalPages, searchParams, setSearchParams]);
+
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
     setActiveSort(value);
@@ -70,6 +146,37 @@ const Tienda: React.FC = () => {
     next.set('orden', value);
     setSearchParams(next, { replace: true });
   };
+
+  const handlePageSizeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = Number(event.target.value);
+    const normalizedValue = value as (typeof PAGE_SIZE_OPTIONS)[number];
+    if (!PAGE_SIZE_OPTIONS.includes(normalizedValue)) {
+      return;
+    }
+    if (normalizedValue === pageSize) return;
+    setPageSize(normalizedValue);
+    setCurrentPage(1);
+    const next = new URLSearchParams(searchParams);
+    next.set('porPagina', String(normalizedValue));
+    next.set('pagina', '1');
+    setSearchParams(next, { replace: true });
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page === currentPage) return;
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    const next = new URLSearchParams(searchParams);
+    next.set('pagina', String(page));
+    setSearchParams(next, { replace: true });
+  };
+
+  const showingFrom =
+    productosFiltrados.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const showingTo = Math.min(currentPage * pageSize, productosFiltrados.length);
+  const showPagination = totalPages > 1;
 
   return (
     <div className="container">
@@ -106,6 +213,25 @@ const Tienda: React.FC = () => {
                 ))}
               </select>
             </div>
+            <div className={styles.pageSizeGroup}>
+              <span>Mostrar</span>
+              <div className={styles.select}>
+                <label htmlFor="page-size" className="visually-hidden">
+                  Productos por página
+                </label>
+                <select
+                  id="page-size"
+                  value={pageSize}
+                  onChange={handlePageSizeChange}
+                >
+                  {PAGE_SIZE_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option} por página
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -115,67 +241,133 @@ const Tienda: React.FC = () => {
             <p>Intenta cambiar los filtros o revisar otra categoría.</p>
           </div>
         ) : (
-          <div className={styles.grid}>
-            {productosFiltrados.map((producto) => {
-              const pricing = getPriceBreakdown(producto.precio);
-              return (
-                <article key={producto.codigo} className={styles.card}>
-                  <img
-                    src={producto.url}
-                    alt={producto.nombre}
-                    loading="lazy"
-                  />
-                  <div className={styles.cardBody}>
-                    <h3 className={styles.productName}>{producto.nombre}</h3>
-                    <p className={styles.productDescription}>
-                      {producto.descripcion}
-                    </p>
+          <>
+            <div className={styles.grid}>
+              {paginatedProducts.map((producto) => {
+                const pricing = getPriceBreakdown(producto.precio);
+                return (
+                  <article key={producto.codigo} className={styles.card}>
+                    <Link
+                      to={`/tienda/${producto.codigo}`}
+                      className={styles.cardMedia}
+                      aria-label={`Ver detalles de ${producto.nombre}`}
+                    >
+                      <img
+                        src={producto.url}
+                        alt={producto.nombre}
+                        loading="lazy"
+                      />
+                    </Link>
+                    <div className={styles.cardBody}>
+                      <div className={styles.productMeta}>
+                        <h3 className={styles.productName}>
+                          <Link
+                            to={`/tienda/${producto.codigo}`}
+                            className={styles.productLink}
+                          >
+                            {producto.nombre}
+                          </Link>
+                        </h3>
+                        <p className={styles.productDescription}>
+                          {truncateText(
+                            producto.descripcion,
+                            MAX_DESCRIPTION_LENGTH
+                          )}
+                        </p>
+                      </div>
 
-                    <div className={styles.priceSection}>
-                      {pricing.hasDiscount ? (
-                        <span className={styles.priceWithDiscount}>
-                          <span className={styles.priceOriginal}>
-                            {formatPrice(pricing.basePrice)}
+                      <div className={styles.priceSection}>
+                        {pricing.hasDiscount ? (
+                          <span className={styles.priceWithDiscount}>
+                            <span className={styles.priceOriginal}>
+                              {formatPrice(pricing.basePrice)}
+                            </span>
+                            <span className={styles.priceFinal}>
+                              {formatPrice(pricing.finalPrice)}
+                            </span>
+                            <span className={styles.discountBadge}>
+                              −{Math.round(discountRate * 100)}% DUOC
+                            </span>
                           </span>
+                        ) : (
                           <span className={styles.priceFinal}>
                             {formatPrice(pricing.finalPrice)}
                           </span>
-                          <span className={styles.discountBadge}>
-                            −{Math.round(discountRate * 100)}% DUOC
-                          </span>
-                        </span>
-                      ) : (
-                        <span className={styles.priceFinal}>
-                          {formatPrice(pricing.finalPrice)}
-                        </span>
-                      )}
-                      <Link
-                        to={`/tienda/${producto.codigo}`}
-                        className={styles.detailLink}
-                      >
-                        Ver detalle →
-                      </Link>
-                    </div>
+                        )}
+                      </div>
 
-                    <button
-                      type="button"
-                      className={styles.addButton}
-                      onClick={() => {
-                        addItem(producto);
-                        addToast({
-                          title: 'Producto añadido',
-                          description: producto.nombre,
-                          variant: 'success',
-                        });
-                      }}
-                    >
-                      Agregar al carrito
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                      <button
+                        type="button"
+                        className={styles.addButton}
+                        onClick={() => {
+                          addItem(producto);
+                          addToast({
+                            title: 'Producto añadido',
+                            description: producto.nombre,
+                            variant: 'success',
+                          });
+                        }}
+                      >
+                        Agregar al carrito
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className={styles.resultsFooter}>
+              <span className={styles.resultsSummary}>
+                Mostrando {showingFrom} – {showingTo} de{' '}
+                {productosFiltrados.length} productos
+              </span>
+              {showPagination && (
+                <nav
+                  className={styles.pagination}
+                  aria-label="Paginación de productos"
+                >
+                  <button
+                    type="button"
+                    className={styles.paginationNavButton}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Anterior
+                  </button>
+                  <ul className={styles.paginationList}>
+                    {Array.from({ length: totalPages }).map((_, index) => {
+                      const page = index + 1;
+                      const isActive = page === currentPage;
+                      return (
+                        <li key={page}>
+                          <button
+                            type="button"
+                            className={
+                              isActive
+                                ? styles.paginationButtonActive
+                                : styles.paginationButton
+                            }
+                            onClick={() => handlePageChange(page)}
+                            aria-current={isActive ? 'page' : undefined}
+                          >
+                            {page}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <button
+                    type="button"
+                    className={styles.paginationNavButton}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Siguiente
+                  </button>
+                </nav>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

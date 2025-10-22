@@ -36,6 +36,7 @@
   border: 1px solid rgba(255, 255, 255, 0.04);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
 }
 
 .card:hover {
@@ -43,46 +44,74 @@
   box-shadow: 0 22px 45px rgba(0, 0, 0, 0.45);
 }
 
-.imageWrap {
-  position: relative;
+.cardMedia {
+  display: block;
+  width: 100%;
   aspect-ratio: 4 / 3;
   background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
 }
 
-.imageWrap img {
+.cardMedia img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.25s ease;
 }
 
-.body {
-  display: grid;
+.cardMedia:hover img {
+  transform: scale(1.04);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
-  padding: 1.35rem 1.35rem 1.5rem;
+  padding: 1.25rem 1.35rem 1.5rem;
+  flex: 1;
+}
+
+.productMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
 .productName {
   font-size: 1rem;
   font-weight: 600;
+  margin: 0;
+}
+
+.productLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.productLink:hover,
+.productLink:focus {
+  color: var(--color-accent-neon);
 }
 
 .productDescription {
   font-size: 0.9rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  max-height: calc(1.5rem * 3);
+  min-height: calc(1.5rem * 3);
 }
 
-.meta {
+.priceSection {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.price {
-  font-size: 1.1rem;
-  font-weight: 600;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-top: auto;
 }
 
 .priceWithDiscount {
@@ -115,20 +144,23 @@
   letter-spacing: 0.05em;
 }
 
-.action {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  background: rgba(199, 41, 242, 0.15);
-  color: var(--color-accent-neon);
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
+.addButton {
+  margin-top: 0.75rem;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(199, 41, 242, 0.9), rgba(83, 58, 250, 0.9));
+  border: none;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.action:hover {
-  background: rgba(199, 41, 242, 0.25);
+.addButton:hover,
+.addButton:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 25px rgba(199, 41, 242, 0.35);
 }
