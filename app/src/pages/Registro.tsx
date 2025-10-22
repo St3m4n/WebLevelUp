@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { regiones } from '@/data/regionesComunas';
 import styles from './Auth.module.css';
 
@@ -195,6 +196,7 @@ const formatRun = (raw: string): string => {
 
 const Registro: React.FC = () => {
   const { register: registerUser, isAuthenticated } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = (location.state as LocationState) ?? null;
@@ -391,7 +393,7 @@ const Registro: React.FC = () => {
     setIsSubmitting(true);
     setStatus(undefined);
     try {
-      await registerUser({
+      const result = await registerUser({
         nombre: form.nombre.trim(),
         apellidos: form.apellidos.trim(),
         correo: form.correo.trim(),
@@ -404,6 +406,35 @@ const Registro: React.FC = () => {
         referralCode: form.referralCode
           ? form.referralCode.trim().toUpperCase()
           : undefined,
+      });
+      const messageParts = [
+        result.correo
+          ? `Tu cuenta (${result.correo}) fue creada con éxito.`
+          : 'Tu cuenta fue creada con éxito.',
+      ];
+      if (result.referralCode) {
+        messageParts.push(`Tu código Level-Up es ${result.referralCode}.`);
+      }
+      messageParts.push('Inicia sesión para comenzar a jugar.');
+      const successMessage = messageParts.join(' ');
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem(
+          'registrationSuccess',
+          JSON.stringify({
+            email: result.correo,
+            refCode: result.referralCode,
+          })
+        );
+      }
+      addToast({
+        title: 'Cuenta creada',
+        description: successMessage,
+        variant: 'success',
+        duration: 6000,
+      });
+      navigate('/login', {
+        replace: true,
+        state: locationState?.from ? { from: locationState.from } : undefined,
       });
     } catch (error) {
       const message =

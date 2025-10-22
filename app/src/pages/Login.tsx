@@ -1,6 +1,7 @@
 import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import styles from './Auth.module.css';
 
 type LoginForm = {
@@ -18,6 +19,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = (location.state as LocationState) ?? null;
@@ -30,12 +32,47 @@ const Login: React.FC = () => {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [status, setStatus] = useState<{ type: 'error'; message: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string>();
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate(fromPath, { replace: true });
     }
   }, [fromPath, isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.sessionStorage.getItem('registrationSuccess');
+      if (!raw) return;
+      window.sessionStorage.removeItem('registrationSuccess');
+      const parsed = JSON.parse(raw) as {
+        email?: string;
+        refCode?: string;
+      } | null;
+      const email = parsed?.email ? String(parsed.email) : '';
+      const refCode = parsed?.refCode ? String(parsed.refCode) : '';
+      const messageParts = [
+        email
+          ? `Tu cuenta (${email}) fue creada con éxito.`
+          : 'Tu cuenta fue creada con éxito.',
+      ];
+      if (refCode) {
+        messageParts.push(`Tu código Level-Up es ${refCode}.`);
+      }
+      messageParts.push('Ingresa tus datos para iniciar sesión.');
+      const message = messageParts.join(' ');
+      setSuccessMessage(message);
+      addToast({
+        title: 'Cuenta creada',
+        description: message,
+        variant: 'success',
+        duration: 6000,
+      });
+    } catch (error) {
+      console.warn('No se pudo restaurar el aviso de registro en login', error);
+    }
+  }, [addToast]);
 
   const handleFieldChange =
     (field: keyof LoginForm) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -110,6 +147,16 @@ const Login: React.FC = () => {
             </p>
           </div>
 
+          {successMessage && (
+            <div
+              role="status"
+              aria-live="polite"
+              className={styles.statusSuccess}
+            >
+              {successMessage}
+            </div>
+          )}
+
           {status && (
             <div
               role="status"
@@ -166,6 +213,9 @@ const Login: React.FC = () => {
                 <Link to="/registro" state={registerLinkState}>
                   Regístrate aquí
                 </Link>
+              </p>
+              <p className={styles.helperLink}>
+                <Link to="/olvidaste">¿Olvidaste tu contraseña?</Link>
               </p>
               <p className={styles.helperLink}>
                 <Link to="/tienda">Volver a la tienda</Link>

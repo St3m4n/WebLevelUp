@@ -78,6 +78,13 @@ type RegisterPayload = {
   referralCode?: string;
 };
 
+type RegisterResult = {
+  run: string;
+  correo: string;
+  nombre: string;
+  referralCode?: string;
+};
+
 type ExtraUsuario = Usuario & {
   passwordHash: string;
   passwordSalt: string;
@@ -95,7 +102,7 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   login: (credentials: Credentials) => Promise<void>;
   logout: () => void;
-  register: (payload: RegisterPayload) => Promise<void>;
+  register: (payload: RegisterPayload) => Promise<RegisterResult>;
   profileOverrides: ProfileOverrides;
   updateProfile: (patch: OverridePatch) => ProfileOverrides;
   clearProfileOverrides: () => void;
@@ -650,8 +657,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         nuevoUsuario.fechaNacimiento = birthDate;
       }
 
-      ensureUserStats(runKey);
-      ensureReferralCode(runKey);
+      const stats = ensureUserStats(runKey);
+      const ensuredReferralCode = ensureReferralCode(runKey);
 
       const referralCodeToApply = payload.referralCode
         ? payload.referralCode.trim().toUpperCase()
@@ -686,9 +693,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       usuarios.push(nuevoUsuario);
       setExtraUsers((prev) => [...prev, nuevoUsuario]);
-      setUser(createAuthUser({ ...nuevoUsuario, origin: 'extra' }));
-      setProfileOverrides(getProfileOverrides(nuevoUsuario.correo));
-      setAddresses(getUserAddresses(nuevoUsuario.correo));
       emitAuthAuditEvent(
         'registered',
         {
@@ -707,6 +711,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           },
         }
       );
+      return {
+        run: nuevoUsuario.run,
+        correo: nuevoUsuario.correo,
+        nombre: nuevoUsuario.nombre,
+        referralCode: ensuredReferralCode || stats.referralCode,
+      };
     },
     [emitAuthAuditEvent, usuariosFusionados]
   );

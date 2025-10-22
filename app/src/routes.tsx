@@ -12,6 +12,7 @@ const Login = lazy(() => import('./pages/Login'));
 const Registro = lazy(() => import('./pages/Registro'));
 const Perfil = lazy(() => import('./pages/Perfil'));
 const Contacto = lazy(() => import('./pages/Contacto'));
+const Olvidaste = lazy(() => import('./pages/Olvidaste'));
 const Nosotros = lazy(() => import('./pages/Nosotros'));
 const Comunidad = lazy(() => import('./pages/Comunidad'));
 const ComunidadDetalle = lazy(() => import('./pages/ComunidadDetalle'));
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
       { path: 'carrito', element: <Carrito /> },
       { path: 'checkout', element: <Checkout /> },
       { path: 'login', element: <Login /> },
+      { path: 'olvidaste', element: <Olvidaste /> },
       { path: 'registro', element: <Registro /> },
       { path: 'nosotros', element: <Nosotros /> },
       { path: 'comunidad', element: <Comunidad /> },
