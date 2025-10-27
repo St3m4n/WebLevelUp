@@ -10,7 +10,7 @@
 .navContent {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 1rem;
   padding: 0.75rem 0;
 }
@@ -93,7 +93,6 @@
   border-bottom: 2px solid transparent;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
-
 .navLink:hover,
 .navLinkActive {
   color: var(--color-text-primary);
@@ -104,6 +103,7 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  margin-left: auto;
 }
 
 .iconButton {
@@ -323,17 +323,25 @@
     display: none;
   }
 
+  .brand {
+    order: 1;
+  }
+
   .ctaLinks {
     display: inline-flex;
     gap: 0.5rem;
+    order: 4;
+    margin-left: auto;
+  }
+
+  .mobileMenuButton {
+    order: 3;
+    display: inline-flex;
+    margin-left: 0.75rem;
   }
 
   .ctaLinks .navLink {
     display: none;
-  }
-
-  .mobileMenuButton {
-    display: inline-flex;
   }
 
   .mobileMenu {
