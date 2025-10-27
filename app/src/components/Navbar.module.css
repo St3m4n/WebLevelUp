@@ -319,8 +319,16 @@
 
 @media (max-width: 991px) {
   .desktopLinks,
-  .ctaLinks,
   .searchForm {
+    display: none;
+  }
+
+  .ctaLinks {
+    display: inline-flex;
+    gap: 0.5rem;
+  }
+
+  .ctaLinks .navLink {
     display: none;
   }
 

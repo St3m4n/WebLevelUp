@@ -92,9 +92,50 @@ const Navbar: React.FC = () => {
     <header className={styles.navbarRoot}>
       <div className="container">
         <div className={styles.navContent}>
-          <Link to="/" className={styles.brand} onClick={handleLinkClick}>
-            <img src={logo} alt="Level-Up" />
-            Level-Up Gamer
+          {/* Mobile categories toggler (matches legacy behavior) */}
+          <button
+            type="button"
+            className="navbar-toggler d-lg-none me-2 mobile-cat-toggler"
+            data-bs-toggle="collapse"
+            data-bs-target="#secNavCollapse"
+            aria-controls="secNavCollapse"
+            aria-expanded="false"
+            aria-label="Abrir categorías"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 6h18"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+              <path
+                d="M3 12h18"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+              <path
+                d="M3 18h18"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+          <Link
+            to="/"
+            className={styles.brand}
+            onClick={handleLinkClick}
+            aria-label="Level-Up Gamer"
+          >
+            <img src={logo} alt="Level-Up Gamer" />
           </Link>
 
           <nav className={styles.desktopLinks} aria-label="Principal">

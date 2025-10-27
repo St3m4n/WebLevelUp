@@ -1,14 +1,11 @@
-import { useEffect, useMemo, useRef, useState, useId } from 'react';
-import { NavLink, useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo } from 'react';
+import { NavLink, useLocation, useSearchParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import styles from './SecondaryNav.module.css';
 
 type SecondaryNavProps = {
   currentCategoria?: string;
 };
-
-const MAX_VISIBLE_CATEGORIES = 6;
-
 const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
   const productos = useProducts();
   const categorias = useMemo(
@@ -24,11 +21,8 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
     [productos]
   );
   const [searchParams] = useSearchParams();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
-
-  const overflowMenuRef = useRef<HTMLDivElement | null>(null);
-  const overflowButtonId = `secondary-nav-more-${useId()}`;
+  const location = useLocation();
+  // Bootstrap collapse handles mobile open/close, we don't need local open state here
   const searchParamsString = searchParams.toString();
   const resetCategoriaSearch = useMemo(() => {
     const next = new URLSearchParams(searchParamsString);
@@ -37,19 +31,47 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
     return result ? `?${result}` : '';
   }, [searchParamsString]);
 
+  const allCategories = useMemo(() => ['Todos', ...categorias], [categorias]);
+
   const activeCategoria = (
     currentCategoria ??
     searchParams.get('categoria') ??
     ''
   ).toLowerCase();
+  const isAllActive = !activeCategoria;
 
-  const handleToggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const closeMobileMenus = useCallback(() => {
+    const mainCollapse = document.getElementById('secNavCollapse');
+    if (mainCollapse) {
+      mainCollapse.classList.remove('show', 'collapsing');
+      mainCollapse.style.height = '';
+    }
+
+    const mainToggler = document.querySelector<HTMLButtonElement>(
+      '.mobile-cat-toggler'
+    );
+    if (mainToggler) {
+      mainToggler.setAttribute('aria-expanded', 'false');
+    }
+
+    const nestedCollapse = document.getElementById('mobileCategories-0');
+    if (nestedCollapse) {
+      nestedCollapse.classList.remove('show', 'collapsing');
+      nestedCollapse.style.height = '';
+    }
+
+    document
+      .querySelectorAll<HTMLButtonElement>(
+        '[data-bs-target="#mobileCategories-0"]'
+      )
+      .forEach((button) => {
+        button.setAttribute('aria-expanded', 'false');
+      });
+  }, []);
+
   const handleLinkClick = () => {
-    setIsMenuOpen(false);
-    setIsOverflowMenuOpen(false);
+    closeMobileMenus();
   };
-
-  const handleOverflowToggle = () => setIsOverflowMenuOpen((prev) => !prev);
 
   const buildLinkClassName = (
     isActive: boolean,
@@ -58,149 +80,108 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
   ) =>
     [
       baseClass,
-      isActive || categoria.toLowerCase() === activeCategoria
+      isActive ||
+      (categoria.toLowerCase() === 'todos'
+        ? isAllActive
+        : categoria.toLowerCase() === activeCategoria)
         ? styles.linkActive
         : '',
     ]
       .filter(Boolean)
       .join(' ');
 
-  const visibleCategories = categorias.slice(0, MAX_VISIBLE_CATEGORIES);
-  const overflowCategories = categorias.slice(MAX_VISIBLE_CATEGORIES);
-  const hasOverflow = overflowCategories.length > 0;
+  const buildCategoryHref = (categoria: string) =>
+    categoria.toLowerCase() === 'todos'
+      ? `/tienda${resetCategoriaSearch}`
+      : `/tienda?categoria=${encodeURIComponent(categoria)}`;
 
+  // No extra effects required: Bootstrap collapse handles outside clicks and toggling
   useEffect(() => {
-    setIsOverflowMenuOpen(false);
-  }, [categorias.length]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        isOverflowMenuOpen &&
-        overflowMenuRef.current &&
-        !overflowMenuRef.current.contains(event.target as Node)
-      ) {
-        const button = document.getElementById(overflowButtonId);
-        if (!button || !button.contains(event.target as Node)) {
-          setIsOverflowMenuOpen(false);
-        }
-      }
-    };
-
-    if (isOverflowMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOverflowMenuOpen, overflowButtonId]);
+    closeMobileMenus();
+  }, [closeMobileMenus, location.pathname, location.search]);
 
   return (
-    <nav className={styles.secondaryNav}>
+    <nav
+      className={[
+        styles.secondaryNav,
+        'secondary-nav',
+        'navbar',
+        'navbar-expand-lg',
+        'navbar-dark',
+      ].join(' ')}
+    >
       <div className="container">
-        <div className={styles.inner}>
-          <span className={styles.title}>Explora por categoría</span>
-
-          <button
-            type="button"
-            className={styles.toggleButton}
-            aria-expanded={isMenuOpen}
-            aria-controls="secondary-nav-links"
-            onClick={handleToggleMenu}
-          >
-            Categorías
-            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M6 9l6 6 6-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-
-          <div
-            id="secondary-nav-links"
-            className={[styles.links, isMenuOpen ? styles.linksOpen : '']
-              .filter(Boolean)
-              .join(' ')}
-          >
-            <NavLink
-              to={`/tienda${resetCategoriaSearch}`}
-              className={({ isActive }) => buildLinkClassName(isActive, '')}
-              onClick={handleLinkClick}
-            >
-              Todos
-            </NavLink>
-            {visibleCategories.map((categoria) => (
-              <NavLink
-                key={categoria}
-                to={`/tienda?categoria=${encodeURIComponent(categoria)}`}
-                className={({ isActive }) =>
-                  buildLinkClassName(isActive, categoria)
-                }
-                onClick={handleLinkClick}
+        <div className="collapse navbar-collapse" id="secNavCollapse">
+          {/* Mobile links: shown only on small screens via Bootstrap classes */}
+          <ul className="navbar-nav w-100 d-lg-none mb-2">
+            <li className="nav-item">
+              <button
+                className="nav-link w-100 text-start d-flex align-items-center justify-content-between"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mobileCategories-0"
+                aria-expanded="false"
+                aria-controls="mobileCategories-0"
               >
-                {categoria}
-              </NavLink>
-            ))}
-            {hasOverflow && (
-              <div className={styles.moreWrapper} ref={overflowMenuRef}>
-                <button
-                  type="button"
-                  id={overflowButtonId}
-                  className={styles.moreButton}
-                  aria-haspopup="true"
-                  aria-expanded={isOverflowMenuOpen}
-                  onClick={handleOverflowToggle}
-                >
-                  Ver más
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M6 9l6 6 6-6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                {isOverflowMenuOpen && (
-                  <div role="menu" className={styles.overflowMenu}>
-                    {overflowCategories.map((categoria) => (
+                Categorías
+                <i className="bi bi-chevron-down ms-2" aria-hidden="true" />
+              </button>
+              <div
+                className="collapse mobile-cats-collapse mt-2"
+                id="mobileCategories-0"
+              >
+                <ul className="navbar-nav ps-3">
+                  {allCategories.map((cat) => (
+                    <li key={cat} className="nav-item">
                       <NavLink
-                        key={categoria}
-                        role="menuitem"
-                        to={`/tienda?categoria=${encodeURIComponent(categoria)}`}
+                        to={buildCategoryHref(cat)}
                         className={({ isActive }) =>
-                          buildLinkClassName(
-                            isActive,
-                            categoria,
-                            styles.overflowItem
-                          )
+                          [styles.link, isActive ? styles.linkActive : '']
+                            .filter(Boolean)
+                            .join(' ')
                         }
                         onClick={handleLinkClick}
                       >
-                        {categoria}
+                        {cat}
                       </NavLink>
-                    ))}
-                  </div>
-                )}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            )}
-            {!visibleCategories.length && !hasOverflow && (
-              <span className={styles.emptyMessage}>
-                Sin categorías activas
-              </span>
-            )}
-          </div>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/nosotros" className="nav-link">
+                Nosotros
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/comunidad" className="nav-link">
+                Comunidad
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/contacto" className="nav-link">
+                Contacto
+              </NavLink>
+            </li>
+          </ul>
+
+          {/* Desktop: horizontal categories */}
+          <ul className="navbar-nav justify-content-center w-100 secondary-nav-list d-none d-lg-flex">
+            {allCategories.map((cat) => (
+              <li key={cat} className="nav-item">
+                <NavLink
+                  to={buildCategoryHref(cat)}
+                  className={({ isActive }) =>
+                    buildLinkClassName(isActive, cat)
+                  }
+                  onClick={handleLinkClick}
+                >
+                  {cat}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </nav>

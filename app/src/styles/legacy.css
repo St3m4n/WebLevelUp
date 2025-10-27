@@ -1,5 +1,12 @@
 /* Estilos legacy importados (recortado a las partes usadas por index) */
-:root { --color-background:#121212; --color-accent-neon:#C729F2; --color-accent-blue:#533AFA; --color-text-primary:#FFFFFF; --color-text-secondary:#D3D3D3; }
+:root {
+	--color-background:#121212;
+	--color-accent-neon:#C729F2;
+	--color-accent-blue:#533AFA;
+	--color-text-primary:#FFFFFF;
+	--color-text-secondary:#D3D3D3;
+	--navbar-height:72px;
+}
 body { background-color: var(--color-background); color: var(--color-text-primary); font-family: 'Roboto', sans-serif; padding-top:175px; }
 .primary-nav { background: rgba(18,18,18,.7); backdrop-filter:blur(10px); box-shadow:0 5px 15px rgba(187,62,255,.25),0 5px 20px rgba(24,123,219,.15); }
 .top-nav { background:#1a1a1a; border-bottom:1px solid rgba(255,255,255,.1); padding:.1rem 0; }

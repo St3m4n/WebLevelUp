@@ -124,15 +124,15 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  color: var(--color-text-secondary);
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 999px;
   transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .link:hover {
   color: var(--color-text-primary);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
 }
 
@@ -144,8 +144,10 @@
 
 @media (max-width: 992px) {
   .secondaryNav {
-    position: static;
+    position: sticky;
+    top: var(--navbar-height, 72px);
     border-top: none;
+    z-index: 1100;
   }
 
   .inner {
@@ -158,15 +160,30 @@
     align-self: flex-end;
   }
 
+  /* Make category links visible on small screens as a horizontal, scrollable strip.
+     This keeps the categories accessible on mobile without hiding them behind
+     an extra click. If needed we still keep the toggleButton behavior, but by
+     default show the links as a single-row scrollable list. */
   .links {
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.35rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.35rem 0.25rem;
+    scrollbar-width: thin;
   }
 
+  /* If someone toggles the menu, preserve open state for accessibility hooks */
   .linksOpen {
     display: flex;
+  }
+
+  /* Reduce title presence to save horizontal space on very small screens */
+  .title {
+    font-size: 0.72rem;
   }
 
   .link {
@@ -174,4 +191,13 @@
     font-size: 0.78rem;
     padding: 0.55rem 0.85rem;
   }
+}
+
+/* Small cosmetic scrollbar for WebKit-based browsers */
+.links::-webkit-scrollbar {
+  height: 8px;
+}
+.links::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
 }
