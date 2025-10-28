@@ -30,11 +30,9 @@ const formatPublishedDate = (isoDate: string) =>
   });
 
 const Comunidad: React.FC = () => {
-  const highlight =
-    communityNews.find((item) => item.highlight) ?? communityNews[0];
-  const secondaryNews = communityNews.filter(
-    (item) => item.id !== highlight.id
-  );
+  // Tomar las primeras 3 noticias para la fila principal
+  const mainNews = communityNews.slice(0, 3);
+  const secondaryNews = communityNews.slice(3);
 
   return (
     <div className="container">
@@ -67,57 +65,59 @@ const Comunidad: React.FC = () => {
               competitiva.
             </p>
           </div>
-          <div className={styles.newsGrid}>
-            <article className={styles.newsMain}>
-              <img src={highlight.image} alt={highlight.title} loading="lazy" />
-              <div className={styles.newsBody}>
-                <span
-                  className={`${styles.newsBadge} ${
-                    highlight.accent === 'neon' ? styles.newsBadgeNeon : ''
-                  }`}
-                >
-                  {highlight.category}
-                </span>
-                <h3 className={styles.newsTitle}>{highlight.title}</h3>
-                <p className={styles.newsExcerpt}>{highlight.excerpt}</p>
-                <p className={styles.newsMeta}>
-                  Publicado el {formatPublishedDate(highlight.publishedAt)}
-                </p>
-                <Link
-                  to={`/comunidad/${highlight.slug}`}
-                  className={styles.newsLink}
-                >
-                  Leer más →
-                </Link>
-              </div>
-            </article>
-            <div className={styles.newsStack}>
-              {secondaryNews.map((item) => (
-                <article key={item.id} className={styles.newsCard}>
-                  <img src={item.image} alt={item.title} loading="lazy" />
-                  <div>
-                    <span
-                      className={`${styles.newsBadge} ${
-                        item.accent === 'neon' ? styles.newsBadgeNeon : ''
-                      }`}
-                    >
-                      {item.category}
-                    </span>
-                    <h3 className={styles.newsTitle}>{item.title}</h3>
-                    <p className={styles.newsExcerpt}>{item.excerpt}</p>
-                    <p className={styles.newsMeta}>
-                      Publicado el {formatPublishedDate(item.publishedAt)}
-                    </p>
-                    <Link
-                      to={`/comunidad/${item.slug}`}
-                      className={styles.newsLink}
-                    >
-                      Leer más →
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
+          <div className={styles.newsGridRow}>
+            {mainNews.map((item) => (
+              <Link
+                key={item.id}
+                to={`/comunidad/${item.slug}`}
+                className={styles.newsCard}
+                style={{ textDecoration: 'none' }}
+              >
+                <img src={item.image} alt={item.title} loading="lazy" />
+                <div>
+                  <span
+                    className={`${styles.newsBadge} ${
+                      item.accent === 'neon' ? styles.newsBadgeNeon : ''
+                    }`}
+                  >
+                    {item.category}
+                  </span>
+                  <h3 className={styles.newsTitle}>{item.title}</h3>
+                  <p className={styles.newsExcerpt}>{item.excerpt}</p>
+                  <p className={styles.newsMeta}>
+                    Publicado el {formatPublishedDate(item.publishedAt)}
+                  </p>
+                  <span className={styles.newsLink}>Leer más →</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className={styles.newsStack}>
+            {secondaryNews.map((item) => (
+              <Link
+                key={item.id}
+                to={`/comunidad/${item.slug}`}
+                className={styles.newsCard}
+                style={{ textDecoration: 'none' }}
+              >
+                <img src={item.image} alt={item.title} loading="lazy" />
+                <div>
+                  <span
+                    className={`${styles.newsBadge} ${
+                      item.accent === 'neon' ? styles.newsBadgeNeon : ''
+                    }`}
+                  >
+                    {item.category}
+                  </span>
+                  <h3 className={styles.newsTitle}>{item.title}</h3>
+                  <p className={styles.newsExcerpt}>{item.excerpt}</p>
+                  <p className={styles.newsMeta}>
+                    Publicado el {formatPublishedDate(item.publishedAt)}
+                  </p>
+                  <span className={styles.newsLink}>Leer más →</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
 
@@ -132,7 +132,12 @@ const Comunidad: React.FC = () => {
           </div>
           <div className={styles.blogGrid}>
             {communityBlogPosts.map((post) => (
-              <article key={post.id} className={styles.blogCard}>
+              <Link
+                key={post.id}
+                to={`/comunidad/${post.slug}`}
+                className={styles.blogCard}
+                style={{ textDecoration: 'none' }}
+              >
                 <img src={post.image} alt={post.title} loading="lazy" />
                 <div className={styles.blogBody}>
                   <h3 className={styles.blogTitle}>{post.title}</h3>
@@ -141,13 +146,8 @@ const Comunidad: React.FC = () => {
                 <p className={styles.blogMeta}>
                   {formatPublishedDate(post.publishedAt)}
                 </p>
-                <Link
-                  to={`/comunidad/${post.slug}`}
-                  className={styles.blogLink}
-                >
-                  Leer entrada →
-                </Link>
-              </article>
+                <span className={styles.blogLink}>Leer entrada →</span>
+              </Link>
             ))}
           </div>
         </section>

@@ -514,20 +514,26 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: clamp(1rem, 6vw, 2.5rem);
+  align-items: flex-start;
+  padding: clamp(5rem, 10vw, 6.5rem) clamp(1.25rem, 5vw, 2.5rem) clamp(2rem, 6vw, 3rem);
+  overflow-y: auto;
+  scroll-padding-top: clamp(4rem, 8vw, 5rem);
 }
 
 .detailDialog {
-  width: min(720px, 100%);
-  max-height: 90vh;
-  background: rgba(18, 18, 18, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 22px;
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+  width: min(760px, 100%);
+  background: rgba(10, 10, 10, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 26px;
+  box-shadow: 0 32px 120px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: auto;
 }
 
 .detailHeader {
@@ -541,11 +547,25 @@
   justify-content: space-between;
   gap: 0.75rem;
   align-items: flex-start;
+  padding: clamp(1.2rem, 3vw, 1.6rem) clamp(1.25rem, 4vw, 2rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .detailTitle {
   margin: 0;
   font-size: clamp(1.3rem, 3vw, 1.75rem);
+}
+
+.detailSubtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+}
+
+.detailHeaderText {
+  display: grid;
+  gap: 0.45rem;
+  max-width: min(520px, 100%);
 }
 
 .detailHeaderMeta {
@@ -662,13 +682,14 @@
 
 .form {
   display: grid;
-  gap: clamp(1rem, 3vw, 1.5rem);
+  gap: clamp(1.25rem, 3vw, 1.75rem);
+  padding: clamp(1.25rem, 4vw, 2rem);
 }
 
 .formGrid {
   display: grid;
-  gap: clamp(1rem, 3vw, 1.5rem);
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(0.9rem, 3vw, 1.4rem);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
 .formControl {
@@ -680,13 +701,17 @@
 .formControl input,
 .formControl textarea,
 .formControl select {
-  background: rgba(12, 12, 12, 0.82);
+  background: rgba(14, 14, 14, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 0.65rem 0.85rem;
+  border-radius: 14px;
+  padding: 0.7rem 0.9rem;
   color: var(--color-text-primary);
   font-family: inherit;
   font-size: 0.95rem;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .formControl input[aria-invalid='true'],
@@ -694,11 +719,66 @@
   border-color: rgba(244, 63, 94, 0.35);
 }
 
+.formControl input:focus,
+.formControl textarea:focus,
+.formControl select:focus {
+  outline: none;
+  border-color: rgba(199, 41, 242, 0.55);
+  box-shadow: 0 0 0 2px rgba(199, 41, 242, 0.18);
+}
+
+.formControl span {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.formSection {
+  display: grid;
+  gap: clamp(0.85rem, 2vw, 1.2rem);
+  background: rgba(12, 12, 12, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: clamp(1rem, 3vw, 1.4rem);
+}
+
+.formSectionHeader {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.formSectionTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.formSectionSubtitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.inputHint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.formControlFull {
+  grid-column: 1 / -1;
+}
+
 .formFooter {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0.75rem;
+  gap: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: clamp(1rem, 3vw, 1.4rem);
 }
 
 .checkboxControl {
@@ -927,12 +1007,25 @@
 }
 
 @media (max-width: 640px) {
+  .detailOverlay {
+    padding: clamp(4.5rem, 12vw, 5.5rem) 0 clamp(2rem, 10vw, 3rem);
+  }
+
   .detailDialog {
-    max-height: 100vh;
+    border-radius: 0;
+    min-height: 100vh;
     border-radius: 0;
   }
 
   .detailBody {
     padding-right: 0;
+  }
+
+  .form {
+    padding: clamp(1rem, 6vw, 1.5rem);
+  }
+
+  .formSection {
+    padding: clamp(0.85rem, 6vw, 1.2rem);
   }
 }

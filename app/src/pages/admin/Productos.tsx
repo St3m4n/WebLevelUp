@@ -760,13 +760,15 @@ const Productos: React.FC = () => {
 
         {formState.isOpen && (
           <div className={styles.detailOverlay} role="dialog" aria-modal="true">
-            <div className={styles.detailDialog} style={{ maxWidth: '720px' }}>
+            <div className={styles.detailDialog}>
               <header className={styles.detailHeader}>
-                <h2>
-                  {formState.mode === 'create'
-                    ? 'Agregar nuevo producto'
-                    : `Editar "${formState.initial?.nombre ?? ''}"`}
-                </h2>
+                <div className={styles.detailHeaderText}>
+                  <h2>
+                    {formState.mode === 'create'
+                      ? 'Agregar nuevo producto'
+                      : `Editar "${formState.initial?.nombre ?? ''}"`}
+                  </h2>
+                </div>
                 <button
                   type="button"
                   className={styles.closeButton}
@@ -778,173 +780,198 @@ const Productos: React.FC = () => {
               </header>
 
               <form className={styles.form} onSubmit={handleSubmitForm}>
-                <div className={styles.formGrid}>
-                  <label className={styles.formControl}>
-                    <span>Código (SKU)</span>
-                    <input
-                      name="codigo"
-                      value={formValues.codigo}
-                      onChange={handleFormInputChange}
-                      placeholder="Se genera automáticamente si lo dejas vacío"
-                      readOnly={formState.mode === 'edit'}
-                      aria-invalid={Boolean(formErrors.codigo)}
-                    />
-                    {formErrors.codigo && (
-                      <span className={styles.formError}>
-                        {formErrors.codigo}
-                      </span>
-                    )}
-                  </label>
+                <div className={styles.formSection}>
+                  <div className={styles.formSectionHeader}>
+                    <h3 className={styles.formSectionTitle}>
+                      Información básica
+                    </h3>
+                  </div>
+                  <div className={styles.formGrid}>
+                    <label className={styles.formControl}>
+                      <span>Código (SKU)</span>
+                      <input
+                        name="codigo"
+                        value={formValues.codigo}
+                        onChange={handleFormInputChange}
+                        placeholder="Se genera automáticamente si lo dejas vacío"
+                        readOnly={formState.mode === 'edit'}
+                        aria-invalid={Boolean(formErrors.codigo)}
+                      />
+                      {formErrors.codigo && (
+                        <span className={styles.formError}>
+                          {formErrors.codigo}
+                        </span>
+                      )}
+                    </label>
 
-                  <label className={styles.formControl}>
-                    <span>Nombre</span>
-                    <input
-                      name="nombre"
-                      value={formValues.nombre}
-                      onChange={handleFormInputChange}
-                      required
-                      aria-invalid={Boolean(formErrors.nombre)}
-                    />
-                    {formErrors.nombre && (
-                      <span className={styles.formError}>
-                        {formErrors.nombre}
-                      </span>
-                    )}
-                  </label>
+                    <label className={styles.formControl}>
+                      <span>Nombre</span>
+                      <input
+                        name="nombre"
+                        value={formValues.nombre}
+                        onChange={handleFormInputChange}
+                        required
+                        aria-invalid={Boolean(formErrors.nombre)}
+                      />
+                      {formErrors.nombre && (
+                        <span className={styles.formError}>
+                          {formErrors.nombre}
+                        </span>
+                      )}
+                    </label>
 
-                  <label className={styles.formControl}>
-                    <span>Categoría</span>
-                    <input
-                      name="categoria"
-                      value={formValues.categoria}
-                      onChange={handleFormInputChange}
-                      list="catalog-categories"
-                      required
-                      aria-invalid={Boolean(formErrors.categoria)}
-                    />
-                    <datalist id="catalog-categories">
-                      {categories.map((categoria) => (
-                        <option key={categoria} value={categoria} />
-                      ))}
-                    </datalist>
-                    {formErrors.categoria && (
-                      <span className={styles.formError}>
-                        {formErrors.categoria}
-                      </span>
-                    )}
-                  </label>
+                    <label className={styles.formControl}>
+                      <span>Categoría</span>
+                      <input
+                        name="categoria"
+                        value={formValues.categoria}
+                        onChange={handleFormInputChange}
+                        list="catalog-categories"
+                        required
+                        aria-invalid={Boolean(formErrors.categoria)}
+                      />
+                      <datalist id="catalog-categories">
+                        {categories.map((categoria) => (
+                          <option key={categoria} value={categoria} />
+                        ))}
+                      </datalist>
+                      {formErrors.categoria && (
+                        <span className={styles.formError}>
+                          {formErrors.categoria}
+                        </span>
+                      )}
+                    </label>
 
-                  <label className={styles.formControl}>
-                    <span>Fabricante</span>
-                    <input
-                      name="fabricante"
-                      value={formValues.fabricante}
-                      onChange={handleFormInputChange}
-                      required
-                      aria-invalid={Boolean(formErrors.fabricante)}
-                    />
-                    {formErrors.fabricante && (
-                      <span className={styles.formError}>
-                        {formErrors.fabricante}
-                      </span>
-                    )}
-                  </label>
+                    <label className={styles.formControl}>
+                      <span>Fabricante</span>
+                      <input
+                        name="fabricante"
+                        value={formValues.fabricante}
+                        onChange={handleFormInputChange}
+                        required
+                        aria-invalid={Boolean(formErrors.fabricante)}
+                      />
+                      {formErrors.fabricante && (
+                        <span className={styles.formError}>
+                          {formErrors.fabricante}
+                        </span>
+                      )}
+                    </label>
 
-                  <label className={styles.formControl}>
-                    <span>Distribuidor</span>
-                    <input
-                      name="distribuidor"
-                      value={formValues.distribuidor}
-                      onChange={handleFormInputChange}
-                      required
-                      aria-invalid={Boolean(formErrors.distribuidor)}
-                    />
-                    {formErrors.distribuidor && (
-                      <span className={styles.formError}>
-                        {formErrors.distribuidor}
-                      </span>
-                    )}
-                  </label>
-
-                  <label className={styles.formControl}>
-                    <span>Precio (CLP)</span>
-                    <input
-                      name="precio"
-                      type="number"
-                      min={0}
-                      step={100}
-                      value={formValues.precio}
-                      onChange={handleFormInputChange}
-                      required
-                      aria-invalid={Boolean(formErrors.precio)}
-                    />
-                    {formErrors.precio && (
-                      <span className={styles.formError}>
-                        {formErrors.precio}
-                      </span>
-                    )}
-                  </label>
-
-                  <label className={styles.formControl}>
-                    <span>Stock disponible</span>
-                    <input
-                      name="stock"
-                      type="number"
-                      min={0}
-                      value={formValues.stock}
-                      onChange={handleFormInputChange}
-                      required
-                      aria-invalid={Boolean(formErrors.stock)}
-                    />
-                    {formErrors.stock && (
-                      <span className={styles.formError}>
-                        {formErrors.stock}
-                      </span>
-                    )}
-                  </label>
-
-                  <label className={styles.formControl}>
-                    <span>Stock crítico</span>
-                    <input
-                      name="stockCritico"
-                      type="number"
-                      min={0}
-                      value={formValues.stockCritico}
-                      onChange={handleFormInputChange}
-                      required
-                      aria-invalid={Boolean(formErrors.stockCritico)}
-                    />
-                    {formErrors.stockCritico && (
-                      <span className={styles.formError}>
-                        {formErrors.stockCritico}
-                      </span>
-                    )}
-                  </label>
-
-                  <label className={styles.formControl}>
-                    <span>Imagen (URL)</span>
-                    <input
-                      name="url"
-                      value={formValues.url}
-                      onChange={handleFormInputChange}
-                      required
-                      aria-invalid={Boolean(formErrors.url)}
-                    />
-                    {formErrors.url && (
-                      <span className={styles.formError}>{formErrors.url}</span>
-                    )}
-                  </label>
+                    <label className={styles.formControl}>
+                      <span>Distribuidor</span>
+                      <input
+                        name="distribuidor"
+                        value={formValues.distribuidor}
+                        onChange={handleFormInputChange}
+                        required
+                        aria-invalid={Boolean(formErrors.distribuidor)}
+                      />
+                      {formErrors.distribuidor && (
+                        <span className={styles.formError}>
+                          {formErrors.distribuidor}
+                        </span>
+                      )}
+                    </label>
+                  </div>
                 </div>
 
-                <label className={styles.formControl}>
-                  <span>Descripción</span>
-                  <textarea
-                    name="descripcion"
-                    value={formValues.descripcion}
-                    onChange={handleFormInputChange}
-                    rows={4}
-                  />
-                </label>
+                <div className={styles.formSection}>
+                  <div className={styles.formSectionHeader}>
+                    <h3 className={styles.formSectionTitle}>
+                      Inventario y precios
+                    </h3>
+                  </div>
+                  <div className={styles.formGrid}>
+                    <label className={styles.formControl}>
+                      <span>Precio (CLP)</span>
+                      <input
+                        name="precio"
+                        type="number"
+                        min={0}
+                        step={100}
+                        value={formValues.precio}
+                        onChange={handleFormInputChange}
+                        required
+                        aria-invalid={Boolean(formErrors.precio)}
+                      />
+                      {formErrors.precio && (
+                        <span className={styles.formError}>
+                          {formErrors.precio}
+                        </span>
+                      )}
+                    </label>
+
+                    <label className={styles.formControl}>
+                      <span>Stock disponible</span>
+                      <input
+                        name="stock"
+                        type="number"
+                        min={0}
+                        value={formValues.stock}
+                        onChange={handleFormInputChange}
+                        required
+                        aria-invalid={Boolean(formErrors.stock)}
+                      />
+                      {formErrors.stock && (
+                        <span className={styles.formError}>
+                          {formErrors.stock}
+                        </span>
+                      )}
+                    </label>
+
+                    <label className={styles.formControl}>
+                      <span>Stock crítico</span>
+                      <input
+                        name="stockCritico"
+                        type="number"
+                        min={0}
+                        value={formValues.stockCritico}
+                        onChange={handleFormInputChange}
+                        required
+                        aria-invalid={Boolean(formErrors.stockCritico)}
+                      />
+                      {formErrors.stockCritico && (
+                        <span className={styles.formError}>
+                          {formErrors.stockCritico}
+                        </span>
+                      )}
+                    </label>
+
+                    <label className={styles.formControl}>
+                      <span>Imagen (URL)</span>
+                      <input
+                        name="url"
+                        value={formValues.url}
+                        onChange={handleFormInputChange}
+                        required
+                        aria-invalid={Boolean(formErrors.url)}
+                      />
+                      {formErrors.url && (
+                        <span className={styles.formError}>
+                          {formErrors.url}
+                        </span>
+                      )}
+                    </label>
+                  </div>
+                </div>
+
+                <div className={styles.formSection}>
+                  <div className={styles.formSectionHeader}>
+                    <h3 className={styles.formSectionTitle}>Descripción</h3>
+                  </div>
+                  <label
+                    className={`${styles.formControl} ${styles.formControlFull}`}
+                  >
+                    <span>Descripción</span>
+                    <textarea
+                      name="descripcion"
+                      value={formValues.descripcion}
+                      onChange={handleFormInputChange}
+                      rows={4}
+                    />
+                  </label>
+                </div>
 
                 <footer className={styles.formFooter}>
                   <button

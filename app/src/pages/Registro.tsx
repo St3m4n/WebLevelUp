@@ -387,6 +387,19 @@ const Registro: React.FC = () => {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
+      setTouched((previous) => {
+        const next = { ...previous };
+        (Object.keys(validationErrors) as Array<keyof RegisterForm>).forEach(
+          (field) => {
+            next[field] = true;
+          }
+        );
+        return next;
+      });
+      setStatus({
+        type: 'error',
+        message: 'Completa los campos obligatorios resaltados.',
+      });
       return;
     }
 

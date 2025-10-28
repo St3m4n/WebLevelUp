@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
@@ -8,6 +8,7 @@ import { truncateText } from '@/utils/text';
 import styles from './RecommendationsGrid.module.css';
 
 const RecommendationsGrid: React.FC = () => {
+  const navigate = useNavigate();
   const productos = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
@@ -34,19 +35,33 @@ const RecommendationsGrid: React.FC = () => {
         <div className={styles.grid}>
           {recomendados.map((producto) => {
             const pricing = getPriceBreakdown(producto.precio);
+            const goToProduct = () => navigate(`/tienda/${producto.codigo}`);
+            const handleKeyDown: React.KeyboardEventHandler<HTMLElement> = (
+              event
+            ) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                goToProduct();
+              }
+            };
+
             return (
-              <article className={styles.card} key={producto.codigo}>
-                <Link
-                  to={`/tienda/${producto.codigo}`}
-                  className={styles.cardMedia}
-                  aria-label={`Ver detalles de ${producto.nombre}`}
-                >
+              <article
+                className={styles.card}
+                key={producto.codigo}
+                role="link"
+                tabIndex={0}
+                onClick={goToProduct}
+                onKeyDown={handleKeyDown}
+                aria-label={`Ver detalles de ${producto.nombre}`}
+              >
+                <div className={styles.cardMedia}>
                   <img
                     src={producto.url}
                     alt={producto.nombre}
                     loading="lazy"
                   />
-                </Link>
+                </div>
 
                 <div className={styles.cardBody}>
                   <div className={styles.productMeta}>
@@ -54,6 +69,8 @@ const RecommendationsGrid: React.FC = () => {
                       <Link
                         to={`/tienda/${producto.codigo}`}
                         className={styles.productLink}
+                        tabIndex={-1}
+                        onClick={(event) => event.stopPropagation()}
                       >
                         {producto.nombre}
                       </Link>
@@ -89,7 +106,8 @@ const RecommendationsGrid: React.FC = () => {
                   <button
                     type="button"
                     className={styles.addButton}
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       addItem(producto);
                       addToast({
                         title: 'Producto añadido',
@@ -97,6 +115,7 @@ const RecommendationsGrid: React.FC = () => {
                         variant: 'success',
                       });
                     }}
+                    onKeyDown={(event) => event.stopPropagation()}
                   >
                     Agregar al carrito
                   </button>

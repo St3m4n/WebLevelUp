@@ -1,3 +1,137 @@
+/* Dropdown de categorías junto al logo */
+.categoryDropdownWrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 1.2rem;
+  position: relative;
+}
+
+.categoryDropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.categoryDropdownButton {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-weight: 700;
+  font-size: 1.08rem;
+  padding: 0.5rem 1.1rem 0.5rem 0.7rem;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: background 0.18s;
+}
+.categoryDropdownButton:hover {
+  background: rgba(199,41,242,0.08);
+  color: var(--color-accent-neon);
+}
+
+.categoryDropdownMenu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  min-width: 320px;
+  background: #18181a;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  border-radius: 0 0 16px 16px;
+  border-top: 2px solid var(--color-accent-neon);
+  z-index: 1500;
+  padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.categoryGroupsMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.categoryDropdownMenu ul,
+.mobileCategoryMenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.categoryGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.categoryGroupTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-accent-neon);
+  margin-bottom: 0.2rem;
+}
+.categoryDropdownItem {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: 0.98rem;
+  padding: 0.18rem 0.1rem;
+  border-radius: 4px;
+  transition: background 0.18s, color 0.18s;
+  display: block;
+}
+.categoryDropdownItem:hover {
+  background: rgba(199,41,242,0.08);
+  color: var(--color-accent-neon);
+}
+/* Mega menú estilo columnas para desktop */
+.megaMenu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100vw;
+  background: #18181a;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 2.5rem 4vw 2.5rem 4vw;
+  display: none;
+  z-index: 1200;
+}
+.navbarItem:hover .megaMenu {
+  display: flex;
+}
+.megaMenuColumns {
+  display: flex;
+  gap: 3rem;
+  width: 100%;
+  justify-content: flex-start;
+}
+.megaMenuGroup {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.megaMenuTitle {
+  font-weight: 700;
+  font-size: 1.08rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-accent-neon);
+}
+.megaMenuLink {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: 0.98rem;
+  padding: 0.18rem 0.1rem;
+  border-radius: 4px;
+  transition: background 0.18s;
+}
+.megaMenuLink:hover {
+  background: rgba(199,41,242,0.08);
+  color: var(--color-accent-neon);
+}
+@media (max-width: 992px) {
+  .megaMenu {
+    display: none !important;
+  }
+}
 .navbarRoot {
   position: sticky;
   top: 0;
@@ -15,6 +149,57 @@
   padding: 0.75rem 0;
 }
 
+.navContent {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+
+/* Top row: small nav with main page links */
+.topRow {
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.topLinks {
+  display: flex;
+  gap: 0.6rem; /* más juntos */
+  align-items: center;
+  font-size: 0.88rem;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 1rem 0 0; /* empuja ligeramente hacia la derecha */
+  justify-content: flex-end; /* alinear a la derecha */
+}
+.topLink {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.84rem; /* ligeramente más pequeño para homogeneidad */
+  padding: 0.12rem 0.18rem; /* más compactos */
+}
+.topLinkActive,
+.topLink:hover {
+  color: var(--color-text-primary);
+}
+
+/* Main row: logo, search and CTAs */
+.mainRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.55rem 0;
+}
+
+.brandWrapper {
+  display: flex;
+  align-items: center;
+}
 .brand {
   display: flex;
   align-items: center;
@@ -41,11 +226,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.5rem;
+  padding: 0.45rem 0.75rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  min-width: 260px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  width: 100%;
+  max-width: 740px; /* buscador más grande */
+  justify-self: center; /* centrar en la columna central */
 }
 
 .searchInput {
@@ -53,8 +240,9 @@
   background: transparent;
   border: none;
   color: var(--color-text-primary);
-  font-size: 0.9rem;
+  font-size: 1rem; /* un poco mayor para legibilidad */
   outline: none;
+  padding: 0.12rem 0;
 }
 
 .searchInput::placeholder {
@@ -104,6 +292,37 @@
   align-items: center;
   gap: 0.85rem;
   margin-left: auto;
+}
+
+/* Ajustes responsive: mantener buscador prominente en pantallas grandes, ocultarlo o ajustarlo en móviles */
+@media (min-width: 992px) {
+  .brand img { height: 44px; }
+}
+
+@media (max-width: 991px) {
+  .mainRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .brandWrapper {
+    order: 1;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .brand {
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  .brand img {
+    margin: 0 auto;
+  }
+
+  .searchForm { max-width: 420px; width: 100%; }
 }
 
 .iconButton {
@@ -195,7 +414,8 @@
 
 .profileWrapper {
   position: relative;
-  z-index: 45;
+  /* Aumentar z-index para que el dropdown se muestre siempre por encima de la barra de categorías */
+  z-index: 9999;
 }
 
 .profileMenu {
@@ -211,7 +431,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45);
-  z-index: 1300;
+  z-index: 10000; /* asegurar prioridad sobre cualquier otra barra sticky */
 }
 
 .profileMenuItem,
@@ -307,6 +527,51 @@
   height: 18px;
 }
 
+.mobileDropdownToggle {
+  background: none;
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.mobileDropdownToggle:hover,
+.mobileDropdownToggle:focus-visible {
+  color: var(--color-accent-neon);
+  outline: none;
+}
+
+.mobileDropdownIcon {
+  transition: transform 0.2s ease;
+}
+
+.mobileDropdownIconOpen {
+  transform: rotate(180deg);
+}
+
+.mobileCategoryMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.35rem;
+  padding-left: 0.6rem;
+}
+
+.mobileCategoryMenu .categoryGroupsMenu {
+  gap: 0.8rem;
+}
+
+.mobileCategoryMenu .categoryGroupTitle {
+  margin-bottom: 0.3rem;
+}
+
 .mobileNavLink {
   color: var(--color-text-secondary);
   font-weight: 600;
@@ -323,21 +588,24 @@
     display: none;
   }
 
-  .brand {
-    order: 1;
+  /* Ocultar el dropdown de categorías en pantallas pequeñas (móvil) para evitar que se solape
+     y usar la sidebar / menú móvil como única vía para acceder a categorías. */
+  .categoryDropdownWrapper {
+    display: none !important;
   }
 
   .ctaLinks {
     display: inline-flex;
     gap: 0.5rem;
-    order: 4;
+    order: 2;
     margin-left: auto;
   }
 
   .mobileMenuButton {
-    order: 3;
+    order: 0;
     display: inline-flex;
-    margin-left: 0.75rem;
+    margin: 0;
+    margin-right: 0.5rem;
   }
 
   .ctaLinks .navLink {
@@ -346,5 +614,12 @@
 
   .mobileMenu {
     display: flex;
+  }
+}
+
+/* Ensure top links collapse nicely on small screens */
+@media (max-width: 767px) {
+  .topLinks {
+    display: none;
   }
 }

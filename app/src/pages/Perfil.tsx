@@ -233,6 +233,26 @@ const Perfil: React.FC = () => {
       : [];
   }, [profileForm.region]);
 
+  const addressAvailableComunas = useMemo(() => {
+    if (!addressForm.region) return [];
+    const regionMatch = regiones.find(
+      (entry) => entry.nombre === addressForm.region
+    );
+    return regionMatch
+      ? regionMatch.comunas.map((comuna) => comuna.nombre)
+      : [];
+  }, [addressForm.region]);
+
+  const addressComunaOptions = useMemo(() => {
+    if (!addressForm.city) {
+      return addressAvailableComunas;
+    }
+    if (addressAvailableComunas.includes(addressForm.city)) {
+      return addressAvailableComunas;
+    }
+    return [addressForm.city, ...addressAvailableComunas];
+  }, [addressAvailableComunas, addressForm.city]);
+
   const persistedProfile = useMemo<ProfileFormState>(() => {
     if (!user) {
       return {
@@ -527,10 +547,16 @@ const Perfil: React.FC = () => {
         }
         return;
       }
-      setAddressForm((previous) => ({
-        ...previous,
-        [field]: value,
-      }));
+      setAddressForm((previous) => {
+        const next: AddressFormState = {
+          ...previous,
+          [field]: value,
+        };
+        if (field === 'region' && value !== previous.region) {
+          next.city = '';
+        }
+        return next;
+      });
     },
     []
   );
@@ -559,6 +585,16 @@ const Perfil: React.FC = () => {
           title: 'Faltan datos en la dirección',
           description:
             'Ingresa un nombre de contacto y la dirección principal para continuar.',
+        });
+        setIsSavingAddress(false);
+        return;
+      }
+      if (!sanitized.region || !sanitized.city) {
+        addToast({
+          variant: 'warning',
+          title: 'Completa la ubicación',
+          description:
+            'Selecciona una región y comuna para guardar la dirección.',
         });
         setIsSavingAddress(false);
         return;
@@ -1293,24 +1329,43 @@ const Perfil: React.FC = () => {
                         />
                       </label>
                       <label className={styles.formField}>
-                        <span className={styles.formLabel}>Ciudad</span>
-                        <input
-                          className={styles.input}
-                          name="city"
-                          value={addressForm.city}
-                          onChange={handleAddressFieldChange}
-                          placeholder="Ciudad o localidad"
-                        />
-                      </label>
-                      <label className={styles.formField}>
                         <span className={styles.formLabel}>Región</span>
-                        <input
-                          className={styles.input}
+                        <select
+                          className={styles.select}
                           name="region"
                           value={addressForm.region}
                           onChange={handleAddressFieldChange}
-                          placeholder="Región"
-                        />
+                        >
+                          <option value="">Selecciona una región</option>
+                          {regiones.map((region) => (
+                            <option key={region.nombre} value={region.nombre}>
+                              {region.nombre}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className={styles.formField}>
+                        <span className={styles.formLabel}>
+                          Ciudad / comuna
+                        </span>
+                        <select
+                          className={styles.select}
+                          name="city"
+                          value={addressForm.city}
+                          onChange={handleAddressFieldChange}
+                          disabled={!addressForm.region}
+                        >
+                          <option value="">
+                            {addressForm.region
+                              ? 'Selecciona una comuna'
+                              : 'Primero elige una región'}
+                          </option>
+                          {addressComunaOptions.map((comuna) => (
+                            <option key={comuna} value={comuna}>
+                              {comuna}
+                            </option>
+                          ))}
+                        </select>
                       </label>
                       <label className={styles.formField}>
                         <span className={styles.formLabel}>País</span>

@@ -321,6 +321,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     [extraUsers]
   );
 
+  const ensureDefaultAddressForUser = useCallback(
+    (
+      usuario: Pick<
+        Usuario,
+        'nombre' | 'apellidos' | 'correo' | 'direccion' | 'comuna' | 'region'
+      >
+    ): UserAddress[] => {
+      const existing = getUserAddresses(usuario.correo);
+      if (existing.length > 0) {
+        return existing;
+      }
+
+      const normalizeField = (value?: string) =>
+        typeof value === 'string' ? value.trim() : '';
+
+      const line1 = normalizeField(usuario.direccion);
+      if (!line1) {
+        return existing;
+      }
+
+      const fullNameParts = [
+        normalizeField(usuario.nombre),
+        normalizeField(usuario.apellidos),
+      ].filter(Boolean);
+      const fullName =
+        fullNameParts.join(' ') || normalizeField(usuario.correo) || 'Usuario';
+
+      const city = normalizeField(usuario.comuna);
+      const region = normalizeField(usuario.region);
+
+      persistAddUserAddress(usuario.correo, {
+        fullName,
+        line1,
+        city,
+        region,
+        country: 'Chile',
+        isPrimary: true,
+      });
+
+      return getUserAddresses(usuario.correo);
+    },
+    []
+  );
+
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     const refreshStates = () => {
@@ -594,7 +638,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         ensureReferralCode(usuario.run);
         setUser(createAuthUser(usuario));
         setProfileOverrides(getProfileOverrides(usuario.correo));
-        setAddresses(getUserAddresses(usuario.correo));
+        const seededAddresses = ensureDefaultAddressForUser(usuario);
+        setAddresses(seededAddresses);
         emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
           metadata: {
             origin: usuario.origin,
@@ -608,7 +653,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       ensureReferralCode(usuario.run);
       setUser(createAuthUser(usuario));
       setProfileOverrides(getProfileOverrides(usuario.correo));
-      setAddresses(getUserAddresses(usuario.correo));
+      const seededAddresses = ensureDefaultAddressForUser(usuario);
+      setAddresses(seededAddresses);
       emitAuthAuditEvent('login', actorPayload, 'Inicio de sesión exitoso', {
         metadata: {
           origin: usuario.origin,
@@ -616,7 +662,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
     },
-    [emitAuthAuditEvent, persistedUserStates, usuariosFusionados]
+    [
+      emitAuthAuditEvent,
+      ensureDefaultAddressForUser,
+      persistedUserStates,
+      usuariosFusionados,
+    ]
   );
 
   const register = useCallback(
@@ -693,6 +744,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       usuarios.push(nuevoUsuario);
       setExtraUsers((prev) => [...prev, nuevoUsuario]);
+      ensureDefaultAddressForUser(nuevoUsuario);
       emitAuthAuditEvent(
         'registered',
         {
@@ -718,7 +770,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         referralCode: ensuredReferralCode || stats.referralCode,
       };
     },
-    [emitAuthAuditEvent, usuariosFusionados]
+    [emitAuthAuditEvent, ensureDefaultAddressForUser, usuariosFusionados]
   );
 
   const logout = useCallback(() => {

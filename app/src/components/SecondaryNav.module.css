@@ -1,7 +1,17 @@
+/* Fila de grupos de categorías con separación visual */
+.categoryGroupsRow {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 3rem;
+  align-items: center;
+  padding: 0 1rem;
+}
 .secondaryNav {
-  background: rgba(18, 18, 18, 0.78);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  /* Minimal, low-height category bar */
+  background: #0f0f10; /* oscuro y limpio */
+  backdrop-filter: blur(6px);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
   position: sticky;
   top: 0;
   z-index: 1020;
@@ -10,9 +20,9 @@
 .inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
-  padding: 0.75rem 0;
+  padding: 0.42rem 0; /* altura menor */
 }
 
 .title {
@@ -37,9 +47,14 @@
 .links {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: 0.6rem; /* igual que .topLinks */
+  flex-wrap: nowrap;
+  justify-content: center; /* centrar en la barra */
+  width: 100%;
+  max-width: none; /* dejar que la grid controle el ancho */
+  padding: 0 1rem;
+  overflow-x: auto; /* permitir scroll en pantallas pequeñas */
+  -webkit-overflow-scrolling: touch;
 }
 
 .moreWrapper {
@@ -50,11 +65,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.45rem 0.95rem;
-  font-size: 0.82rem;
+  padding: 0.42rem 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.55px;
   color: var(--color-text-primary);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -70,38 +85,48 @@
   background: rgba(255, 255, 255, 0.16);
 }
 
-.overflowMenu {
-  position: absolute;
-  top: calc(100% + 0.6rem);
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding: 0.6rem;
-  min-width: 220px;
-  background: rgba(18, 18, 18, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
-  z-index: 15;
-}
+  .overflowMenu {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    color: var(--color-text-secondary);
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
 
-.overflowItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.35rem;
-  width: 100%;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.55px;
-  color: var(--color-text-secondary);
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  transition: color 0.2s ease, background 0.2s ease;
-}
+  /* estilos específicos para links dentro del overflow menu */
+  .overflowMenu .link {
+    display: inline-block;
+    position: relative;
+    padding: 0.12rem 0.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.35px;
+    color: var(--color-text-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 180ms ease;
+  }
+
+  .overflowMenu .link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 100%;
+    background: #9b5cff;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1);
+  }
+
+  .overflowMenu .link:hover { color: #9b5cff; }
+  .overflowMenu .link:hover::after { transform: scaleX(1); }
+  .overflowMenu .linkActive { color: #9b5cff; }
+  .overflowMenu .linkActive::after { transform: scaleX(1); }
 
 .overflowItem:hover {
   color: var(--color-text-primary);
@@ -117,30 +142,73 @@
 
 .link {
   display: inline-flex;
+  position: relative; /* required for ::after underline */
   align-items: center;
   gap: 0.35rem;
-  padding: 0.45rem 0.95rem;
-  font-size: 0.82rem;
+  padding: 0.12rem 0.18rem; /* similar to .topLink compact padding */
+  font-size: 0.84rem; /* match .topLink */
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--color-text-primary);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 999px;
-  transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  transition: color 180ms ease;
 }
 
-.link:hover {
-  color: var(--color-text-primary);
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 2px;
+  width: 100%;
+  background: var(--color-accent-neon);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1);
 }
 
-.linkActive {
-  color: var(--color-text-primary);
-  background: linear-gradient(135deg, rgba(199, 41, 242, 0.45), rgba(83, 58, 250, 0.55));
-  box-shadow: 0 6px 20px rgba(83, 58, 250, 0.25);
+.link:hover { color: var(--color-text-primary); }
+.link:hover::after { transform: scaleX(1); }
+.linkActive { color: var(--color-text-primary); }
+.linkActive::after { transform: scaleX(1); }
+
+/* Dropdown styles for desktop groups */
+.dropdown {
+  position: relative;
 }
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 180px;
+  background: rgba(18,18,18,0.98);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 0.35rem 0.25rem;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+  display: none;
+  z-index: 1050;
+}
+
+.dropdown:hover .dropdownMenu {
+  display: block;
+}
+
+.dropdownItem {
+  display: block;
+  padding: 0.45rem 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: 0.84rem;
+  letter-spacing: 0.45px;
+  text-transform: uppercase;
+}
+
+.dropdownItem:hover { color: var(--color-text-primary); }
 
 @media (max-width: 992px) {
   .secondaryNav {
@@ -169,7 +237,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem; /* mismo gap en móvil */
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding: 0.35rem 0.25rem;
@@ -188,9 +256,34 @@
 
   .link {
     justify-content: space-between;
-    font-size: 0.78rem;
-    padding: 0.55rem 0.85rem;
+    font-size: 0.76rem;
+    padding: 0.48rem 0.75rem;
   }
+}
+
+/* Inner grid to align category row with header (brand - center - actions) */
+.innerGrid {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  gap: 0.5rem;
+}
+
+.leftPlaceholder,
+.rightPlaceholder {
+  display: block;
+}
+
+/* Controlled dropdown: show when parent has .open */
+.dropdownMenu {
+  display: none;
+}
+.dropdown.open .dropdownMenu {
+  display: block;
 }
 
 /* Small cosmetic scrollbar for WebKit-based browsers */
@@ -200,4 +293,23 @@
 .links::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.08);
   border-radius: 999px;
+}
+
+/* Desktop: distribuir los grupos a lo largo del ancho central entre logo y acciones */
+@media (min-width: 992px) {
+  .secondary-nav-list {
+    display: flex;
+    width: 100%;
+    justify-content: space-around; /* distribuir los grupos con espacio alrededor */
+  gap: 7rem !important; /* aumentar separación entre grupos y forzar prioridad */
+    align-items: center;
+    padding: 0 1rem;
+  }
+
+  .secondary-nav-list .nav-item {
+    flex: 0 0 auto; /* permitir que cada item mantenga su ancho natural */
+    min-width: 140px; /* asegurar separación mínima entre grupos */
+    text-align: center;
+    margin: 0 1.5rem; /* margen lateral extra para separar grupos */
+  }
 }

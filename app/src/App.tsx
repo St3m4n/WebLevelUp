@@ -1,20 +1,19 @@
 import { Suspense } from 'react';
-import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
+import { Outlet, ScrollRestoration } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
-import SecondaryNav from '@/components/SecondaryNav';
+// SecondaryNav ahora se renderiza dentro de Navbar
 
 import './App.css';
 import './styles/legacy.css';
 
 const App: React.FC = () => {
-  const location = useLocation();
-  const hideSecondaryNav = location.pathname.startsWith('/admin');
+  // location handled inside Navbar when needed
 
   return (
     <div className="app-shell">
       <Navbar />
-      {!hideSecondaryNav && <SecondaryNav />}
+      {/* SecondaryNav se renderiza dentro de <Navbar /> */}
 
       <main className="app-main">
         <Suspense

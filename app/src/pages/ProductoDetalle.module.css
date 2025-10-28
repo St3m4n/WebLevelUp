@@ -151,6 +151,9 @@
   background: rgba(33, 33, 33, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: flex-start;
 }
 
 .quantityButton {

@@ -1,27 +1,38 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { NavLink, useLocation, useSearchParams } from 'react-router-dom';
-import { useProducts } from '@/hooks/useProducts';
 import styles from './SecondaryNav.module.css';
 
 type SecondaryNavProps = {
   currentCategoria?: string;
 };
 const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
-  const productos = useProducts();
-  const categorias = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          productos
-            .filter((producto) => !producto.deletedAt)
-            .map((producto) => producto.categoria?.trim())
-            .filter(Boolean)
-        )
-      ).sort((a, b) => (a ?? '').localeCompare(b ?? '')) as string[],
-    [productos]
+  // Usar una estructura estática en el orden solicitado por el producto propietario.
+  // Esto reemplaza la generación dinámica por categoría de productos.
+  const categoryGroups = useMemo(
+    () => [
+      {
+        title: 'Hardware y Consolas',
+        items: ['Consolas', 'Computadores Gamers'],
+      },
+      {
+        title: 'Periféricos y Accesorios',
+        items: ['Mouse', 'Mousepad', 'Sillas Gamers', 'Accesorios'],
+      },
+      {
+        title: 'Juegos',
+        items: ['Juegos de Mesa'],
+      },
+      {
+        title: 'Ropa',
+        items: ['Poleras Personalizadas', 'Polerones Gamers Personalizados'],
+      },
+    ],
+    []
   );
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
   // Bootstrap collapse handles mobile open/close, we don't need local open state here
   const searchParamsString = searchParams.toString();
   const resetCategoriaSearch = useMemo(() => {
@@ -30,8 +41,6 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
     const result = next.toString();
     return result ? `?${result}` : '';
   }, [searchParamsString]);
-
-  const allCategories = useMemo(() => ['Todos', ...categorias], [categorias]);
 
   const activeCategoria = (
     currentCategoria ??
@@ -73,22 +82,41 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
     closeMobileMenus();
   };
 
+  const handleMouseEnter = (i: number) => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setOpenIndex(i);
+  };
+
+  const handleMouseLeave = () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+    }
+    // Delay close so the user can move between button and menu without flicker
+    closeTimerRef.current = window.setTimeout(() => {
+      setOpenIndex(null);
+      closeTimerRef.current = null;
+    }, 1600) as unknown as number;
+  };
+
   const buildLinkClassName = (
     isActive: boolean,
     categoria: string,
     baseClass = styles.link
-  ) =>
-    [
-      baseClass,
+  ) => {
+    const categoriaLower = categoria.toLowerCase();
+    const shouldHighlight =
       isActive ||
-      (categoria.toLowerCase() === 'todos'
+      (categoriaLower === 'todos'
         ? isAllActive
-        : categoria.toLowerCase() === activeCategoria)
-        ? styles.linkActive
-        : '',
-    ]
+        : categoriaLower === activeCategoria);
+
+    return [baseClass, shouldHighlight ? styles.linkActive : '']
       .filter(Boolean)
       .join(' ');
+  };
 
   const buildCategoryHref = (categoria: string) =>
     categoria.toLowerCase() === 'todos'
@@ -99,6 +127,15 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
   useEffect(() => {
     closeMobileMenus();
   }, [closeMobileMenus, location.pathname, location.search]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <nav
@@ -131,19 +168,29 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
                 id="mobileCategories-0"
               >
                 <ul className="navbar-nav ps-3">
-                  {allCategories.map((cat) => (
-                    <li key={cat} className="nav-item">
-                      <NavLink
-                        to={buildCategoryHref(cat)}
-                        className={({ isActive }) =>
-                          [styles.link, isActive ? styles.linkActive : '']
-                            .filter(Boolean)
-                            .join(' ')
-                        }
-                        onClick={handleLinkClick}
-                      >
-                        {cat}
-                      </NavLink>
+                  {/* Mostrar los grupos y sus items en móvil: cada grupo como encabezado + lista */}
+                  {categoryGroups.map((group) => (
+                    <li key={group.title} className="nav-item">
+                      <div className="nav-link text-start fw-bold">
+                        {group.title}
+                      </div>
+                      <ul className="navbar-nav ps-3">
+                        {group.items.map((cat) => (
+                          <li key={cat} className="nav-item">
+                            <NavLink
+                              to={buildCategoryHref(cat)}
+                              className={({ isActive }) =>
+                                [styles.link, isActive ? styles.linkActive : '']
+                                  .filter(Boolean)
+                                  .join(' ')
+                              }
+                              onClick={handleLinkClick}
+                            >
+                              {cat}
+                            </NavLink>
+                          </li>
+                        ))}
+                      </ul>
                     </li>
                   ))}
                 </ul>
@@ -167,21 +214,56 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ currentCategoria }) => {
           </ul>
 
           {/* Desktop: horizontal categories */}
-          <ul className="navbar-nav justify-content-center w-100 secondary-nav-list d-none d-lg-flex">
-            {allCategories.map((cat) => (
-              <li key={cat} className="nav-item">
-                <NavLink
-                  to={buildCategoryHref(cat)}
-                  className={({ isActive }) =>
-                    buildLinkClassName(isActive, cat)
-                  }
-                  onClick={handleLinkClick}
+          {/* Desktop: horizontal categories rendered inside an innerGrid so the
+              category row spans the same centered max-width as the main header
+              (brand -> center -> actions). We control dropdown open state so
+              it stays visible al pasar el mouse con un pequeño retraso para
+              evitar cierres accidentales. */}
+          <div className={styles.innerGrid + ' d-none d-lg-grid'}>
+            <div className={styles.leftPlaceholder} />
+            <div className={styles.categoryGroupsRow}>
+              {categoryGroups.map((group, i) => (
+                <div
+                  key={group.title}
+                  className={`nav-item dropdown ${styles.dropdown} ${
+                    openIndex === i ? 'open' : ''
+                  }`}
+                  onMouseEnter={() => handleMouseEnter(i)}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  {cat}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+                  <button
+                    type="button"
+                    className={[styles.link, 'dropdown-toggle'].join(' ')}
+                    aria-expanded={openIndex === i}
+                  >
+                    {group.title}
+                  </button>
+                  <ul
+                    className={[styles.dropdownMenu, 'dropdown-menu'].join(' ')}
+                  >
+                    {group.items.map((cat) => (
+                      <li key={cat}>
+                        <NavLink
+                          to={buildCategoryHref(cat)}
+                          className={({ isActive }) =>
+                            buildLinkClassName(
+                              isActive,
+                              cat,
+                              styles.dropdownItem
+                            )
+                          }
+                          onClick={handleLinkClick}
+                        >
+                          {cat}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <div className={styles.rightPlaceholder} />
+          </div>
         </div>
       </div>
     </nav>

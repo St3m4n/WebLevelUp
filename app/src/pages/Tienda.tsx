@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import type { ProductRecord } from '@/utils/products';
 import { useCart } from '@/context/CartContext';
@@ -51,6 +51,7 @@ const ordenarProductos = (sort: string, items: ProductRecord[]) => {
 };
 
 const Tienda: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeSort, setActiveSort] = useState(
     searchParams.get('orden') ?? 'populares'
@@ -245,25 +246,42 @@ const Tienda: React.FC = () => {
             <div className={styles.grid}>
               {paginatedProducts.map((producto) => {
                 const pricing = getPriceBreakdown(producto.precio);
+                const goToProduct = () =>
+                  navigate(`/tienda/${producto.codigo}`);
+                const handleKeyDown: React.KeyboardEventHandler<HTMLElement> = (
+                  event
+                ) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    goToProduct();
+                  }
+                };
+
                 return (
-                  <article key={producto.codigo} className={styles.card}>
-                    <Link
-                      to={`/tienda/${producto.codigo}`}
-                      className={styles.cardMedia}
-                      aria-label={`Ver detalles de ${producto.nombre}`}
-                    >
+                  <article
+                    key={producto.codigo}
+                    className={styles.card}
+                    role="link"
+                    tabIndex={0}
+                    onClick={goToProduct}
+                    onKeyDown={handleKeyDown}
+                    aria-label={`Ver detalles de ${producto.nombre}`}
+                  >
+                    <div className={styles.cardMedia}>
                       <img
                         src={producto.url}
                         alt={producto.nombre}
                         loading="lazy"
                       />
-                    </Link>
+                    </div>
                     <div className={styles.cardBody}>
                       <div className={styles.productMeta}>
                         <h3 className={styles.productName}>
                           <Link
                             to={`/tienda/${producto.codigo}`}
                             className={styles.productLink}
+                            tabIndex={-1}
+                            onClick={(event) => event.stopPropagation()}
                           >
                             {producto.nombre}
                           </Link>
@@ -299,7 +317,8 @@ const Tienda: React.FC = () => {
                       <button
                         type="button"
                         className={styles.addButton}
-                        onClick={() => {
+                        onClick={(event) => {
+                          event.stopPropagation();
                           addItem(producto);
                           addToast({
                             title: 'Producto añadido',
@@ -307,6 +326,7 @@ const Tienda: React.FC = () => {
                             variant: 'success',
                           });
                         }}
+                        onKeyDown={(event) => event.stopPropagation()}
                       >
                         Agregar al carrito
                       </button>

@@ -35,13 +35,22 @@
   background: rgba(18, 18, 18, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.04);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   height: 100%;
+  cursor: pointer;
+  position: relative;
 }
 
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 22px 45px rgba(0, 0, 0, 0.45);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-accent-neon);
+  outline-offset: 4px;
 }
 
 .cardMedia {
@@ -147,7 +156,11 @@
 .addButton {
   margin-top: 0.75rem;
   width: 100%;
-  background: linear-gradient(135deg, rgba(199, 41, 242, 0.9), rgba(83, 58, 250, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.9),
+    rgba(83, 58, 250, 0.9)
+  );
   border: none;
   color: #fff;
   font-size: 0.88rem;
@@ -156,7 +169,9 @@
   text-transform: uppercase;
   padding: 0.75rem 1rem;
   border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .addButton:hover,

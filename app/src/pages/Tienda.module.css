@@ -89,7 +89,11 @@
 }
 
 .filterButtonActive {
-  background: linear-gradient(135deg, rgba(199, 41, 242, 0.9), rgba(83, 58, 250, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.9),
+    rgba(83, 58, 250, 0.9)
+  );
   box-shadow: 0 12px 35px rgba(83, 58, 250, 0.35);
 }
 
@@ -130,8 +134,12 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 18px;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   height: 100%;
+  cursor: pointer;
+  position: relative;
 }
 
 .card:hover {
@@ -139,6 +147,10 @@
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
 }
 
+.card:focus-visible {
+  outline: 2px solid var(--color-accent-neon);
+  outline-offset: 4px;
+}
 
 .cardMedia {
   display: block;
@@ -243,7 +255,11 @@
 .addButton {
   margin-top: 0.75rem;
   width: 100%;
-  background: linear-gradient(135deg, rgba(199, 41, 242, 0.9), rgba(83, 58, 250, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.9),
+    rgba(83, 58, 250, 0.9)
+  );
   border: none;
   color: #fff;
   font-weight: 600;
@@ -299,7 +315,9 @@
   color: var(--color-text-primary);
   font-weight: 600;
   font-size: 0.85rem;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .paginationButton:hover,
@@ -309,7 +327,11 @@
 }
 
 .paginationButtonActive {
-  background: linear-gradient(135deg, rgba(199, 41, 242, 0.9), rgba(83, 58, 250, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(199, 41, 242, 0.9),
+    rgba(83, 58, 250, 0.9)
+  );
   border-color: transparent;
 }
 
