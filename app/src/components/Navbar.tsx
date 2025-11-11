@@ -155,6 +155,7 @@ const Navbar: React.FC = () => {
             className={styles.mobileMenuButton}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
+            aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             onClick={handleToggleMenu}
           >
             <svg viewBox="0 0 24 24" aria-hidden>

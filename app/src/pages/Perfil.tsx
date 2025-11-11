@@ -79,6 +79,125 @@ const dateFormatter = new Intl.DateTimeFormat('es-CL', {
   timeStyle: 'short',
 });
 
+export const maskEmail = (email: string): string => {
+  const [userPart, domainPart] = email.split('@');
+  if (!userPart || !domainPart) return email;
+  if (userPart.length <= 2) {
+    return `${userPart[0] ?? ''}***@${domainPart}`;
+  }
+  const head = userPart.slice(0, 2);
+  return `${head}***@${domainPart}`;
+};
+
+type ReferralListEntry = {
+  email: string;
+  dateLabel: string;
+};
+
+type ReferralTabContentProps = {
+  panelId: string;
+  labelId: string;
+  referralCode: string;
+  referralLink: string;
+  referralCount: number;
+  referrals: ReferralListEntry[];
+  referralFeedback: string | null;
+  onCopy: () => void;
+  onShare: () => void;
+  maskEmailFn?: (email: string) => string;
+};
+
+export const ReferralTabContent: React.FC<ReferralTabContentProps> = ({
+  panelId,
+  labelId,
+  referralCode,
+  referralLink,
+  referralCount,
+  referrals,
+  referralFeedback,
+  onCopy,
+  onShare,
+  maskEmailFn,
+}) => {
+  const applyMask = maskEmailFn ?? maskEmail;
+
+  return (
+    <div
+      id={panelId}
+      role="tabpanel"
+      aria-labelledby={labelId}
+      className={styles.tabPanel}
+    >
+      <h2 className={styles.tabTitle}>Referidos Level-Up</h2>
+      <p className={styles.tabDescription}>
+        Comparte tu código y gana EXP adicional junto a tus amigos.
+      </p>
+
+      <div className={styles.referralSection}>
+        <div className={styles.referralHeader}>
+          <h3 className={styles.subsectionTitle}>Tu código</h3>
+          <span className={styles.referralCounter}>
+            {referralCount}{' '}
+            {referralCount === 1 ? 'referido' : 'referidos'}
+          </span>
+        </div>
+        <div className={styles.referralInputGroup}>
+          <input
+            className={styles.referralInput}
+            value={referralCode || 'Disponible al iniciar sesión'}
+            readOnly
+            aria-label="Código de referido"
+          />
+          <button
+            type="button"
+            className={styles.referralButton}
+            onClick={onCopy}
+            disabled={!referralCode}
+          >
+            Copiar código
+          </button>
+          <button
+            type="button"
+            className={styles.referralButton}
+            onClick={onShare}
+            disabled={!referralLink}
+          >
+            Compartir enlace
+          </button>
+        </div>
+        {referralFeedback && (
+          <p className={styles.referralFeedback}>{referralFeedback}</p>
+        )}
+        <p className={styles.referralHint}>
+          Cada registro con tu código suma 100 EXP para ambos jugadores.
+        </p>
+      </div>
+
+      <div className={styles.referralListSection}>
+        <h3 className={styles.subsectionTitle}>Historial de referidos</h3>
+        {referrals.length === 0 ? (
+          <p className={styles.referralEmpty}>
+            Aún no sumas referidos. ¡Comparte tu código con tu squad!
+          </p>
+        ) : (
+          <ul className={styles.referralList}>
+            {referrals.map((referral) => (
+              <li key={referral.email} className={styles.referralListItem}>
+                <span className={styles.referralEmail}>
+                  {applyMask(referral.email)}
+                </span>
+                <span className={styles.referralDate}>
+                  {referral.dateLabel || 'Reciente'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const Perfil: React.FC = () => {
   const {
     user,
@@ -723,16 +842,6 @@ const Perfil: React.FC = () => {
     },
     [addToast, setPrimaryAddress, user]
   );
-
-  const maskEmail = (email: string): string => {
-    const [userPart, domainPart] = email.split('@');
-    if (!userPart || !domainPart) return email;
-    if (userPart.length <= 2) {
-      return `${userPart[0] ?? ''}***@${domainPart}`;
-    }
-    const head = userPart.slice(0, 2);
-    return `${head}***@${domainPart}`;
-  };
 
   const handleCopyCode = async () => {
     if (!referralCode) return;
@@ -1523,88 +1632,18 @@ const Perfil: React.FC = () => {
               )}
 
               {activeTab === 'referrals' && (
-                <div
-                  id="tab-panel-referrals"
-                  role="tabpanel"
-                  aria-labelledby="tab-trigger-referrals"
-                  className={styles.tabPanel}
-                >
-                  <h2 className={styles.tabTitle}>Referidos Level-Up</h2>
-                  <p className={styles.tabDescription}>
-                    Comparte tu código y gana EXP adicional junto a tus amigos.
-                  </p>
-
-                  <div className={styles.referralSection}>
-                    <div className={styles.referralHeader}>
-                      <h3 className={styles.subsectionTitle}>Tu código</h3>
-                      <span className={styles.referralCounter}>
-                        {referralCount}{' '}
-                        {referralCount === 1 ? 'referido' : 'referidos'}
-                      </span>
-                    </div>
-                    <div className={styles.referralInputGroup}>
-                      <input
-                        className={styles.referralInput}
-                        value={referralCode || 'Disponible al iniciar sesión'}
-                        readOnly
-                        aria-label="Código de referido"
-                      />
-                      <button
-                        type="button"
-                        className={styles.referralButton}
-                        onClick={handleCopyCode}
-                        disabled={!referralCode}
-                      >
-                        Copiar código
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.referralButton}
-                        onClick={handleShareReferral}
-                        disabled={!referralLink}
-                      >
-                        Compartir enlace
-                      </button>
-                    </div>
-                    {referralFeedback && (
-                      <p className={styles.referralFeedback}>
-                        {referralFeedback}
-                      </p>
-                    )}
-                    <p className={styles.referralHint}>
-                      Cada registro con tu código suma 100 EXP para ambos
-                      jugadores.
-                    </p>
-                  </div>
-
-                  <div className={styles.referralListSection}>
-                    <h3 className={styles.subsectionTitle}>
-                      Historial de referidos
-                    </h3>
-                    {referrals.length === 0 ? (
-                      <p className={styles.referralEmpty}>
-                        Aún no sumas referidos. ¡Comparte tu código con tu
-                        squad!
-                      </p>
-                    ) : (
-                      <ul className={styles.referralList}>
-                        {referrals.map((referral) => (
-                          <li
-                            key={referral.email}
-                            className={styles.referralListItem}
-                          >
-                            <span className={styles.referralEmail}>
-                              {maskEmail(referral.email)}
-                            </span>
-                            <span className={styles.referralDate}>
-                              {referral.dateLabel || 'Reciente'}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </div>
+                <ReferralTabContent
+                  panelId="tab-panel-referrals"
+                  labelId="tab-trigger-referrals"
+                  referralCode={referralCode}
+                  referralLink={referralLink}
+                  referralCount={referralCount}
+                  referrals={referrals}
+                  referralFeedback={referralFeedback}
+                  onCopy={handleCopyCode}
+                  onShare={handleShareReferral}
+                  maskEmailFn={maskEmail}
+                />
               )}
             </div>
           </section>

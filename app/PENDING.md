@@ -14,3 +14,4 @@
 
 ## Completed
 - Added "Olvidaste tu contraseña" flow and post-registro login notices to mirror legacy `olvidaste.js` and `login.js` behaviors.
+- Vitest tooling with initial coverage (snapshots for Navbar/SecondaryNav/Home, audit + CartContext functionality, component flows for ToastViewport, FeaturedOffers, Checkout y Perfil).
