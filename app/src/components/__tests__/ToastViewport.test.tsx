@@ -38,7 +38,9 @@ describe('ToastViewport', () => {
 
   it('no renderiza nada cuando no hay toasts', () => {
     // Si la lista está vacía, el contenedor debe quedar sin contenido.
-    const { container } = render(<ToastViewport toasts={[]} onDismiss={vi.fn()} />);
+    const { container } = render(
+      <ToastViewport toasts={[]} onDismiss={vi.fn()} />
+    );
     expect(container.firstChild).toBeNull();
   });
 });

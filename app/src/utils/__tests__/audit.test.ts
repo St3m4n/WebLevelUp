@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  clearAuditEvents,
-  loadAuditEvents,
-  recordAuditEvent,
-} from '../audit';
+import { clearAuditEvents, loadAuditEvents, recordAuditEvent } from '../audit';
 
 describe('audit utilities', () => {
   beforeEach(() => {

@@ -5,11 +5,15 @@ import Home from '../Home';
 
 // Reemplazamos componentes pesados por placeholders para concentrarnos en la estructura del hero.
 vi.mock('@/components/FeaturedOffers', () => ({
-  default: () => <section data-testid="featured-offers-placeholder">Ofertas</section>,
+  default: () => (
+    <section data-testid="featured-offers-placeholder">Ofertas</section>
+  ),
 }));
 
 vi.mock('@/components/RecommendationsGrid', () => ({
-  default: () => <section data-testid="recommendations-placeholder">Recs</section>,
+  default: () => (
+    <section data-testid="recommendations-placeholder">Recs</section>
+  ),
 }));
 
 vi.mock('@/assets/background.png', () => ({
@@ -26,7 +30,9 @@ describe('Home snapshot', () => {
     );
 
     // Extrae el título principal del hero.
-    const heroTitle = screen.getByRole('heading', { level: 1 }).textContent?.trim();
+    const heroTitle = screen
+      .getByRole('heading', { level: 1 })
+      .textContent?.trim();
     const linkNodes = screen.getAllByRole('link') as HTMLAnchorElement[];
     // Toma los primeros dos enlaces (CTA) para verificar texto y destino.
     const ctas = linkNodes.slice(0, 2).map((link) => {
@@ -44,7 +50,9 @@ describe('Home snapshot', () => {
     const metrics = metricNodes.map((node) => node.textContent?.trim() ?? '');
 
     // Snapshots para asegurarnos de que los textos clave sigan presentes.
-    expect(heroTitle).toMatchInlineSnapshot('"Todo lo que necesitas para dominar tu setup"');
+    expect(heroTitle).toMatchInlineSnapshot(
+      '"Todo lo que necesitas para dominar tu setup"'
+    );
     expect(ctas).toMatchInlineSnapshot(`
       [
         {

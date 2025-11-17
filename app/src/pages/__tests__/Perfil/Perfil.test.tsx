@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 // which previously triggered out-of-memory failures in constrained CI runs.
 
 describe('Perfil test placeholder', () => {
-	it('tracks referral coverage via dedicated suite', () => {
-		expect(true).toBe(true);
-	});
+  it('tracks referral coverage via dedicated suite', () => {
+    expect(true).toBe(true);
+  });
 });

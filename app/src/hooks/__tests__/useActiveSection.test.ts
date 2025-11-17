@@ -1,5 +1,13 @@
 import { act, renderHook } from '@testing-library/react';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { useActiveSection } from '../useActiveSection';
 
 type ObserverRecord = {
@@ -48,7 +56,10 @@ describe('useActiveSection', () => {
       }
     }
 
-    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver as unknown as typeof IntersectionObserver);
+    vi.stubGlobal(
+      'IntersectionObserver',
+      MockIntersectionObserver as unknown as typeof IntersectionObserver
+    );
   });
 
   afterAll(() => {

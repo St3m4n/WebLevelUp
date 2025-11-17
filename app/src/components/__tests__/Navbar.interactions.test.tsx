@@ -7,7 +7,9 @@ const mockNavigate = vi.fn();
 
 // Mockeamos useNavigate para poder inspeccionar hacia dónde se dirige el usuario.
 vi.mock('react-router-dom', async () => {
-  const actual = (await vi.importActual('react-router-dom')) as typeof RouterDom;
+  const actual = (await vi.importActual(
+    'react-router-dom'
+  )) as typeof RouterDom;
   return {
     ...actual,
     useNavigate: () => mockNavigate,

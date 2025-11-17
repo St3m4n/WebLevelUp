@@ -137,8 +137,7 @@ export const ReferralTabContent: React.FC<ReferralTabContentProps> = ({
         <div className={styles.referralHeader}>
           <h3 className={styles.subsectionTitle}>Tu código</h3>
           <span className={styles.referralCounter}>
-            {referralCount}{' '}
-            {referralCount === 1 ? 'referido' : 'referidos'}
+            {`${referralCount} ${referralCount === 1 ? 'referido' : 'referidos'}`}
           </span>
         </div>
         <div className={styles.referralInputGroup}>

@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CartProvider, useCart, type CartContextValue } from '../CartContext';
+import { CartProvider, useCart } from '../CartContext';
 import type { ProductRecord } from '@/utils/products';
 
 const mockProducts: ProductRecord[] = [
@@ -42,7 +42,9 @@ vi.mock('@/hooks/usePricing', () => ({
   }),
 }));
 
-const Consumer = ({ onReady }: { onReady: (value: ReturnType<typeof useCart>) => void }) => {
+type CartValue = ReturnType<typeof useCart>;
+
+const Consumer = ({ onReady }: { onReady: (value: CartValue) => void }) => {
   const cart = useCart();
   onReady(cart);
   return (
@@ -68,8 +70,8 @@ describe('CartContext', () => {
   });
 
   it('agrega productos respetando stock máximo', () => {
-  let latestContext: CartContextValue | null = null;
-  const handleReady = (value: CartContextValue) => {
+    let latestContext: CartValue | null = null;
+    const handleReady = (value: CartValue) => {
       latestContext = value;
     };
 
@@ -86,14 +88,16 @@ describe('CartContext', () => {
     });
 
     // Se espera que el carrito limite a 5 unidades y actualice las cifras derivadas.
-  expect(latestContext?.items?.[0]?.cantidad).toBe(5);
-  expect(screen.getByTestId('items-count').textContent).toBe('5');
+    expect(latestContext).not.toBeNull();
+    const contextAfterAdd = latestContext!;
+    expect(contextAfterAdd.items[0]?.cantidad).toBe(5);
+    expect(screen.getByTestId('items-count').textContent).toBe('5');
     expect(screen.getByTestId('subtotal').textContent).toBe('75000');
   });
 
   it('actualiza y elimina productos del carrito', () => {
-  let latestContext: CartContextValue | null = null;
-  const handleReady = (value: CartContextValue) => {
+    let latestContext: CartValue | null = null;
+    const handleReady = (value: CartValue) => {
       latestContext = value;
     };
 
@@ -114,13 +118,17 @@ describe('CartContext', () => {
       latestContext?.updateCantidad('prod-1', 3);
     });
 
-  expect(latestContext?.items?.[0]?.cantidad).toBe(3);
+    expect(latestContext).not.toBeNull();
+    const contextAfterUpdate = latestContext!;
+    expect(contextAfterUpdate.items[0]?.cantidad).toBe(3);
 
     // Finalmente elimina el producto y valida que el carrito quede vacío.
     act(() => {
       latestContext?.removeItem('prod-1');
     });
 
-  expect(latestContext?.items).toHaveLength(0);
+    expect(latestContext).not.toBeNull();
+    const contextAfterRemove = latestContext!;
+    expect(contextAfterRemove.items).toHaveLength(0);
   });
 });
