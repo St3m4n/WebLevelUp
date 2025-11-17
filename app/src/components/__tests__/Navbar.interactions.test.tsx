@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { fireEvent, render, screen } from '@testing-library/react';
 import * as RouterDom from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -8,7 +7,7 @@ const mockNavigate = vi.fn();
 
 // Mockeamos useNavigate para poder inspeccionar hacia dónde se dirige el usuario.
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<any>('react-router-dom');
+  const actual = (await vi.importActual('react-router-dom')) as typeof RouterDom;
   return {
     ...actual,
     useNavigate: () => mockNavigate,

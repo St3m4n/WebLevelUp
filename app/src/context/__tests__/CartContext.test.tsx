@@ -1,9 +1,9 @@
-// @ts-nocheck
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CartProvider, useCart } from '../CartContext';
+import { CartProvider, useCart, type CartContextValue } from '../CartContext';
+import type { ProductRecord } from '@/utils/products';
 
-const mockProducts = [
+const mockProducts: ProductRecord[] = [
   {
     codigo: 'prod-1',
     nombre: 'Teclado Gamer',
@@ -16,6 +16,7 @@ const mockProducts = [
     url: 'teclado.png',
     descripcion: 'Teclado mecánico RGB',
     deletedAt: null,
+    origin: 'seed',
   },
 ];
 
@@ -67,8 +68,8 @@ describe('CartContext', () => {
   });
 
   it('agrega productos respetando stock máximo', () => {
-    let latestContext: ReturnType<typeof useCart> | null = null;
-    const handleReady = (value: ReturnType<typeof useCart>) => {
+  let latestContext: CartContextValue | null = null;
+  const handleReady = (value: CartContextValue) => {
       latestContext = value;
     };
 
@@ -85,14 +86,14 @@ describe('CartContext', () => {
     });
 
     // Se espera que el carrito limite a 5 unidades y actualice las cifras derivadas.
-    expect(latestContext?.items[0]?.cantidad).toBe(5);
-    expect(screen.getByTestId('items-count').textContent).toBe('5');
+  expect(latestContext?.items?.[0]?.cantidad).toBe(5);
+  expect(screen.getByTestId('items-count').textContent).toBe('5');
     expect(screen.getByTestId('subtotal').textContent).toBe('75000');
   });
 
   it('actualiza y elimina productos del carrito', () => {
-    let latestContext: ReturnType<typeof useCart> | null = null;
-    const handleReady = (value: ReturnType<typeof useCart>) => {
+  let latestContext: CartContextValue | null = null;
+  const handleReady = (value: CartContextValue) => {
       latestContext = value;
     };
 
@@ -113,13 +114,13 @@ describe('CartContext', () => {
       latestContext?.updateCantidad('prod-1', 3);
     });
 
-    expect(latestContext?.items[0]?.cantidad).toBe(3);
+  expect(latestContext?.items?.[0]?.cantidad).toBe(3);
 
     // Finalmente elimina el producto y valida que el carrito quede vacío.
     act(() => {
       latestContext?.removeItem('prod-1');
     });
 
-    expect(latestContext?.items).toHaveLength(0);
+  expect(latestContext?.items).toHaveLength(0);
   });
 });

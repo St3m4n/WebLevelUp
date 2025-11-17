@@ -1,10 +1,10 @@
-// @ts-nocheck
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import ToastViewport from '../ToastViewport';
+import type { ToastEntry } from '@/types/toast';
 
 describe('ToastViewport', () => {
-  const sampleToasts = [
+  const sampleToasts: ToastEntry[] = [
     {
       id: 'toast-1',
       title: 'Perfil actualizado',

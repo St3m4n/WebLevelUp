@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
@@ -69,8 +68,8 @@ describe('Navbar snapshot', () => {
 
     // Recorremos los enlaces superiores para validar que sigan presentes y en el mismo orden.
     const topLinks = Array.from(
-      container.querySelectorAll<HTMLAnchorElement>('nav[aria-label="Top nav"] a')
-    ).map((link) => link.textContent?.trim() ?? '');
+      container.querySelectorAll('nav[aria-label="Top nav"] a')
+    ).map((link) => (link as HTMLAnchorElement).textContent?.trim() ?? '');
 
     expect(topLinks).toMatchInlineSnapshot(`
       [
@@ -89,7 +88,9 @@ describe('Navbar snapshot', () => {
       cartCount: container
         .querySelector('[aria-label="Abrir carrito"] span')
         ?.textContent?.trim(),
-      hasAdminLink: container.querySelector('a[href="/admin"]')?.textContent?.trim(),
+      hasAdminLink: container
+        .querySelector('a[href="/admin"]')
+        ?.textContent?.trim(),
     };
 
     // Comprobamos que los datos clave (nivel, items del carrito, acceso admin) se mantengan.

@@ -42,7 +42,7 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'SYNC_PRODUCTS'; payload: ProductRecord[] };
 
-type CartContextValue = {
+export type CartContextValue = {
   items: CartItem[];
   totalCantidad: number;
   subtotal: number;

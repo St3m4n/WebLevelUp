@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
@@ -30,10 +29,13 @@ describe('Home snapshot', () => {
     const heroTitle = screen.getByRole('heading', { level: 1 }).textContent?.trim();
     const linkNodes = screen.getAllByRole('link') as HTMLAnchorElement[];
     // Toma los primeros dos enlaces (CTA) para verificar texto y destino.
-    const ctas = linkNodes.slice(0, 2).map((link) => ({
-      label: link.textContent?.trim() ?? '',
-      href: link.getAttribute('href') ?? '',
-    }));
+    const ctas = linkNodes.slice(0, 2).map((link) => {
+      const anchor = link as HTMLAnchorElement;
+      return {
+        label: anchor.textContent?.trim() ?? '',
+        href: anchor.getAttribute('href') ?? '',
+      };
+    });
 
     // Obtiene las métricas resumidas que se muestran en el hero.
     const metricNodes = screen.getAllByText(

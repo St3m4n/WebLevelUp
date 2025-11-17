@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
@@ -14,9 +13,9 @@ describe('SecondaryNav snapshot', () => {
     );
 
     // Extrae los títulos de cada grupo desplegable para comprobar el orden predefinido.
-    const dropdownGroups = (Array.from(
+    const dropdownGroups = Array.from(
       container.querySelectorAll('.dropdown-toggle')
-    ) as HTMLButtonElement[]).map((button) => button.textContent?.trim() ?? '');
+    ).map((button) => (button as HTMLButtonElement).textContent?.trim() ?? '');
 
     expect(dropdownGroups).toMatchInlineSnapshot(`
       [
@@ -28,11 +27,11 @@ describe('SecondaryNav snapshot', () => {
     `);
 
     // Obtiene una muestra de enlaces de categoría para validar rutas y etiquetas.
-    const categoryLinks = (Array.from(
+    const categoryLinks = Array.from(
       container.querySelectorAll('a[href^="/tienda"]')
-    ) as HTMLAnchorElement[]).map((link) => ({
-      href: link.getAttribute('href') ?? '',
-      label: link.textContent?.trim() ?? '',
+    ).map((link) => ({
+      href: (link as HTMLAnchorElement).getAttribute('href') ?? '',
+      label: (link as HTMLAnchorElement).textContent?.trim() ?? '',
     }));
 
     expect(categoryLinks.slice(0, 6)).toMatchInlineSnapshot(`

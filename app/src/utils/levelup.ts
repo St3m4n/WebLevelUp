@@ -58,7 +58,7 @@ type ReferralApplyResult =
         | 'already-referred';
     };
 
-type PurchasePointsResult = {
+export type PurchasePointsResult = {
   ok: true;
   pointsAdded: number;
   totalPoints: number;
