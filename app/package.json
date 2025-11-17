@@ -11,14 +11,16 @@
     "format": "prettier --write .",
     "check": "npm run lint:strict && npm run build",
     "preview": "vite preview",
-  "test": "node ./scripts/run-vitest-sequential.js",
+    "test": "node ./scripts/run-vitest-sequential.js",
     "test:watch": "vitest --watch"
   },
   "dependencies": {
+    "chart.js": "^4.5.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "react": "^19.1.1",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4"
   },

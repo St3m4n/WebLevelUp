@@ -16,6 +16,7 @@ import {
   MESSAGE_STORAGE_KEYS,
 } from '@/utils/messages';
 import styles from './Admin.module.css';
+import SalesChartSection from './SalesChartSection';
 
 type Metric = {
   label: string;
@@ -160,6 +161,11 @@ const Dashboard: React.FC = () => {
       .slice(0, 6);
   }, [orders]);
 
+  const chartOrders = useMemo(
+    () => orders.filter((order) => order.status !== 'Cancelado'),
+    [orders]
+  );
+
   return (
     <div className="container">
       <div className={styles.page}>
@@ -185,6 +191,8 @@ const Dashboard: React.FC = () => {
             </article>
           ))}
         </section>
+
+        <SalesChartSection orders={chartOrders} />
 
         <section
           className={styles.sectionCard}
