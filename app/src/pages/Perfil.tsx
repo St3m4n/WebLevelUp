@@ -1,4 +1,5 @@
 import {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -225,6 +226,7 @@ const Perfil: React.FC = () => {
   );
   const [referralFeedback, setReferralFeedback] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('orders');
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState<ProfileFormState>({
     nombre: '',
     apellidos: '',
@@ -1087,6 +1089,7 @@ const Perfil: React.FC = () => {
                             <th scope="col">Total</th>
                             <th scope="col">Productos</th>
                             <th scope="col">Estado</th>
+                            <th scope="col">Detalle</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1098,14 +1101,87 @@ const Perfil: React.FC = () => {
                             const formattedDate = dateFormatter.format(
                               new Date(order.createdAt)
                             );
+                            const isExpanded = expandedOrderId === order.id;
                             return (
-                              <tr key={order.id}>
-                                <td>{order.id}</td>
-                                <td>{formattedDate}</td>
-                                <td>{formatPrice(order.total)}</td>
-                                <td>{itemsCount}</td>
-                                <td>{order.status}</td>
-                              </tr>
+                              <Fragment key={order.id}>
+                                <tr>
+                                  <td>{order.id}</td>
+                                  <td>{formattedDate}</td>
+                                  <td>{formatPrice(order.total)}</td>
+                                  <td>{itemsCount}</td>
+                                  <td>{order.status}</td>
+                                  <td>
+                                    <button
+                                      type="button"
+                                      className={styles.ghostButton}
+                                      onClick={() =>
+                                        setExpandedOrderId(
+                                          isExpanded ? null : order.id
+                                        )
+                                      }
+                                    >
+                                      {isExpanded ? 'Ocultar' : 'Ver'}
+                                    </button>
+                                  </td>
+                                </tr>
+                                {isExpanded && (
+                                  <tr>
+                                    <td colSpan={6}>
+                                      <div
+                                        style={{
+                                          padding: '1rem',
+                                          background: 'rgba(255,255,255,0.05)',
+                                          borderRadius: '8px',
+                                          marginTop: '0.5rem',
+                                        }}
+                                      >
+                                        <h4
+                                          style={{
+                                            margin: '0 0 0.75rem 0',
+                                            fontSize: '0.9rem',
+                                            color: 'var(--color-text-secondary)',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.05em',
+                                          }}
+                                        >
+                                          Detalle de productos
+                                        </h4>
+                                        <ul
+                                          style={{
+                                            listStyle: 'none',
+                                            padding: 0,
+                                            margin: 0,
+                                            display: 'grid',
+                                            gap: '0.5rem',
+                                          }}
+                                        >
+                                          {order.items.map((item, idx) => (
+                                            <li
+                                              key={`${order.id}-${item.codigo}-${idx}`}
+                                              style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                padding: '0.5rem 0',
+                                                borderBottom:
+                                                  '1px solid rgba(255,255,255,0.1)',
+                                                fontSize: '0.9rem',
+                                              }}
+                                            >
+                                              <span>
+                                                <strong>{item.cantidad}x</strong>{' '}
+                                                {item.nombre}
+                                              </span>
+                                              <span>
+                                                {formatPrice(item.subtotal)}
+                                              </span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )}
+                              </Fragment>
                             );
                           })}
                         </tbody>

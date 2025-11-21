@@ -23,10 +23,8 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = (location.state as LocationState) ?? null;
-  const fromPath =
-    locationState?.from && locationState.from !== '/login'
-      ? locationState.from
-      : '/';
+  // Force redirect to home on login as requested
+  const fromPath = '/';
 
   const [form, setForm] = useState<LoginForm>({ correo: '', password: '' });
   const [errors, setErrors] = useState<LoginErrors>({});

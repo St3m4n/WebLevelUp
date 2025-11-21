@@ -106,51 +106,6 @@ const RANGE_LABEL: Record<SalesRange, string> = {
   mes: 'Últimos 30 días',
 };
 
-function generateFallbackSeries(): Record<SalesRange, SalesPoint[]> {
-  return {
-    hora: Array.from({ length: 12 }, (_, index) => {
-      const ordenes = Math.floor(Math.random() * 5 + 1);
-      const ventas = ordenes * Math.floor(Math.random() * 8000 + 2000);
-      return {
-        label: `${(index + 1) * 5}m`,
-        ventas,
-        ordenes,
-        ticket: ordenes ? Math.round(ventas / ordenes) : 0,
-      };
-    }),
-    dia: Array.from({ length: 24 }, (_, index) => {
-      const ordenes = Math.floor(Math.random() * 15 + 2);
-      const ventas = ordenes * Math.floor(Math.random() * 12000 + 4000);
-      return {
-        label: `${index.toString().padStart(2, '0')}:00`,
-        ventas,
-        ordenes,
-        ticket: ordenes ? Math.round(ventas / ordenes) : 0,
-      };
-    }),
-    semana: Array.from({ length: 7 }, (_, index) => {
-      const ordenes = Math.floor(Math.random() * 80 + 10);
-      const ventas = ordenes * Math.floor(Math.random() * 15000 + 5000);
-      return {
-        label: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][index],
-        ventas,
-        ordenes,
-        ticket: ordenes ? Math.round(ventas / ordenes) : 0,
-      };
-    }),
-    mes: Array.from({ length: 30 }, (_, index) => {
-      const ordenes = Math.floor(Math.random() * 120 + 25);
-      const ventas = ordenes * Math.floor(Math.random() * 20000 + 7000);
-      return {
-        label: `${index + 1}`,
-        ventas,
-        ordenes,
-        ticket: ordenes ? Math.round(ventas / ordenes) : 0,
-      };
-    }),
-  };
-}
-
 function buildSeriesFromOrders(
   orders: Order[]
 ): Record<SalesRange, SalesPoint[]> {
@@ -197,28 +152,20 @@ function buildSeriesFromOrders(
       ticket: bucket.ordenes ? Math.round(bucket.ventas / bucket.ordenes) : 0,
     }));
 
-    const hasActivity = points.some(
-      (point) => point.ventas > 0 || point.ordenes > 0
-    );
-    return [range, hasActivity ? points : []] as const;
+    return [range, points] as const;
   });
 
   return Object.fromEntries(seriesEntries) as Record<SalesRange, SalesPoint[]>;
 }
 
 const SalesChartSection: React.FC<Props> = ({ orders }) => {
-  const fallbackSeries = useMemo(generateFallbackSeries, []);
   const computedSeries = useMemo(() => buildSeriesFromOrders(orders), [orders]);
   const [range, setRange] = useState<SalesRange>('dia');
   const [metric, setMetric] = useState<SalesMetric>('ventas');
 
   const chartSeries = useMemo(() => {
-    const points = computedSeries[range];
-    if (points.length === 0) {
-      return fallbackSeries[range];
-    }
-    return points;
-  }, [computedSeries, fallbackSeries, range]);
+    return computedSeries[range];
+  }, [computedSeries, range]);
 
   const summary = useMemo(() => {
     const total = chartSeries.reduce((acc, item) => acc + item[metric], 0);

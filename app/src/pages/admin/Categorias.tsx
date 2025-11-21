@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import type { Categoria } from '@/types';
@@ -43,6 +44,8 @@ const Categorias: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const { products: productos } = useProducts();
   const auditActor = useAuditActor();
+  const prevCategoriasLength = useRef(categorias.length);
+
   const logCategoryEvent = (
     action: 'created' | 'deleted' | 'restored' | 'updated',
     nombre: string,
@@ -95,6 +98,44 @@ const Categorias: React.FC = () => {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
+  // Sincronización automática con el catálogo
+  useEffect(() => {
+    if (productos.length === 0) return;
+
+    updateCategorias((prev) => {
+      const seeded = seedCategoriesFromProducts(prev, productos);
+      if (seeded.length > prev.length) {
+        return seeded;
+      }
+      return prev;
+    });
+  }, [productos]);
+
+  // Detectar cambios en la cantidad de categorías para notificar
+  useEffect(() => {
+    const diff = categorias.length - prevCategoriasLength.current;
+    if (diff > 0) {
+      setStatusMessage(
+        `${diff} categoría${diff === 1 ? '' : 's'} sincronizada${
+          diff === 1 ? '' : 's'
+        } desde el catálogo.`
+      );
+      recordAuditEvent({
+        action: 'updated',
+        summary: 'Sincronización automática de categorías',
+        entity: {
+          type: 'sistema',
+          context: 'categorias',
+        },
+        metadata: {
+          agregadas: diff,
+        },
+        actor: auditActor,
+      });
+    }
+    prevCategoriasLength.current = categorias.length;
+  }, [categorias.length, auditActor]);
+
   const updateCategorias = (updater: (current: Categoria[]) => Categoria[]) => {
     setCategorias((prev) => {
       const next = updater(prev);
@@ -145,37 +186,6 @@ const Categorias: React.FC = () => {
         origen: 'panel',
       }
     );
-  };
-
-  const handleSeedFromCatalog = () => {
-    setStatusMessage(null);
-    let added = 0;
-    updateCategorias((prev) => {
-      const seeded = seedCategoriesFromProducts(prev, productos);
-      added = seeded.length - prev.length;
-      return seeded;
-    });
-    if (added > 0) {
-      setStatusMessage(
-        `${added} categoría${added === 1 ? '' : 's'} agregada${
-          added === 1 ? '' : 's'
-        } desde el catálogo.`
-      );
-      recordAuditEvent({
-        action: 'updated',
-        summary: 'Sincronización de categorías desde catálogo de productos',
-        entity: {
-          type: 'sistema',
-          context: 'categorias',
-        },
-        metadata: {
-          agregadas: added,
-        },
-        actor: auditActor,
-      });
-    } else {
-      setStatusMessage('No hay nuevas categorías para sincronizar.');
-    }
   };
 
   const handleDelete = (categoria: Categoria) => {
@@ -312,13 +322,6 @@ const Categorias: React.FC = () => {
             />
             <button type="submit" className={styles.primaryAction}>
               Agregar categoría
-            </button>
-            <button
-              type="button"
-              className={styles.secondaryAction}
-              onClick={handleSeedFromCatalog}
-            >
-              Sincronizar con catálogo
             </button>
           </form>
           {formError && (

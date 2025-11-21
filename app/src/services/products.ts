@@ -51,8 +51,11 @@ const extractList = (payload: ProductListResponse): ProductDto[] => {
 };
 
 const mapDtoToProduct = (dto: ProductDto): ProductDto => {
+  // @ts-ignore
+  const categoryAlt = dto.category;
   return {
     ...dto,
+    categoria: dto.categoria || categoryAlt || 'Sin categoría',
     url: dto.url || dto.imagenUrl || '',
   };
 };
@@ -110,7 +113,6 @@ export const createProduct = (
     ...rest,
     imagenUrl: finalUrl,
   };
-  console.log('createProduct payload:', JSON.stringify(payload, null, 2));
   return apiPost<Producto>('/products', payload);
 };
 
@@ -128,7 +130,6 @@ export const updateProduct = (codigo: string, product: Partial<Producto>) => {
         }
       : {}),
   };
-  console.log('updateProduct payload:', JSON.stringify(payload, null, 2));
   return apiPut<Producto>(`/products/${encodeURIComponent(codigo)}`, payload);
 };
 

@@ -104,6 +104,7 @@ export interface Order {
   region: string;
   comuna: string;
   status: OrderStatus;
+  deletedAt?: string | null;
 }
 
 export type ContactMessageStatus = 'pendiente' | 'respondido';

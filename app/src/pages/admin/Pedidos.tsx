@@ -4,12 +4,14 @@ import {
   useCallback,
   useMemo,
   useState,
+  useEffect,
 } from 'react';
 import type { Order } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { useOrders } from '@/hooks/useOrders';
-import { updateOrderStatus, deleteOrder } from '@/services/orderService';
+import { updateOrderStatus, deleteOrder, restoreOrder } from '@/services/orderService';
 import { useAuditActor } from '@/hooks/useAuditActor';
+import { useToast } from '@/context/ToastContext';
 import { recordAuditEvent } from '@/utils/audit';
 import styles from './Admin.module.css';
 
@@ -17,11 +19,14 @@ type StatusFilter = 'all' | Order['status'];
 type PaymentFilter = 'all' | Order['paymentMethod'];
 type SortOption = 'newest' | 'oldest' | 'highest' | 'lowest';
 
+type ViewMode = 'active' | 'deleted';
+
 type FiltersState = {
   query: string;
   status: StatusFilter;
   payment: PaymentFilter;
   sort: SortOption;
+  view: ViewMode;
 };
 
 const statusLabels: Record<Order['status'], string> = {
@@ -41,6 +46,7 @@ const defaultFilters: FiltersState = {
   status: 'all',
   payment: 'all',
   sort: 'newest',
+  view: 'active',
 };
 
 const Pedidos: React.FC = () => {
@@ -48,6 +54,11 @@ const Pedidos: React.FC = () => {
   const [filters, setFilters] = useState<FiltersState>(defaultFilters);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const auditActor = useAuditActor();
+  const { addToast } = useToast();
+
+  useEffect(() => {
+    refreshOrders({ includeDeleted: filters.view === 'deleted' });
+  }, [filters.view, refreshOrders]);
 
   const logOrderEvent = useCallback(
     (
@@ -105,6 +116,14 @@ const Pedidos: React.FC = () => {
   const displayedOrders = useMemo(() => {
     const query = filters.query.trim().toLowerCase();
     const filtered = orders.filter((order) => {
+      const isDeleted = Boolean(order.deletedAt);
+      if (filters.view === 'active' && isDeleted) {
+        return false;
+      }
+      if (filters.view === 'deleted' && !isDeleted) {
+        return false;
+      }
+
       if (query) {
         const haystack =
           `${order.id} ${order.userName} ${order.userEmail}`.toLowerCase();
@@ -220,6 +239,29 @@ const Pedidos: React.FC = () => {
     }
   };
 
+  const handleRestoreOrder = async (order: Order) => {
+    if (typeof window === 'undefined') return;
+    const confirmed = window.confirm(`¿Restaurar el pedido ${order.id}?`);
+    if (!confirmed) return;
+
+    try {
+      await restoreOrder(order.id);
+      await refreshOrders();
+      logOrderEvent('restored', order, `Pedido ${order.id} restaurado`, {
+        total: order.total,
+        estado: order.status,
+      });
+    } catch (error) {
+      console.error('Error restoring order', error);
+      addToast({
+        title: 'Error al restaurar',
+        description:
+          'No se pudo restaurar el pedido. Verifica que el backend soporte esta operación.',
+        variant: 'error',
+      });
+    }
+  };
+
   const toggleExpanded = (orderId: string) => {
     setExpandedOrder((prev) => (prev === orderId ? null : orderId));
   };
@@ -296,29 +338,59 @@ const Pedidos: React.FC = () => {
             </button>
           </div>
 
-          <div className={styles.resultsSummary}>
-            <span>
-              Total pedidos: <strong>{summary.total}</strong>
-            </span>
-            <span>
-              Pagados: <strong>{summary.byStatus.Pagado}</strong>
-            </span>
-            <span>
-              Pendientes: <strong>{summary.byStatus.Pendiente}</strong>
-            </span>
-            <span>
-              Cancelados: <strong>{summary.byStatus.Cancelado}</strong>
-            </span>
-            <span>
-              Ingresos acumulados:{' '}
-              <strong>{formatPrice(summary.revenue)}</strong>
-            </span>
-            {summary.byStatus.Pendiente > 0 && (
+          <div className={styles.controlsBar}>
+            <div className={styles.tabList} role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={filters.view === 'active'}
+                className={`${styles.tabButton} ${
+                  filters.view === 'active' ? styles.tabButtonActive : ''
+                }`.trim()}
+                onClick={() =>
+                  setFilters((prev) => ({ ...prev, view: 'active' }))
+                }
+              >
+                Activos
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={filters.view === 'deleted'}
+                className={`${styles.tabButton} ${
+                  filters.view === 'deleted' ? styles.tabButtonActive : ''
+                }`.trim()}
+                onClick={() =>
+                  setFilters((prev) => ({ ...prev, view: 'deleted' }))
+                }
+              >
+                Eliminados
+              </button>
+            </div>
+            <div className={styles.resultsSummary}>
               <span>
-                Por confirmar:{' '}
-                <strong>{formatPrice(summary.pendingValue)}</strong>
+                Total pedidos: <strong>{summary.total}</strong>
               </span>
-            )}
+              <span>
+                Pagados: <strong>{summary.byStatus.Pagado}</strong>
+              </span>
+              <span>
+                Pendientes: <strong>{summary.byStatus.Pendiente}</strong>
+              </span>
+              <span>
+                Cancelados: <strong>{summary.byStatus.Cancelado}</strong>
+              </span>
+              <span>
+                Ingresos acumulados:{' '}
+                <strong>{formatPrice(summary.revenue)}</strong>
+              </span>
+              {summary.byStatus.Pendiente > 0 && (
+                <span>
+                  Por confirmar:{' '}
+                  <strong>{formatPrice(summary.pendingValue)}</strong>
+                </span>
+              )}
+            </div>
           </div>
 
           {displayedOrders.length === 0 ? (
@@ -407,13 +479,23 @@ const Pedidos: React.FC = () => {
                                   ? 'Ocultar detalles'
                                   : 'Ver detalles'}
                               </button>
-                              <button
-                                type="button"
-                                className={`${styles.tableActionButton} ${styles.tableActionButtonDanger}`.trim()}
-                                onClick={() => handleRemoveOrder(order)}
-                              >
-                                Eliminar
-                              </button>
+                              {!order.deletedAt ? (
+                                <button
+                                  type="button"
+                                  className={`${styles.tableActionButton} ${styles.tableActionButtonDanger}`.trim()}
+                                  onClick={() => handleRemoveOrder(order)}
+                                >
+                                  Eliminar
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className={styles.tableActionButton}
+                                  onClick={() => handleRestoreOrder(order)}
+                                >
+                                  Restaurar
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
