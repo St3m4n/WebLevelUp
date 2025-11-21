@@ -6,6 +6,11 @@ import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
 import { LevelUpConfig } from '@/utils/levelup';
+import ImageWithSkeleton from '@/components/ImageWithSkeleton';
+import {
+  syncProductByCode,
+  type ProductRecord,
+} from '@/utils/products';
 import styles from './ProductoDetalle.module.css';
 
 const ProductoDetalle: React.FC = () => {
@@ -17,14 +22,82 @@ const ProductoDetalle: React.FC = () => {
   const { getPriceBreakdown, discountRate } = usePricing();
   const [cantidad, setCantidad] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [fallbackProduct, setFallbackProduct] = useState<ProductRecord | null>(
+    null
+  );
+  const [fallbackLoading, setFallbackLoading] = useState(false);
+  const [fallbackError, setFallbackError] = useState(false);
 
   const producto = useMemo(() => {
     if (!id) return undefined;
-    return productos.find(
+    const match = productos.find(
       (item) =>
         item.codigo.toLowerCase() === id.toLowerCase() && !item.deletedAt
     );
-  }, [id, productos]);
+    if (match) {
+      return match;
+    }
+    if (
+      fallbackProduct &&
+      fallbackProduct.codigo.toLowerCase() === id.toLowerCase() &&
+      !fallbackProduct.deletedAt
+    ) {
+      return fallbackProduct;
+    }
+    return undefined;
+  }, [fallbackProduct, id, productos]);
+
+  useEffect(() => {
+    let active = true;
+
+    if (!id) {
+      setFallbackProduct(null);
+      setFallbackLoading(false);
+      setFallbackError(false);
+      return () => {
+        active = false;
+      };
+    }
+
+    if (producto) {
+      setFallbackLoading(false);
+      setFallbackError(false);
+      setFallbackProduct(null);
+      return () => {
+        active = false;
+      };
+    }
+
+    setFallbackLoading(true);
+    setFallbackError(false);
+    setFallbackProduct(null);
+
+    syncProductByCode(id)
+      .then((record) => {
+        if (!active) {
+          return;
+        }
+        setFallbackLoading(false);
+        if (record && !record.deletedAt) {
+          setFallbackProduct(record);
+        } else {
+          setFallbackProduct(null);
+          setFallbackError(true);
+        }
+      })
+      .catch(() => {
+        if (!active) {
+          return;
+        }
+        setFallbackLoading(false);
+        setFallbackProduct(null);
+        setFallbackError(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id, producto]);
 
   const relacionados = useMemo(() => {
     if (!producto) return [];
@@ -89,11 +162,17 @@ const ProductoDetalle: React.FC = () => {
   }, [pointsFormatter, purchaseMultiplier]);
 
   if (!producto) {
+    const title = fallbackLoading ? 'Cargando producto…' : 'Producto no encontrado';
+    const message = fallbackLoading
+      ? 'Buscando la información del producto en el catálogo.'
+      : fallbackError
+        ? 'No pudimos encontrar el producto solicitado en el catálogo.'
+        : 'No pudimos encontrar el producto solicitado.';
     return (
       <div className="container">
         <div className={styles.emptyState}>
-          <h1>Producto no encontrado</h1>
-          <p>No pudimos encontrar el producto solicitado.</p>
+          <h1>{title}</h1>
+          <p>{message}</p>
           <Link to="/tienda" className={styles.backLink}>
             Volver a la tienda
           </Link>
@@ -124,7 +203,12 @@ const ProductoDetalle: React.FC = () => {
 
         <div className={styles.layout}>
           <section className={styles.gallery}>
-            <img src={producto.url} alt={producto.nombre} />
+            <ImageWithSkeleton
+              src={producto.url}
+              alt={producto.nombre}
+              containerClassName={styles.galleryImageContainer}
+              className={styles.galleryImage}
+            />
           </section>
 
           <section className={styles.info}>
@@ -286,7 +370,13 @@ const ProductoDetalle: React.FC = () => {
                   to={`/tienda/${item.codigo}`}
                   className={styles.relatedCard}
                 >
-                  <img src={item.url} alt={item.nombre} loading="lazy" />
+                  <ImageWithSkeleton
+                    src={item.url}
+                    alt={item.nombre}
+                    loading="lazy"
+                    containerClassName={styles.relatedImageContainer}
+                    className={styles.relatedImage}
+                  />
                   <h3>{item.nombre}</h3>
                   <footer>
                     {(() => {

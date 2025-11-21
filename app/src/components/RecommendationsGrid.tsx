@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import ImageWithSkeleton from '@/components/ImageWithSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
@@ -55,13 +56,13 @@ const RecommendationsGrid: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 aria-label={`Ver detalles de ${producto.nombre}`}
               >
-                <div className={styles.cardMedia}>
-                  <img
-                    src={producto.url}
-                    alt={producto.nombre}
-                    loading="lazy"
-                  />
-                </div>
+                <ImageWithSkeleton
+                  src={producto.url}
+                  alt={producto.nombre}
+                  loading="lazy"
+                  containerClassName={styles.cardMedia}
+                  className={styles.cardMediaImage}
+                />
 
                 <div className={styles.cardBody}>
                   <div className={styles.productMeta}>

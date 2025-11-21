@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CartProvider, useCart } from '../CartContext';
 import type { ProductRecord } from '@/utils/products';
+import type { AuthenticatedUser } from '@/services/authService';
 
 const mockProducts: ProductRecord[] = [
   {
@@ -20,10 +21,61 @@ const mockProducts: ProductRecord[] = [
   },
 ];
 
+const mockRequestProductsSync = vi.fn(() => Promise.resolve(mockProducts));
+
+let remoteItems: Array<{ productCode: string; quantity: number }> = [];
+
+const mockGetCart = vi.fn(async () => ({
+  userRun: '12345678-9',
+  items: remoteItems,
+  totalQuantity: remoteItems.reduce((sum, item) => sum + item.quantity, 0),
+  updatedAt: new Date().toISOString(),
+}));
+
+const mockUpdateCart = vi.fn(async (payload: unknown) => {
+  const items = Array.isArray(payload?.items)
+    ? payload.items.map((item: { productCode: string; quantity: number }) => ({
+        ...item,
+      }))
+    : [];
+  remoteItems = items;
+  return {
+    userRun: '12345678-9',
+    items: remoteItems,
+    totalQuantity: remoteItems.reduce((sum, item) => sum + item.quantity, 0),
+    updatedAt: new Date().toISOString(),
+  };
+});
+
+const mockClearCartRemote = vi.fn(async () => {
+  remoteItems = [];
+});
+
+const authState: { user: AuthenticatedUser | null } = {
+  user: null,
+};
+
 vi.mock('@/utils/products', () => ({
   // Mockeamos la carga de productos para evitar dependencias con el almacenamiento real.
   loadProducts: () => mockProducts,
   subscribeToProducts: () => () => undefined,
+  requestProductsSync: () => mockRequestProductsSync(),
+}));
+
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: () => authState,
+}));
+
+vi.mock('@/context/ToastContext', () => ({
+  useToast: () => ({
+    addToast: vi.fn(),
+  }),
+}));
+
+vi.mock('@/services/cartService', () => ({
+  getCart: () => mockGetCart(),
+  updateCart: (payload: unknown) => mockUpdateCart(payload),
+  clearCartRemote: () => mockClearCartRemote(),
 }));
 
 vi.mock('@/hooks/usePricing', () => ({

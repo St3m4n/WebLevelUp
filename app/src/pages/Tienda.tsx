@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import ImageWithSkeleton from '@/components/ImageWithSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import type { ProductRecord } from '@/utils/products';
 import { useCart } from '@/context/CartContext';
@@ -267,13 +268,13 @@ const Tienda: React.FC = () => {
                     onKeyDown={handleKeyDown}
                     aria-label={`Ver detalles de ${producto.nombre}`}
                   >
-                    <div className={styles.cardMedia}>
-                      <img
-                        src={producto.url}
-                        alt={producto.nombre}
-                        loading="lazy"
-                      />
-                    </div>
+                    <ImageWithSkeleton
+                      src={producto.url}
+                      alt={producto.nombre}
+                      loading="lazy"
+                      containerClassName={styles.cardMedia}
+                      className={styles.cardMediaImage}
+                    />
                     <div className={styles.cardBody}>
                       <div className={styles.productMeta}>
                         <h3 className={styles.productName}>

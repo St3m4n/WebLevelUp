@@ -482,14 +482,14 @@ const Perfil: React.FC = () => {
   }, [persistedProfile]);
 
   const handleSaveField = useCallback(
-    (field: EditableField) => {
+    async (field: EditableField) => {
       if (!user) return;
       const normalizeOptional = (value: string) => {
         const trimmed = value.trim();
         return trimmed.length > 0 ? trimmed : undefined;
       };
 
-      const submitPatch = () => {
+      const submitPatch = async () => {
         switch (field) {
           case 'nombre': {
             const value = profileForm.nombre.trim();
@@ -501,7 +501,7 @@ const Perfil: React.FC = () => {
               });
               return false;
             }
-            updateProfile({ nombre: value });
+            await updateProfile({ nombre: value });
             return true;
           }
           case 'apellidos': {
@@ -514,11 +514,11 @@ const Perfil: React.FC = () => {
               });
               return false;
             }
-            updateProfile({ apellidos: value });
+            await updateProfile({ apellidos: value });
             return true;
           }
           case 'direccion': {
-            updateProfile({
+            await updateProfile({
               direccion: normalizeOptional(profileForm.direccion),
             });
             return true;
@@ -542,7 +542,7 @@ const Perfil: React.FC = () => {
               });
               return false;
             }
-            updateProfile({ region, comuna });
+            await updateProfile({ region, comuna });
             return true;
           }
           default:
@@ -552,7 +552,7 @@ const Perfil: React.FC = () => {
 
       setSavingField(field);
       try {
-        const updated = submitPatch();
+        const updated = await submitPatch();
         if (!updated) {
           return;
         }
@@ -582,24 +582,35 @@ const Perfil: React.FC = () => {
     setActiveTab(tab);
   }, []);
 
-  const handleResetProfile = useCallback(() => {
+  const handleResetProfile = useCallback(async () => {
     if (!user) return;
-    clearProfileOverrides();
-    setProfileForm({
-      nombre: user.nombre ?? '',
-      apellidos: user.apellidos ?? '',
-      region: user.region ?? '',
-      comuna: user.comuna ?? '',
-      direccion: user.direccion ?? '',
-    });
-    setEditingField(null);
-    setPaymentPreference('');
-    addToast({
-      variant: 'info',
-      title: 'Datos restablecidos',
-      description:
-        'Recuperamos la información original registrada en Level-Up.',
-    });
+    try {
+      await clearProfileOverrides();
+      setProfileForm({
+        nombre: user.nombre ?? '',
+        apellidos: user.apellidos ?? '',
+        region: user.region ?? '',
+        comuna: user.comuna ?? '',
+        direccion: user.direccion ?? '',
+      });
+      setEditingField(null);
+      setPaymentPreference('');
+      addToast({
+        variant: 'info',
+        title: 'Datos restablecidos',
+        description:
+          'Recuperamos la información original registrada en Level-Up.',
+      });
+    } catch (error) {
+      addToast({
+        variant: 'error',
+        title: 'No se pudo restablecer tu información',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Intenta nuevamente en unos segundos.',
+      });
+    }
   }, [addToast, clearProfileOverrides, user]);
 
   const paymentHelper = useMemo(() => {
@@ -612,18 +623,18 @@ const Perfil: React.FC = () => {
   }, [paymentPreference]);
 
   const handlePaymentPreferenceChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
+    async (event: ChangeEvent<HTMLSelectElement>) => {
       if (!user) return;
       const value = event.target.value as PaymentPreferenceMethod | '';
       setPaymentPreference(value);
       setIsSavingPayment(true);
       try {
         if (value) {
-          updateProfile({
+          await updateProfile({
             preferencias: { defaultPaymentMethod: value },
           });
         } else {
-          updateProfile({ preferencias: {} });
+          await updateProfile({ preferencias: {} });
         }
         addToast({
           variant: 'success',
@@ -685,7 +696,7 @@ const Perfil: React.FC = () => {
   }, []);
 
   const handleAddressSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!user) return;
       setIsSavingAddress(true);
@@ -719,14 +730,14 @@ const Perfil: React.FC = () => {
       }
       try {
         if (addressMode === 'edit' && addressForm.id) {
-          updateAddress(addressForm.id, sanitized);
+          await updateAddress(addressForm.id, sanitized);
           addToast({
             variant: 'success',
             title: 'Dirección actualizada',
             description: 'Guardamos los cambios en tu dirección.',
           });
         } else {
-          addAddress(sanitized);
+          await addAddress(sanitized);
           addToast({
             variant: 'success',
             title: 'Dirección guardada',
@@ -772,7 +783,7 @@ const Perfil: React.FC = () => {
   }, []);
 
   const handleDeleteAddress = useCallback(
-    (id: string) => {
+    async (id: string) => {
       if (!user) return;
       const target = addresses.find((address) => address.id === id);
       if (!target) return;
@@ -782,7 +793,7 @@ const Perfil: React.FC = () => {
       if (!confirmed) return;
       setIsSavingAddress(true);
       try {
-        removeAddress(id);
+        await removeAddress(id);
         addToast({
           variant: 'info',
           title: 'Dirección eliminada',
@@ -816,11 +827,11 @@ const Perfil: React.FC = () => {
   );
 
   const handleSetPrimaryAddressClick = useCallback(
-    (id: string) => {
+    async (id: string) => {
       if (!user) return;
       setIsSavingAddress(true);
       try {
-        setPrimaryAddress(id);
+        await setPrimaryAddress(id);
         addToast({
           variant: 'success',
           title: 'Dirección principal actualizada',

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ImageWithSkeleton from '@/components/ImageWithSkeleton';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/format';
 import styles from './Carrito.module.css';
@@ -109,7 +110,13 @@ const Carrito: React.FC = () => {
               return (
                 <article key={item.id} className={styles.row}>
                   <div className={styles.productCell}>
-                    <img src={item.imagen} alt={item.nombre} loading="lazy" />
+                    <ImageWithSkeleton
+                      src={item.imagen}
+                      alt={item.nombre}
+                      loading="lazy"
+                      containerClassName={styles.productImageContainer}
+                      className={styles.productImage}
+                    />
                     <div className={styles.productInfo}>
                       <span className={styles.productName}>{item.nombre}</span>
                       <span className={styles.productMeta}>
