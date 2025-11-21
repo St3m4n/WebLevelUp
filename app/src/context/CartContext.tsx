@@ -18,10 +18,10 @@ import { usePricing, type PriceBreakdown } from '@/hooks/usePricing';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import {
-  clearCartRemote,
   getCart,
   updateCart,
   type CartItemInput,
+  type UpdateCartRequest,
 } from '@/services/cartService';
 import { ApiError } from '@/services/apiClient';
 
@@ -356,8 +356,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const hydratingRef = useRef(false);
   const lastSuccessfulSyncRef = useRef<string | null>(null);
   const failedSnapshotRef = useRef<string | null>(null);
+  const clearCartIntentRef = useRef(false);
   const { hasDuocDiscount, discountRate, applyDiscount, getPriceBreakdown } =
     usePricing();
+  const sendCartUpdate = useCallback(
+    async (
+      payload: CartItemInput[],
+      options?: { forceReplace?: boolean }
+    ) => {
+      const request: UpdateCartRequest = {
+        items: payload,
+        ...(options?.forceReplace ? { forceReplace: true } : {}),
+      };
+      await updateCart(request);
+    },
+    [updateCart]
+  );
 
   const synchronizeFromServer = useCallback(
     async (options?: { mergeGuest?: boolean }) => {
@@ -407,11 +421,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         if (mergedSnapshot !== remoteSnapshot) {
-          if (mergedPayload.length === 0) {
-            await clearCartRemote();
-          } else {
-            await updateCart({ items: mergedPayload });
-          }
+          await sendCartUpdate(mergedPayload);
         }
 
         return { items: mergedItems, snapshot: mergedSnapshot };
@@ -442,7 +452,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
           }
 
           if (payload.length > 0) {
-            await updateCart({ items: payload });
+            await sendCartUpdate(payload);
           }
 
           return { items: guestItems, snapshot };
@@ -453,7 +463,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         hydratingRef.current = false;
       }
     },
-    [userRun]
+    [userRun, sendCartUpdate]
   );
 
   useEffect(() => {
@@ -501,6 +511,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       );
     }
 
+    clearCartIntentRef.current = false;
+
     previousUserRunRef.current = null;
     lastSuccessfulSyncRef.current = null;
     failedSnapshotRef.current = null;
@@ -524,6 +536,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (!userRun) {
+      clearCartIntentRef.current = false;
       lastSuccessfulSyncRef.current = null;
       failedSnapshotRef.current = null;
       return;
@@ -547,14 +560,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     let cancelled = false;
+    const forceReplace =
+      payload.length === 0 && clearCartIntentRef.current;
+    if (clearCartIntentRef.current) {
+      clearCartIntentRef.current = false;
+    }
 
     (async () => {
       try {
-        if (payload.length === 0) {
-          await clearCartRemote();
-        } else {
-          await updateCart({ items: payload });
-        }
+        await sendCartUpdate(
+          payload,
+          forceReplace ? { forceReplace: true } : undefined
+        );
 
         if (cancelled) {
           return;
@@ -593,6 +610,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     userRun,
     addToast,
     synchronizeFromServer,
+    sendCartUpdate,
   ]);
 
   useEffect(() => {
@@ -622,6 +640,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const clearCart = useCallback(() => {
+    clearCartIntentRef.current = true;
     dispatch({ type: 'CLEAR_CART' });
   }, []);
 

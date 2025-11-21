@@ -47,10 +47,6 @@ const mockUpdateCart = vi.fn(async (payload: unknown) => {
   };
 });
 
-const mockClearCartRemote = vi.fn(async () => {
-  remoteItems = [];
-});
-
 const authState: { user: AuthenticatedUser | null } = {
   user: null,
 };
@@ -75,7 +71,6 @@ vi.mock('@/context/ToastContext', () => ({
 vi.mock('@/services/cartService', () => ({
   getCart: () => mockGetCart(),
   updateCart: (payload: unknown) => mockUpdateCart(payload),
-  clearCartRemote: () => mockClearCartRemote(),
 }));
 
 vi.mock('@/hooks/usePricing', () => ({
