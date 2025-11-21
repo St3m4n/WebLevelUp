@@ -9,7 +9,7 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { regiones } from '@/data/regionesComunas';
+import { useRegions } from '@/hooks/useRegions';
 import styles from './Auth.module.css';
 
 type RegisterForm = {
@@ -234,6 +234,7 @@ const Registro: React.FC = () => {
   );
   const [status, setStatus] = useState<{ type: 'error'; message: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { regions } = useRegions();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -242,11 +243,11 @@ const Registro: React.FC = () => {
   }, [fromPath, isAuthenticated, navigate]);
 
   const comunasDisponibles = useMemo(() => {
-    const regionSeleccionada = regiones.find(
+    const regionSeleccionada = regions.find(
       (region) => region.nombre === form.region
     );
     return regionSeleccionada?.comunas ?? [];
-  }, [form.region]);
+  }, [form.region, regions]);
 
   const applyValidation = (
     nextState: RegisterForm,
@@ -691,7 +692,7 @@ const Registro: React.FC = () => {
                     <option value="" disabled>
                       Selecciona una región
                     </option>
-                    {regiones.map((region) => (
+                    {regions.map((region) => (
                       <option key={region.nombre} value={region.nombre}>
                         {region.nombre}
                       </option>

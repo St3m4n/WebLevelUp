@@ -7,10 +7,7 @@ import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
 import { LevelUpConfig } from '@/utils/levelup';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
-import {
-  syncProductByCode,
-  type ProductRecord,
-} from '@/utils/products';
+import { syncProductByCode, type ProductRecord } from '@/utils/products';
 import styles from './ProductoDetalle.module.css';
 
 const ProductoDetalle: React.FC = () => {
@@ -162,7 +159,9 @@ const ProductoDetalle: React.FC = () => {
   }, [pointsFormatter, purchaseMultiplier]);
 
   if (!producto) {
-    const title = fallbackLoading ? 'Cargando producto…' : 'Producto no encontrado';
+    const title = fallbackLoading
+      ? 'Cargando producto…'
+      : 'Producto no encontrado';
     const message = fallbackLoading
       ? 'Buscando la información del producto en el catálogo.'
       : fallbackError

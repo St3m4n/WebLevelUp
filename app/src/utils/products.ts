@@ -95,9 +95,7 @@ const toRecord = (
   ...producto,
   origin,
   deletedAt:
-    metadata && 'deletedAt' in metadata
-      ? metadata.deletedAt ?? null
-      : null,
+    metadata && 'deletedAt' in metadata ? (metadata.deletedAt ?? null) : null,
   createdAt: metadata?.createdAt ?? undefined,
   updatedAt: metadata?.updatedAt ?? undefined,
 });
@@ -220,6 +218,9 @@ const removeOverride = (codigo: string) => {
 
 const comparableSnapshot = (record: ProductRecord) => {
   const { origin, createdAt, updatedAt, ...rest } = record;
+  void origin;
+  void createdAt;
+  void updatedAt;
   return {
     ...rest,
     deletedAt: record.deletedAt ?? null,
@@ -264,17 +265,19 @@ const mapApiProduct = (product: ProductDto): ProductRecord | null => {
     return null;
   }
 
-  const nombre = sanitizeString(product.nombre, 'Producto sin nombre') ||
+  const nombre =
+    sanitizeString(product.nombre, 'Producto sin nombre') ||
     'Producto sin nombre';
 
   const base: Producto = {
     codigo,
     nombre,
-    categoria: sanitizeString(product.categoria, 'Sin categoría') ||
-      'Sin categoría',
-    fabricante: sanitizeString(product.fabricante, 'Sin fabricante') ||
-      'Sin fabricante',
-    distribuidor: sanitizeString(product.distribuidor, 'Sin distribuidor') ||
+    categoria:
+      sanitizeString(product.categoria, 'Sin categoría') || 'Sin categoría',
+    fabricante:
+      sanitizeString(product.fabricante, 'Sin fabricante') || 'Sin fabricante',
+    distribuidor:
+      sanitizeString(product.distribuidor, 'Sin distribuidor') ||
       'Sin distribuidor',
     precio: sanitizeNumber(product.precio),
     stock: Math.max(0, sanitizeNumber(product.stock)),

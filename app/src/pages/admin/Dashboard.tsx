@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useProducts } from '@/hooks/useProducts';
-import { usuarios } from '@/data/usuarios';
+import { useUsers } from '@/hooks/useUsers';
 import type { ContactMessage, Order } from '@/types';
 import { formatPrice } from '@/utils/format';
 import {
@@ -28,6 +28,7 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const productos = useProducts();
+  const { users } = useUsers();
   const [orders, setOrders] = useState<Order[]>(() => loadOrders());
   const [messages, setMessages] = useState<ContactMessage[]>(() =>
     loadMessages()
@@ -82,7 +83,7 @@ const Dashboard: React.FC = () => {
     const lowStock = productos.filter(
       (producto) => producto.stock <= producto.stockCritico
     );
-    const perfilesActivos = usuarios.filter((item) => !item.isSystem);
+    const perfilesActivos = users.filter((item) => !item.isSystem);
     const totalUsuarios = perfilesActivos.length;
     const administradores = perfilesActivos.filter(
       (item) => item.perfil === 'Administrador'
@@ -127,7 +128,7 @@ const Dashboard: React.FC = () => {
             : `${respondedMessages} respondidos`,
       },
     ];
-  }, [messages, orders, productos]);
+  }, [messages, orders, productos, users]);
 
   const lowStockProducts = useMemo(
     () =>

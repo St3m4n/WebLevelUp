@@ -7,8 +7,8 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { usuarios } from '@/data/usuarios';
-import { regiones } from '@/data/regionesComunas';
+import { useRegions } from '@/hooks/useRegions';
+import { useUsers } from '@/hooks/useUsers';
 import type { Order, Usuario, UsuarioPerfil } from '@/types';
 import { formatPrice } from '@/utils/format';
 import {
@@ -297,6 +297,8 @@ const Usuarios: React.FC = () => {
   const [formErrors, setFormErrors] = useState<UserFormErrors>({});
   const [status, setStatus] = useState<StatusState | null>(null);
   const auditActor = useAuditActor();
+  const { users } = useUsers();
+  const { regions } = useRegions();
 
   const logUserEvent = useCallback(
     (
@@ -407,21 +409,21 @@ const Usuarios: React.FC = () => {
   }, [persistedStates]);
 
   const adminUsuarios = useMemo(
-    () => mergeUsuarios(usuarios, extraUsuarios, persistedStates),
-    [extraUsuarios, persistedStates]
+    () => mergeUsuarios(users, extraUsuarios, persistedStates),
+    [extraUsuarios, persistedStates, users]
   );
 
   const regionOptions = useMemo(
-    () => regiones.map((region) => region.nombre),
-    []
+    () => regions.map((region) => region.nombre),
+    [regions]
   );
   const comunasForRegion = useMemo(() => {
     if (!formValues.region) return [];
-    const region = regiones.find(
+    const region = regions.find(
       (candidate) => candidate.nombre === formValues.region
     );
     return region ? region.comunas.map((comuna) => comuna.nombre) : [];
-  }, [formValues.region]);
+  }, [formValues.region, regions]);
 
   const roles = useMemo(() => {
     const unique = new Set(adminUsuarios.map((usuario) => usuario.perfil));

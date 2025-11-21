@@ -9,7 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { regiones } from '@/data/regionesComunas';
+import { useRegions } from '@/hooks/useRegions';
 import { useLevelUpStats } from '@/hooks/useLevelUpStats';
 import type { Order, PaymentPreferenceMethod, UserAddress } from '@/types';
 import { formatPrice } from '@/utils/format';
@@ -243,6 +243,7 @@ const Perfil: React.FC = () => {
   );
   const [addressMode, setAddressMode] = useState<'create' | 'edit'>('create');
   const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const { regions } = useRegions();
 
   useEffect(() => {
     const unsubscribe = subscribeToOrders(() => {
@@ -343,23 +344,23 @@ const Perfil: React.FC = () => {
 
   const availableComunas = useMemo(() => {
     if (!profileForm.region) return [];
-    const regionMatch = regiones.find(
+    const regionMatch = regions.find(
       (entry) => entry.nombre === profileForm.region
     );
     return regionMatch
       ? regionMatch.comunas.map((comuna) => comuna.nombre)
       : [];
-  }, [profileForm.region]);
+  }, [profileForm.region, regions]);
 
   const addressAvailableComunas = useMemo(() => {
     if (!addressForm.region) return [];
-    const regionMatch = regiones.find(
+    const regionMatch = regions.find(
       (entry) => entry.nombre === addressForm.region
     );
     return regionMatch
       ? regionMatch.comunas.map((comuna) => comuna.nombre)
       : [];
-  }, [addressForm.region]);
+  }, [addressForm.region, regions]);
 
   const addressComunaOptions = useMemo(() => {
     if (!addressForm.city) {
@@ -1251,7 +1252,7 @@ const Perfil: React.FC = () => {
                               onChange={handleProfileFieldChange}
                             >
                               <option value="">Selecciona una región</option>
-                              {regiones.map((region) => (
+                              {regions.map((region) => (
                                 <option
                                   key={region.nombre}
                                   value={region.nombre}
@@ -1456,7 +1457,7 @@ const Perfil: React.FC = () => {
                           onChange={handleAddressFieldChange}
                         >
                           <option value="">Selecciona una región</option>
-                          {regiones.map((region) => (
+                          {regions.map((region) => (
                             <option key={region.nombre} value={region.nombre}>
                               {region.nombre}
                             </option>

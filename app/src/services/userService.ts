@@ -1,4 +1,4 @@
-import type { ProfileOverrides, UserAddress } from '@/types';
+import type { ProfileOverrides, UserAddress, Usuario } from '@/types';
 import type { AuthenticatedUser } from '@/services/authService';
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/services/apiClient';
 
@@ -64,3 +64,5 @@ export const promoteUserAddress = (run: string, addressId: string) =>
   apiPost<UserAddress>(
     `/users/${encodeURIComponent(run)}/addresses/${encodeURIComponent(addressId)}/primary`
   );
+
+export const fetchUsers = () => apiGet<Usuario[]>('/users');

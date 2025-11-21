@@ -214,9 +214,10 @@ const mergeCartItems = (
   primary.forEach(accumulate);
   secondary.forEach(accumulate);
 
-  const combined = Array.from(quantities.entries()).map(
-    ([id, cantidad]) => ({ id, cantidad })
-  );
+  const combined = Array.from(quantities.entries()).map(([id, cantidad]) => ({
+    id,
+    cantidad,
+  }));
   return sanitizeStoredItems(combined);
 };
 
@@ -343,10 +344,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const { user } = useAuth();
   const { addToast } = useToast();
   const userRun = user?.run ?? null;
-  const [state, dispatch] = useReducer(
-    cartReducer,
-    undefined,
-    () => initializeCartState(userRun)
+  const [state, dispatch] = useReducer(cartReducer, undefined, () =>
+    initializeCartState(userRun)
   );
   const stateRef = useRef(state);
   useEffect(() => {
@@ -360,17 +359,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const { hasDuocDiscount, discountRate, applyDiscount, getPriceBreakdown } =
     usePricing();
   const sendCartUpdate = useCallback(
-    async (
-      payload: CartItemInput[],
-      options?: { forceReplace?: boolean }
-    ) => {
+    async (payload: CartItemInput[], options?: { forceReplace?: boolean }) => {
       const request: UpdateCartRequest = {
         items: payload,
         ...(options?.forceReplace ? { forceReplace: true } : {}),
       };
       await updateCart(request);
     },
-    [updateCart]
+    []
   );
 
   const synchronizeFromServer = useCallback(
@@ -486,10 +482,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
               'Intentaremos de nuevo en unos segundos.'
             ),
           });
-          const fallback = mergeCartItems(
-            [],
-            initializeCartState(null).items
-          );
+          const fallback = mergeCartItems([], initializeCartState(null).items);
           hydratingRef.current = true;
           dispatch({ type: 'SET_ITEMS', payload: fallback });
           hydratingRef.current = false;
@@ -560,8 +553,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     let cancelled = false;
-    const forceReplace =
-      payload.length === 0 && clearCartIntentRef.current;
+    const forceReplace = payload.length === 0 && clearCartIntentRef.current;
     if (clearCartIntentRef.current) {
       clearCartIntentRef.current = false;
     }
@@ -605,13 +597,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       cancelled = true;
     };
-  }, [
-    state.items,
-    userRun,
-    addToast,
-    synchronizeFromServer,
-    sendCartUpdate,
-  ]);
+  }, [state.items, userRun, addToast, synchronizeFromServer, sendCartUpdate]);
 
   useEffect(() => {
     const sync = () => {

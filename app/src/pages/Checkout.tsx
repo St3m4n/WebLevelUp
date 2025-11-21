@@ -9,11 +9,11 @@ import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { regiones } from '@/data/regionesComunas';
 import { formatPrice } from '@/utils/format';
 import { addOrder } from '@/utils/orders';
 import { addPurchasePoints } from '@/utils/levelup';
 import styles from './Checkout.module.css';
+import { useRegions } from '@/hooks/useRegions';
 
 type PagoMetodo = 'tarjeta' | 'transferencia';
 type CheckoutForm = {
@@ -58,6 +58,7 @@ const Checkout: React.FC = () => {
   } = useCart();
   const { user } = useAuth();
   const { addToast } = useToast();
+  const { regions } = useRegions();
   const [form, setForm] = useState<CheckoutForm>(() => buildInitialForm(user));
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<{
@@ -78,11 +79,11 @@ const Checkout: React.FC = () => {
   }, [user]);
 
   const comunasDisponibles = useMemo(() => {
-    const regionSeleccionada = regiones.find(
+    const regionSeleccionada = regions.find(
       (region) => region.nombre === form.region
     );
     return regionSeleccionada?.comunas ?? [];
-  }, [form.region]);
+  }, [form.region, regions]);
 
   const cartEstaVacio = items.length === 0;
 
@@ -317,12 +318,11 @@ const Checkout: React.FC = () => {
                       id="region"
                       value={form.region}
                       onChange={handleFieldChange('region')}
+                      aria-invalid={Boolean(errors.region)}
                       className={errors.region ? styles.inputError : undefined}
                     >
-                      <option value="" disabled>
-                        Selecciona una región
-                      </option>
-                      {regiones.map((region) => (
+                      <option value="">Selecciona una región</option>
+                      {regions.map((region) => (
                         <option key={region.nombre} value={region.nombre}>
                           {region.nombre}
                         </option>

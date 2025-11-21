@@ -60,7 +60,11 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
           onError={handleError}
         />
       ) : (
-        <div className={styles.fallback} role="img" aria-label={alt ?? 'Imagen no disponible'}>
+        <div
+          className={styles.fallback}
+          role="img"
+          aria-label={alt ?? 'Imagen no disponible'}
+        >
           <span>{alt ?? 'Imagen no disponible'}</span>
         </div>
       )}
