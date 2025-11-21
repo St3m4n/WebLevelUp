@@ -10,7 +10,7 @@ import styles from './RecommendationsGrid.module.css';
 
 const RecommendationsGrid: React.FC = () => {
   const navigate = useNavigate();
-  const productos = useProducts();
+  const { products: productos } = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
   const { addToast } = useToast();

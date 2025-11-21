@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
 import { useProducts } from '@/hooks/useProducts';
-import type { ProductRecord } from '@/utils/products';
+import type { ProductDto } from '@/services/products';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
@@ -38,7 +38,7 @@ const normalizePage = (value: string | null): number => {
   return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 1;
 };
 
-const ordenarProductos = (sort: string, items: ProductRecord[]) => {
+const ordenarProductos = (sort: string, items: ProductDto[]) => {
   switch (sort) {
     case 'precio-asc':
       return [...items].sort((a, b) => a.precio - b.precio);
@@ -59,7 +59,7 @@ const Tienda: React.FC = () => {
   );
   const categoriaParam = searchParams.get('categoria') ?? undefined;
   const searchQuery = (searchParams.get('q') ?? '').trim();
-  const productos = useProducts();
+  const { products: productos } = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
   const { addToast } = useToast();

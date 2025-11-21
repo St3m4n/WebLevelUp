@@ -1,4 +1,5 @@
-import { apiGet } from '@/services/apiClient';
+import { apiGet, apiPost, apiPatch, apiPut } from '@/services/apiClient';
+import type { Producto } from '@/types';
 
 export type ProductDto = {
   codigo: string;
@@ -49,11 +50,19 @@ const extractList = (payload: ProductListResponse): ProductDto[] => {
   return [];
 };
 
+const mapDtoToProduct = (dto: ProductDto): ProductDto => {
+  return {
+    ...dto,
+    url: dto.url || dto.imagenUrl || '',
+  };
+};
+
 export const fetchProducts = async (): Promise<ProductDto[]> => {
   const response = await apiGet<ProductListResponse>('/products', {
     auth: false,
   });
-  return extractList(response);
+  const list = extractList(response);
+  return list.map(mapDtoToProduct);
 };
 
 export type ProductDetailResponse =
@@ -73,17 +82,63 @@ export const fetchProductByCode = async (
     }
   );
 
+  let product: ProductDto | undefined;
+
   if (response && typeof response === 'object') {
     if ('codigo' in response) {
-      return response as ProductDto;
+      product = response as ProductDto;
+    } else if (response.product) {
+      product = response.product;
+    } else if (response.data) {
+      product = response.data;
     }
-    if (response.product) {
-      return response.product;
-    }
-    if (response.data) {
-      return response.data;
-    }
+  }
+
+  if (product) {
+    return mapDtoToProduct(product);
   }
 
   throw new Error('Producto no encontrado');
 };
+
+export const createProduct = (
+  product: Omit<Producto, 'codigo'> & { codigo?: string; imagenUrl?: string }
+) => {
+  const { url, imagenUrl, ...rest } = product;
+  const finalUrl = imagenUrl || url;
+  const payload = {
+    ...rest,
+    imagenUrl: finalUrl,
+  };
+  console.log('createProduct payload:', JSON.stringify(payload, null, 2));
+  return apiPost<Producto>('/products', payload);
+};
+
+export const updateProduct = (codigo: string, product: Partial<Producto>) => {
+  const { url, ...rest } = product;
+  // @ts-ignore
+  const imagenUrl = product.imagenUrl;
+  const finalUrl = imagenUrl || url;
+
+  const payload = {
+    ...rest,
+    ...(finalUrl
+      ? {
+          imagenUrl: finalUrl,
+        }
+      : {}),
+  };
+  console.log('updateProduct payload:', JSON.stringify(payload, null, 2));
+  return apiPut<Producto>(`/products/${encodeURIComponent(codigo)}`, payload);
+};
+
+export const deleteProduct = (codigo: string) =>
+  apiPatch<void>(`/products/${encodeURIComponent(codigo)}`, {
+    eliminado: true,
+  });
+
+export const restoreProduct = (codigo: string) =>
+  apiPatch<void>(`/products/${encodeURIComponent(codigo)}`, {
+    eliminado: false,
+    deletedAt: null,
+  });

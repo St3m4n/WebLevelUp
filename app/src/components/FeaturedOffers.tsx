@@ -59,7 +59,7 @@ const FALLBACK_IMAGES: Record<string, string> = {
 };
 
 const FeaturedOffers: React.FC = () => {
-  const productos = useProducts();
+  const { products: productos } = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
 
   const mapProducto = (entry: FeaturedEntry): FeaturedCardData => {

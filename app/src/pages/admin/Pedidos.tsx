@@ -2,19 +2,13 @@ import {
   Fragment,
   type ChangeEvent,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
 import type { Order } from '@/types';
 import { formatPrice } from '@/utils/format';
-import {
-  loadOrders,
-  subscribeToOrders,
-  ORDER_STORAGE_KEYS,
-  updateOrderStatus,
-  removeOrder,
-} from '@/utils/orders';
+import { useOrders } from '@/hooks/useOrders';
+import { updateOrderStatus, deleteOrder } from '@/services/orderService';
 import { useAuditActor } from '@/hooks/useAuditActor';
 import { recordAuditEvent } from '@/utils/audit';
 import styles from './Admin.module.css';
@@ -50,7 +44,7 @@ const defaultFilters: FiltersState = {
 };
 
 const Pedidos: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>(() => loadOrders());
+  const { orders, refreshOrders } = useOrders();
   const [filters, setFilters] = useState<FiltersState>(defaultFilters);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const auditActor = useAuditActor();
@@ -77,26 +71,6 @@ const Pedidos: React.FC = () => {
     },
     [auditActor]
   );
-
-  useEffect(() => {
-    const unsubscribe = subscribeToOrders(() => {
-      setOrders(loadOrders());
-    });
-    return () => {
-      unsubscribe?.();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === ORDER_STORAGE_KEYS.global) {
-        setOrders(loadOrders());
-      }
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
 
   const summary = useMemo(() => {
     return orders.reduce(
@@ -201,48 +175,49 @@ const Pedidos: React.FC = () => {
     setFilters(defaultFilters);
   };
 
-  const handleStatusChange = (order: Order, status: Order['status']) => {
+  const handleStatusChange = async (order: Order, status: Order['status']) => {
     if (order.status === status) return;
-    const updated = updateOrderStatus(order.id, status);
-    if (!updated) {
-      console.warn('No se pudo actualizar el estado del pedido', order.id);
-      return;
+    try {
+      const updated = await updateOrderStatus(order.id, status);
+      await refreshOrders();
+      logOrderEvent(
+        'status-changed',
+        updated,
+        `Estado del pedido ${updated.id} actualizado a ${status}`,
+        {
+          estadoAnterior: order.status,
+          estadoNuevo: status,
+        }
+      );
+    } catch (error) {
+      console.error('Error updating order status', error);
     }
-    setOrders(loadOrders());
-    logOrderEvent(
-      'status-changed',
-      updated,
-      `Estado del pedido ${updated.id} actualizado a ${status}`,
-      {
-        estadoAnterior: order.status,
-        estadoNuevo: status,
-      }
-    );
   };
 
-  const handleRemoveOrder = (order: Order) => {
+  const handleRemoveOrder = async (order: Order) => {
     if (typeof window === 'undefined') return;
     const confirmed = window.confirm(
       `¿Eliminar el pedido ${order.id}? Esta acción no se puede deshacer.`
     );
     if (!confirmed) return;
-    const removed = removeOrder(order.id);
-    if (!removed) {
-      console.warn('No se encontró el pedido para eliminar', order.id);
-      return;
+
+    try {
+      await deleteOrder(order.id);
+      await refreshOrders();
+      setExpandedOrder((prev) => (prev === order.id ? null : prev));
+      logOrderEvent(
+        'deleted',
+        order,
+        `Pedido ${order.id} eliminado del registro`,
+        {
+          total: order.total,
+          estado: order.status,
+          articulos: order.items.length,
+        }
+      );
+    } catch (error) {
+      console.error('Error deleting order', error);
     }
-    setOrders(loadOrders());
-    setExpandedOrder((prev) => (prev === order.id ? null : prev));
-    logOrderEvent(
-      'deleted',
-      removed,
-      `Pedido ${removed.id} eliminado del registro`,
-      {
-        total: removed.total,
-        estado: removed.status,
-        articulos: removed.items.length,
-      }
-    );
   };
 
   const toggleExpanded = (orderId: string) => {

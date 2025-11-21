@@ -9,13 +9,9 @@ import {
 } from 'react';
 import { useRegions } from '@/hooks/useRegions';
 import { useUsers } from '@/hooks/useUsers';
+import { useOrders } from '@/hooks/useOrders';
 import type { Order, Usuario, UsuarioPerfil } from '@/types';
 import { formatPrice } from '@/utils/format';
-import {
-  loadOrders,
-  subscribeToOrders,
-  ORDER_STORAGE_KEYS,
-} from '@/utils/orders';
 import {
   ADMIN_USER_STATES_EVENT,
   ADMIN_USER_STATES_KEY,
@@ -280,7 +276,7 @@ const Usuarios: React.FC = () => {
   const [extraUsuarios, setExtraUsuarios] = useState<ExtraUsuario[]>(() =>
     loadExtraUsuarios()
   );
-  const [orders, setOrders] = useState<Order[]>(() => loadOrders());
+  const { orders } = useOrders();
   const [filters, setFilters] = useState<FiltersState>({
     query: '',
     role: '',
@@ -361,9 +357,6 @@ const Usuarios: React.FC = () => {
           return arePersistedUserStatesEqual(prev, next) ? prev : next;
         });
       }
-      if (event.key === ORDER_STORAGE_KEYS.global) {
-        setOrders(loadOrders());
-      }
     };
     window.addEventListener(EXTRA_USERS_EVENT, handleExtraUsersUpdate);
     window.addEventListener(ADMIN_USER_STATES_EVENT, handleUserStatesUpdate);
@@ -375,15 +368,6 @@ const Usuarios: React.FC = () => {
         handleUserStatesUpdate
       );
       window.removeEventListener('storage', onStorage);
-    };
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = subscribeToOrders(() => {
-      setOrders(loadOrders());
-    });
-    return () => {
-      unsubscribe?.();
     };
   }, []);
 
@@ -919,6 +903,13 @@ const Usuarios: React.FC = () => {
       items.push(
         <span key="creado" className={styles.userMetaItem}>
           Registrado el {formatted}
+        </span>
+      );
+    }
+    if (usuario.referidos) {
+      items.push(
+        <span key="referidos" className={styles.userMetaItem}>
+          Referidos: {usuario.referidos.count}
         </span>
       );
     }

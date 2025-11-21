@@ -8,12 +8,7 @@ import {
   useRef,
 } from 'react';
 import type { Producto } from '@/types';
-import type { ProductRecord } from '@/utils/products';
-import {
-  loadProducts,
-  requestProductsSync,
-  subscribeToProducts,
-} from '@/utils/products';
+import { fetchProducts, type ProductDto } from '@/services/products';
 import { usePricing, type PriceBreakdown } from '@/hooks/usePricing';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -55,7 +50,7 @@ type CartAction =
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; cantidad: number } }
   | { type: 'CLEAR_CART' }
   | { type: 'SET_ITEMS'; payload: CartItem[] }
-  | { type: 'SYNC_PRODUCTS'; payload: ProductRecord[] };
+  | { type: 'SYNC_PRODUCTS'; payload: ProductDto[] };
 
 export type CartContextValue = {
   items: CartItem[];
@@ -86,14 +81,16 @@ const toCartItemInputs = (items: CartItem[]): CartItemInput[] =>
     .filter((item) => item.cantidad > 0)
     .map((item) => ({ productCode: item.id, quantity: item.cantidad }));
 
-const mapRemoteItemsToCartItems = (items: CartItemInput[]): CartItem[] => {
+const mapRemoteItemsToCartItems = (
+  items: CartItemInput[],
+  products: ProductDto[]
+): CartItem[] => {
   if (!items || items.length === 0) {
     return [];
   }
 
-  const productosActuales = loadProducts();
   const productMap = new Map(
-    productosActuales.map((producto) => [producto.codigo, producto])
+    products.map((producto) => [producto.codigo, producto])
   );
 
   return items
@@ -114,7 +111,7 @@ const mapRemoteItemsToCartItems = (items: CartItemInput[]): CartItem[] => {
         nombre: producto.nombre,
         precio: producto.precio,
         cantidad,
-        imagen: producto.url,
+        imagen: producto.url || '',
         stock: producto.stock,
       } satisfies CartItem;
     })
@@ -152,27 +149,18 @@ const sanitizeStoredItems = (items?: Partial<CartItem>[]): CartItem[] => {
     return [];
   }
 
-  const productosActuales = loadProducts();
-  const productMap = new Map(
-    productosActuales.map((producto) => [producto.codigo, producto])
-  );
-
   return items
     .map((stored) => {
-      if (!stored?.id) return undefined;
-      const producto = productMap.get(stored.id);
-      const stock = producto?.stock ?? stored.stock ?? 0;
-      if (!producto || producto.deletedAt || stock <= 0) {
+      if (!stored?.id || !stored.nombre || typeof stored.precio !== 'number')
         return undefined;
-      }
-      const cantidad = Math.min(Math.max(1, stored.cantidad ?? 1), stock);
+      const cantidad = Math.max(1, stored.cantidad ?? 1);
       return {
         id: stored.id,
-        nombre: producto.nombre,
-        precio: producto.precio,
+        nombre: stored.nombre,
+        precio: stored.precio,
         cantidad,
-        imagen: producto.url,
-        stock: producto.stock,
+        imagen: stored.imagen || '',
+        stock: stored.stock ?? 0,
       } satisfies CartItem;
     })
     .filter(Boolean) as CartItem[];
@@ -376,7 +364,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       try {
-        await requestProductsSync().catch(() => undefined);
+        const products = await fetchProducts().catch(() => []);
         const response = await getCart().catch((error) => {
           if (error instanceof ApiError && error.status === 404) {
             return null;
@@ -391,7 +379,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
             quantity: entry.quantity,
           }))
         );
-        const remoteItems = mapRemoteItemsToCartItems(remoteItemsInput);
+        const remoteItems = mapRemoteItemsToCartItems(remoteItemsInput, products);
 
         let mergedItems = remoteItems;
         if (options?.mergeGuest) {
@@ -600,17 +588,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [state.items, userRun, addToast, synchronizeFromServer, sendCartUpdate]);
 
   useEffect(() => {
-    const sync = () => {
-      dispatch({ type: 'SYNC_PRODUCTS', payload: loadProducts() });
+    const sync = async () => {
+      try {
+        const products = await fetchProducts();
+        dispatch({ type: 'SYNC_PRODUCTS', payload: products });
+      } catch (error) {
+        console.warn('Failed to sync products for cart', error);
+      }
     };
 
     sync();
-    requestProductsSync().catch(() => undefined);
-    const unsubscribe = subscribeToProducts(sync);
-
-    return () => {
-      unsubscribe?.();
-    };
   }, []);
 
   const addItem = useCallback((producto: Producto, cantidad?: number) => {

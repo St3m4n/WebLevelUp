@@ -11,9 +11,9 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useRegions } from '@/hooks/useRegions';
 import { useLevelUpStats } from '@/hooks/useLevelUpStats';
+import { useOrders } from '@/hooks/useOrders';
 import type { Order, PaymentPreferenceMethod, UserAddress } from '@/types';
 import { formatPrice } from '@/utils/format';
-import { loadOrders, subscribeToOrders } from '@/utils/orders';
 import styles from './Perfil.module.css';
 
 type ProfileFormState = {
@@ -212,7 +212,7 @@ const Perfil: React.FC = () => {
   } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const [orders, setOrders] = useState<Order[]>(() => loadOrders());
+  const { orders } = useOrders();
   const levelUp = useLevelUpStats();
   const pointsFormatter = useMemo(() => new Intl.NumberFormat('es-CL'), []);
   const referralDateFormatter = useMemo(
@@ -244,15 +244,6 @@ const Perfil: React.FC = () => {
   const [addressMode, setAddressMode] = useState<'create' | 'edit'>('create');
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const { regions } = useRegions();
-
-  useEffect(() => {
-    const unsubscribe = subscribeToOrders(() => {
-      setOrders(loadOrders());
-    });
-    return () => {
-      unsubscribe?.();
-    };
-  }, []);
 
   useEffect(() => {
     if (!user) {

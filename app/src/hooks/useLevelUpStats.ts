@@ -1,19 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { useAuth } from '@/context/AuthContext';
-import {
-  computeLevelProgressFromExp,
-  ensureReferralCode,
-  ensureUserStats,
-  getTotalExp,
-  getUserStats,
-  subscribeToLevelUpStats,
-} from '@/utils/levelup';
-import type {
-  LevelUpStatsEventDetail,
-  LevelUpUserStats,
-} from '@/utils/levelup';
-import { normalizeRun } from '@/utils/users';
+import { computeLevelProgressFromExp, getTotalExp } from '@/utils/levelup';
+import type { LevelUpUserStats } from '@/utils/levelup';
 
 type LevelUpState = {
   stats: LevelUpUserStats | null;
@@ -33,61 +22,35 @@ const initialState: LevelUpState = {
   currentExpIntoLevel: 0,
 };
 
-const shouldRefresh = (
-  detail: LevelUpStatsEventDetail | null,
-  runKey: string
-): boolean => {
-  if (!detail || !Array.isArray(detail.runs) || detail.runs.length === 0) {
-    return true;
-  }
-  return detail.runs.some((run) => normalizeRun(run) === runKey);
-};
-
 export const useLevelUpStats = (): LevelUpState => {
   const { user } = useAuth();
-  const [state, setState] = useState<LevelUpState>(initialState);
 
-  useEffect(() => {
-    if (!user) {
-      setState(initialState);
-      return;
-    }
-    const runKey = normalizeRun(user.run);
-    if (!runKey) {
-      setState(initialState);
-      return;
+  return useMemo(() => {
+    if (!user || !user.levelUpStats) {
+      return initialState;
     }
 
-    ensureUserStats(runKey);
-    ensureReferralCode(runKey);
+    const stats = user.levelUpStats;
 
-    const loadStats = () => {
-      const stats = getUserStats(runKey);
-      const totalExp = getTotalExp(stats.exp);
-      const progress = computeLevelProgressFromExp(totalExp);
-      setState({
-        stats,
-        totalExp,
-        level: progress.level,
-        progressPct: progress.pct,
-        nextLevelExp: progress.nextReq,
-        currentExpIntoLevel: progress.into,
-      });
-    };
+    // Normalize referidos if it comes as an array from the API
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const referidosRaw = stats.referidos as any;
+    const referidosNormalized = Array.isArray(referidosRaw)
+      ? { count: referidosRaw.length, users: referidosRaw }
+      : (stats.referidos ?? { count: 0, users: [] });
 
-    loadStats();
+    const normalizedStats = { ...stats, referidos: referidosNormalized };
 
-    const unsubscribe = subscribeToLevelUpStats((detail) => {
-      if (!runKey) return;
-      if (shouldRefresh(detail, runKey)) {
-        loadStats();
-      }
-    });
+    const totalExp = getTotalExp(normalizedStats.exp);
+    const progress = computeLevelProgressFromExp(totalExp);
 
-    return () => {
-      unsubscribe?.();
+    return {
+      stats: normalizedStats,
+      totalExp,
+      level: progress.level,
+      progressPct: progress.pct,
+      nextLevelExp: progress.nextReq,
+      currentExpIntoLevel: progress.into,
     };
   }, [user]);
-
-  return useMemo(() => state, [state]);
 };

@@ -1,43 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { fetchProducts, type ProductDto } from '@/services/products';
 
-import type { ProductRecord } from '@/utils/products';
-import {
-  loadProducts,
-  requestProductsSync,
-  subscribeToProducts,
-} from '@/utils/products';
+export const useProducts = () => {
+  const [products, setProducts] = useState<ProductDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-type UseProductsOptions = {
-  includeDeleted?: boolean;
-};
-
-export const useProducts = (options?: UseProductsOptions): ProductRecord[] => {
-  const { includeDeleted = false } = options ?? {};
-  const [products, setProducts] = useState<ProductRecord[]>(() =>
-    loadProducts({ includeDeleted })
-  );
+  const refreshProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchProducts();
+      setProducts(data);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch products', err);
+      setError('No se pudieron cargar los productos.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let active = true;
+    refreshProducts();
+  }, [refreshProducts]);
 
-    const syncProducts = () => {
-      if (!active) {
-        return;
-      }
-      setProducts(loadProducts({ includeDeleted }));
-    };
-
-    syncProducts();
-
-    requestProductsSync().catch(() => undefined);
-
-    const unsubscribe = subscribeToProducts(syncProducts);
-
-    return () => {
-      active = false;
-      unsubscribe?.();
-    };
-  }, [includeDeleted]);
-
-  return products;
+  return { products, loading, error, refreshProducts };
 };

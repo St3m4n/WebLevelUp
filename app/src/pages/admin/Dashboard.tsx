@@ -3,13 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useProducts } from '@/hooks/useProducts';
 import { useUsers } from '@/hooks/useUsers';
+import { useOrders } from '@/hooks/useOrders';
 import type { ContactMessage, Order } from '@/types';
 import { formatPrice } from '@/utils/format';
-import {
-  loadOrders,
-  subscribeToOrders,
-  ORDER_STORAGE_KEYS,
-} from '@/utils/orders';
 import {
   loadMessages,
   subscribeToMessages,
@@ -27,21 +23,12 @@ type Metric = {
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const productos = useProducts();
+  const { products: productos } = useProducts();
   const { users } = useUsers();
-  const [orders, setOrders] = useState<Order[]>(() => loadOrders());
+  const { orders } = useOrders();
   const [messages, setMessages] = useState<ContactMessage[]>(() =>
     loadMessages()
   );
-
-  useEffect(() => {
-    const unsubscribe = subscribeToOrders(() => {
-      setOrders(loadOrders());
-    });
-    return () => {
-      unsubscribe?.();
-    };
-  }, []);
 
   useEffect(() => {
     const unsubscribe = subscribeToMessages(() => {
@@ -50,17 +37,6 @@ const Dashboard: React.FC = () => {
     return () => {
       unsubscribe?.();
     };
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === ORDER_STORAGE_KEYS.global) {
-        setOrders(loadOrders());
-      }
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   useEffect(() => {

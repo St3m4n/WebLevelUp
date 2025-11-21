@@ -1,14 +1,13 @@
-import { loadProducts } from '@/utils/products';
 import type { Categoria } from '@/types';
+import type { ProductDto } from '@/services/products';
 
 const CATEGORY_STORAGE_KEY = 'categorias';
 const CATEGORY_UPDATED_EVENT = 'levelup-categories-updated';
 
 const isBrowser = typeof window !== 'undefined';
 
-const fromProductos = (): Categoria[] => {
+const extractCategoriesFromProducts = (products: ProductDto[]): Categoria[] => {
   const unique = new Map<string, Categoria>();
-  const products = loadProducts();
   products.forEach((producto) => {
     const raw = producto.categoria?.trim();
     if (!raw) return;
@@ -60,30 +59,27 @@ const dedupeCategorias = (categorias: Categoria[]): Categoria[] => {
 
 export const loadCategories = (): Categoria[] => {
   if (!isBrowser) {
-    return dedupeCategorias(fromProductos());
+    return [];
   }
   try {
     const raw = window.localStorage.getItem(CATEGORY_STORAGE_KEY);
     if (!raw) {
-      return dedupeCategorias(fromProductos());
+      return [];
     }
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) {
-      return dedupeCategorias(fromProductos());
+      return [];
     }
     const sanitized = parsed
       .map((item) => sanitizeCategoria(item))
       .filter((item): item is Categoria => Boolean(item));
-    if (sanitized.length === 0) {
-      return dedupeCategorias(fromProductos());
-    }
     return dedupeCategorias(sanitized);
   } catch (error) {
     console.warn(
-      'No se pudieron cargar las categorías, usando catálogo base',
+      'No se pudieron cargar las categorías',
       error
     );
-    return dedupeCategorias(fromProductos());
+    return [];
   }
 };
 
@@ -107,10 +103,11 @@ export const saveCategories = (categorias: Categoria[]) => {
 };
 
 export const seedCategoriesFromProducts = (
-  categorias: Categoria[]
+  currentCategories: Categoria[],
+  products: ProductDto[]
 ): Categoria[] => {
-  const current = dedupeCategorias(categorias);
-  const base = fromProductos();
+  const current = dedupeCategorias(currentCategories);
+  const base = extractCategoriesFromProducts(products);
   const existingKeys = new Set(
     current.map((categoria) => categoria.name.toLowerCase())
   );

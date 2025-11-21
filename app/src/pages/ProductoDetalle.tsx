@@ -7,7 +7,7 @@ import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
 import { LevelUpConfig } from '@/utils/levelup';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
-import { syncProductByCode, type ProductRecord } from '@/utils/products';
+import { fetchProductByCode, type ProductDto } from '@/services/products';
 import styles from './ProductoDetalle.module.css';
 
 const ProductoDetalle: React.FC = () => {
@@ -15,11 +15,11 @@ const ProductoDetalle: React.FC = () => {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { addToast } = useToast();
-  const productos = useProducts();
+  const { products: productos } = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const [cantidad, setCantidad] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [fallbackProduct, setFallbackProduct] = useState<ProductRecord | null>(
+  const [fallbackProduct, setFallbackProduct] = useState<ProductDto | null>(
     null
   );
   const [fallbackLoading, setFallbackLoading] = useState(false);
@@ -69,7 +69,7 @@ const ProductoDetalle: React.FC = () => {
     setFallbackError(false);
     setFallbackProduct(null);
 
-    syncProductByCode(id)
+    fetchProductByCode(id)
       .then((record) => {
         if (!active) {
           return;

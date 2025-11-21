@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useToast } from '@/context/ToastContext';
-import { fetchUsers } from '@/services/userService';
+import { fetchUsers, type UserListMetaDto } from '@/services/userService';
 import type { Usuario } from '@/types';
 
 export const useUsers = () => {
   const [users, setUsers] = useState<Usuario[]>([]);
+  const [meta, setMeta] = useState<UserListMetaDto | null>(null);
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
 
@@ -12,7 +13,8 @@ export const useUsers = () => {
     setLoading(true);
     try {
       const payload = await fetchUsers();
-      setUsers(payload);
+      setUsers(payload.data);
+      setMeta(payload.meta);
     } catch (error) {
       console.warn('No se pudieron cargar los usuarios', error);
       addToast({
@@ -32,6 +34,7 @@ export const useUsers = () => {
 
   return {
     users,
+    meta,
     isLoading: loading,
     reload,
   };

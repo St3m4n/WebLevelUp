@@ -1,3 +1,5 @@
+import type { LevelUpReferralDto } from '@/utils/levelup';
+
 export type UsuarioPerfil = 'Administrador' | 'Vendedor' | 'Cliente';
 
 export interface Producto {
@@ -27,6 +29,15 @@ export interface Usuario {
   isSystem?: boolean;
   passwordHash?: string;
   passwordSalt?: string;
+  nivel?: number;
+  activo?: boolean;
+  fechaRegistro?: string;
+  roles?: string[];
+  puntosLevelUp?: number;
+  referidos?: {
+    count: number;
+    users: LevelUpReferralDto[];
+  };
 }
 
 export interface Comuna {

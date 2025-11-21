@@ -10,7 +10,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
-import { addOrder } from '@/utils/orders';
+import { createOrder } from '@/services/orderService';
 import { addPurchasePoints } from '@/utils/levelup';
 import styles from './Checkout.module.css';
 import { useRegions } from '@/hooks/useRegions';
@@ -158,7 +158,7 @@ const Checkout: React.FC = () => {
     return validationErrors;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (cartEstaVacio) {
       setStatus({
@@ -178,69 +178,71 @@ const Checkout: React.FC = () => {
       return;
     }
 
-    const orderId = `ORD-${Date.now()}`;
-    const paymentStatus =
-      form.metodo === 'transferencia' ? 'Pendiente' : 'Pagado';
+    try {
+      const createdOrder = await createOrder({
+        userEmail: form.correo.trim().toLowerCase(),
+        userName: form.nombre.trim(),
+        total,
+        items: items.map((item) => {
+          const pricing = getItemPricing(item);
+          return {
+            codigo: item.id,
+            nombre: item.nombre,
+            cantidad: item.cantidad,
+            precioUnitario: pricing.unitFinal,
+            subtotal: pricing.subtotalFinal,
+          };
+        }),
+        paymentMethod: form.metodo,
+        direccion: form.direccion.trim(),
+        region: form.region,
+        comuna: form.comuna,
+      });
 
-    addOrder({
-      id: orderId,
-      userEmail: form.correo.trim().toLowerCase(),
-      userName: form.nombre.trim(),
-      total,
-      createdAt: new Date().toISOString(),
-      items: items.map((item) => {
-        const pricing = getItemPricing(item);
-        return {
-          codigo: item.id,
-          nombre: item.nombre,
-          cantidad: item.cantidad,
-          precioUnitario: pricing.unitFinal,
-          subtotal: pricing.subtotalFinal,
-        };
-      }),
-      paymentMethod: form.metodo,
-      direccion: form.direccion.trim(),
-      region: form.region,
-      comuna: form.comuna,
-      status: paymentStatus,
-    });
+      const orderId = createdOrder.id;
+      let expEarned = 0;
+      if (user?.run) {
+        const result = addPurchasePoints({ run: user.run, totalCLP: total });
+        expEarned = result.pointsAdded ?? 0;
+      }
 
-    let expEarned = 0;
-    if (user?.run) {
-      const result = addPurchasePoints({ run: user.run, totalCLP: total });
-      expEarned = result.pointsAdded ?? 0;
-    }
-
-    const loyaltySnippet =
-      expEarned > 0
-        ? ` Además, sumaste +${pointsFormatter.format(expEarned)} EXP Level-Up.`
-        : user?.run
-          ? ' Cada $1.000 en compras acumula EXP Level-Up.'
-          : '';
-
-    clearCart();
-    setStatus({
-      type: 'success',
-      message:
-        form.metodo === 'transferencia'
-          ? `Pedido ${orderId} registrado. Recuerda enviar el comprobante a pagos@levelup.cl.${loyaltySnippet}`
-          : `Pedido ${orderId} confirmado. Te enviaremos un correo con los detalles en unos instantes.${loyaltySnippet}`,
-    });
-    addToast({
-      title: 'Pedido confirmado',
-      description:
+      const loyaltySnippet =
         expEarned > 0
-          ? `ID ${orderId}. Sumaste ${pointsFormatter.format(expEarned)} EXP.`
-          : `ID ${orderId} registrado correctamente.`,
-      variant: 'success',
-    });
-    setErrors({});
-    setForm((prev) => ({
-      ...prev,
-      tarjeta: '',
-      expiracion: '',
-      cvv: '',
-    }));
+          ? ` Además, sumaste +${pointsFormatter.format(expEarned)} EXP Level-Up.`
+          : user?.run
+            ? ' Cada $1.000 en compras acumula EXP Level-Up.'
+            : '';
+
+      clearCart();
+      setStatus({
+        type: 'success',
+        message:
+          form.metodo === 'transferencia'
+            ? `Pedido ${orderId} registrado. Recuerda enviar el comprobante a pagos@levelup.cl.${loyaltySnippet}`
+            : `Pedido ${orderId} confirmado. Te enviaremos un correo con los detalles en unos instantes.${loyaltySnippet}`,
+      });
+      addToast({
+        title: 'Pedido confirmado',
+        description:
+          expEarned > 0
+            ? `ID ${orderId}. Sumaste ${pointsFormatter.format(expEarned)} EXP.`
+            : `ID ${orderId} registrado correctamente.`,
+        variant: 'success',
+      });
+      setErrors({});
+      setForm((prev) => ({
+        ...prev,
+        tarjeta: '',
+        expiracion: '',
+        cvv: '',
+      }));
+    } catch (error) {
+      console.error('Error creating order', error);
+      setStatus({
+        type: 'error',
+        message: 'No se pudo procesar el pedido. Inténtalo nuevamente.',
+      });
+    }
   };
 
   return (

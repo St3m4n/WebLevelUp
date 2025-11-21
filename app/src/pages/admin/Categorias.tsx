@@ -41,7 +41,7 @@ const Categorias: React.FC = () => {
   const [newCategoria, setNewCategoria] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const productos = useProducts();
+  const { products: productos } = useProducts();
   const auditActor = useAuditActor();
   const logCategoryEvent = (
     action: 'created' | 'deleted' | 'restored' | 'updated',
@@ -151,7 +151,7 @@ const Categorias: React.FC = () => {
     setStatusMessage(null);
     let added = 0;
     updateCategorias((prev) => {
-      const seeded = seedCategoriesFromProducts(prev);
+      const seeded = seedCategoriesFromProducts(prev, productos);
       added = seeded.length - prev.length;
       return seeded;
     });

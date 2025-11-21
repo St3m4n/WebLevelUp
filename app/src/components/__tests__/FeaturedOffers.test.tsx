@@ -5,21 +5,26 @@ import FeaturedOffers from '../FeaturedOffers';
 
 // Simulamos las respuestas del hook de productos para controlar los datos mostrados en la tarjeta.
 vi.mock('@/hooks/useProducts', () => ({
-  useProducts: () => [
-    {
-      codigo: '1gamer',
-      nombre: 'GPU RTX 5090',
-      categoria: 'Tarjetas de Video',
-      fabricante: 'Nvidia',
-      distribuidor: 'LevelUp',
-      precio: 199990,
-      stock: 5,
-      stockCritico: 1,
-      url: 'gpu.png',
-      descripcion: 'Best GPU',
-      deletedAt: null,
-    },
-  ],
+  useProducts: () => ({
+    products: [
+      {
+        codigo: '1gamer',
+        nombre: 'GPU RTX 5090',
+        categoria: 'Tarjetas de Video',
+        fabricante: 'Nvidia',
+        distribuidor: 'LevelUp',
+        precio: 199990,
+        stock: 5,
+        stockCritico: 1,
+        url: 'gpu.png',
+        descripcion: 'Best GPU',
+        deletedAt: null,
+      },
+    ],
+    loading: false,
+    error: null,
+    refreshProducts: vi.fn(),
+  }),
 }));
 
 const priceBreakdownMock = vi.fn((price: number) => ({

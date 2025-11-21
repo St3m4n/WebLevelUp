@@ -1,10 +1,10 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CartProvider, useCart } from '../CartContext';
-import type { ProductRecord } from '@/utils/products';
+import type { ProductDto } from '@/services/products';
 import type { AuthenticatedUser } from '@/services/authService';
 
-const mockProducts: ProductRecord[] = [
+const mockProducts: ProductDto[] = [
   {
     codigo: 'prod-1',
     nombre: 'Teclado Gamer',
@@ -17,7 +17,6 @@ const mockProducts: ProductRecord[] = [
     url: 'teclado.png',
     descripcion: 'Teclado mecánico RGB',
     deletedAt: null,
-    origin: 'seed',
   },
 ];
 
@@ -51,11 +50,8 @@ const authState: { user: AuthenticatedUser | null } = {
   user: null,
 };
 
-vi.mock('@/utils/products', () => ({
-  // Mockeamos la carga de productos para evitar dependencias con el almacenamiento real.
-  loadProducts: () => mockProducts,
-  subscribeToProducts: () => () => undefined,
-  requestProductsSync: () => mockRequestProductsSync(),
+vi.mock('@/services/products', () => ({
+  fetchProducts: () => Promise.resolve(mockProducts),
 }));
 
 vi.mock('@/context/AuthContext', () => ({

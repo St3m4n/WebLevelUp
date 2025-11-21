@@ -1,4 +1,5 @@
 import type { ProfileOverrides, UsuarioPerfil } from '@/types';
+import type { LevelUpUserStats } from '@/utils/levelup';
 import { apiPost } from '@/services/apiClient';
 
 export type LoginRequest = {
@@ -33,6 +34,7 @@ export type AuthenticatedUser = {
   systemAccount?: boolean;
   referralCode?: string;
   overrides?: ProfileOverrides;
+  levelUpStats?: LevelUpUserStats;
 };
 
 export type AuthResponse = {

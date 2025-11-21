@@ -1,5 +1,6 @@
 import type { ProfileOverrides, UserAddress, Usuario } from '@/types';
 import type { AuthenticatedUser } from '@/services/authService';
+import type { LevelUpReferralDto } from '@/utils/levelup';
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/services/apiClient';
 
 export type UpdateProfileRequest = Partial<Omit<ProfileOverrides, 'updatedAt'>>;
@@ -65,4 +66,27 @@ export const promoteUserAddress = (run: string, addressId: string) =>
     `/users/${encodeURIComponent(run)}/addresses/${encodeURIComponent(addressId)}/primary`
   );
 
-export const fetchUsers = () => apiGet<Usuario[]>('/users');
+export interface UserListMetaDto {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface UserDto extends Usuario {
+  nivel: number;
+  activo: boolean;
+  fechaRegistro: string;
+  roles: string[];
+  puntosLevelUp: number;
+  referidos?: {
+    count: number;
+    users: LevelUpReferralDto[];
+  };
+}
+
+export interface UserListResponseDto {
+  data: UserDto[];
+  meta: UserListMetaDto;
+}
+
+export const fetchUsers = () => apiGet<UserListResponseDto>('/users');

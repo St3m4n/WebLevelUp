@@ -23,6 +23,8 @@ type LevelUpReferralUser = {
   date: string;
 };
 
+export type LevelUpReferralDto = LevelUpReferralUser;
+
 export type LevelUpUserStats = {
   points: number;
   exp: LevelUpExp;
