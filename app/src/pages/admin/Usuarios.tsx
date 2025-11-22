@@ -7,22 +7,22 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useRegions } from '@/hooks/useRegions';
-import { useUsers } from '@/hooks/useUsers';
 import { useOrders } from '@/hooks/useOrders';
-import type { Order, Usuario, UsuarioPerfil } from '@/types';
-import { formatPrice } from '@/utils/format';
+import { useUsers } from '@/hooks/useUsers';
+import { useRegions } from '@/hooks/useRegions';
 import {
-  ADMIN_USER_STATES_EVENT,
-  ADMIN_USER_STATES_KEY,
-  arePersistedUserStatesEqual,
   loadAdminUserStates,
   normalizeCorreo,
   normalizeRun,
   type PersistedUserState,
+  arePersistedUserStatesEqual,
+  ADMIN_USER_STATES_KEY,
+  ADMIN_USER_STATES_EVENT,
 } from '@/utils/users';
+import type { Usuario, UsuarioPerfil } from '@/types';
 import { useAuditActor } from '@/hooks/useAuditActor';
 import { recordAuditEvent } from '@/utils/audit';
+import { formatPrice } from '@/utils/format';
 import styles from './Admin.module.css';
 
 type ViewMode = 'active' | 'deleted';
@@ -1021,9 +1021,8 @@ const Usuarios: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'active'}
-                className={`${styles.tabButton} ${
-                  filters.view === 'active' ? styles.tabButtonActive : ''
-                }`.trim()}
+                className={`${styles.tabButton} ${filters.view === 'active' ? styles.tabButtonActive : ''
+                  }`.trim()}
                 onClick={() => handleViewChange('active')}
               >
                 Activos
@@ -1032,9 +1031,8 @@ const Usuarios: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'deleted'}
-                className={`${styles.tabButton} ${
-                  filters.view === 'deleted' ? styles.tabButtonActive : ''
-                }`.trim()}
+                className={`${styles.tabButton} ${filters.view === 'deleted' ? styles.tabButtonActive : ''
+                  }`.trim()}
                 onClick={() => handleViewChange('deleted')}
               >
                 Eliminados
@@ -1110,12 +1108,12 @@ const Usuarios: React.FC = () => {
                         <td>
                           {usuario.deletedAt
                             ? new Date(usuario.deletedAt).toLocaleString(
-                                'es-CL',
-                                {
-                                  dateStyle: 'medium',
-                                  timeStyle: 'short',
-                                }
-                              )
+                              'es-CL',
+                              {
+                                dateStyle: 'medium',
+                                timeStyle: 'short',
+                              }
+                            )
                             : '—'}
                         </td>
                       ) : (
@@ -1182,9 +1180,8 @@ const Usuarios: React.FC = () => {
                 <h2>
                   {formState.mode === 'create'
                     ? 'Registrar nuevo usuario'
-                    : `Editar "${formState.initial?.nombre ?? ''} ${
-                        formState.initial?.apellidos ?? ''
-                      }"`}
+                    : `Editar "${formState.initial?.nombre ?? ''} ${formState.initial?.apellidos ?? ''
+                    }"`}
                 </h2>
                 <button
                   type="button"

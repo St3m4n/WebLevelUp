@@ -9,11 +9,11 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { type PaymentPreferenceMethod, type UserAddress } from '@/types';
 import { useToast } from '@/context/ToastContext';
-import { useRegions } from '@/hooks/useRegions';
-import { useLevelUpStats } from '@/hooks/useLevelUpStats';
 import { useOrders } from '@/hooks/useOrders';
-import type { Order, PaymentPreferenceMethod, UserAddress } from '@/types';
+import { useLevelUpStats } from '@/hooks/useLevelUpStats';
+import { useRegions } from '@/hooks/useRegions';
 import { formatPrice } from '@/utils/format';
 import styles from './Perfil.module.css';
 
@@ -57,23 +57,23 @@ const PAYMENT_METHOD_OPTIONS: Array<{
   label: string;
   helper: string;
 }> = [
-  {
-    value: 'tarjeta',
-    label: 'Tarjeta de crédito o débito',
-    helper: 'Pagos instantáneos y acumulación de EXP al momento de finalizar.',
-  },
-  {
-    value: 'transferencia',
-    label: 'Transferencia bancaria',
-    helper:
-      'Recibirás instrucciones para realizar la transferencia y confirmar tu pago.',
-  },
-  {
-    value: 'efectivo',
-    label: 'Pago en tienda (efectivo)',
-    helper: 'Reserva productos y paga al retirarlos en la tienda Level-Up.',
-  },
-];
+    {
+      value: 'tarjeta',
+      label: 'Tarjeta de crédito o débito',
+      helper: 'Pagos instantáneos y acumulación de EXP al momento de finalizar.',
+    },
+    {
+      value: 'transferencia',
+      label: 'Transferencia bancaria',
+      helper:
+        'Recibirás instrucciones para realizar la transferencia y confirmar tu pago.',
+    },
+    {
+      value: 'efectivo',
+      label: 'Pago en tienda (efectivo)',
+      helper: 'Reserva productos y paga al retirarlos en la tienda Level-Up.',
+    },
+  ];
 
 const dateFormatter = new Intl.DateTimeFormat('es-CL', {
   dateStyle: 'medium',
@@ -398,11 +398,11 @@ const Perfil: React.FC = () => {
     () =>
       Boolean(
         profileOverrides.nombre ||
-          profileOverrides.apellidos ||
-          profileOverrides.region ||
-          profileOverrides.comuna ||
-          profileOverrides.direccion ||
-          profileOverrides.preferencias?.defaultPaymentMethod
+        profileOverrides.apellidos ||
+        profileOverrides.region ||
+        profileOverrides.comuna ||
+        profileOverrides.direccion ||
+        profileOverrides.preferencias?.defaultPaymentMethod
       ),
     [profileOverrides]
   );

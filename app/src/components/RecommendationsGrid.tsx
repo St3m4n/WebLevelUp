@@ -57,7 +57,7 @@ const RecommendationsGrid: React.FC = () => {
                 aria-label={`Ver detalles de ${producto.nombre}`}
               >
                 <ImageWithSkeleton
-                  src={producto.url}
+                  src={producto.url || undefined}
                   alt={producto.nombre}
                   loading="lazy"
                   containerClassName={styles.cardMedia}

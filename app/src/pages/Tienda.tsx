@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
 import { useProducts } from '@/hooks/useProducts';
-import type { ProductDto } from '@/services/products';
+import type { Producto } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
@@ -38,7 +38,7 @@ const normalizePage = (value: string | null): number => {
   return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 1;
 };
 
-const ordenarProductos = (sort: string, items: ProductDto[]) => {
+const ordenarProductos = (sort: string, items: Producto[]) => {
   switch (sort) {
     case 'precio-asc':
       return [...items].sort((a, b) => a.precio - b.precio);
@@ -84,22 +84,22 @@ const Tienda: React.FC = () => {
   const productosFiltrados = useMemo(() => {
     const base = categoriaParam
       ? productos.filter(
-          (producto) =>
-            producto.categoria?.toLowerCase() === categoriaParam.toLowerCase()
-        )
+        (producto) =>
+          producto.categoria?.toLowerCase() === categoriaParam.toLowerCase()
+      )
       : productos;
     const queryLower = searchQuery.toLowerCase();
     const filtrados = queryLower
       ? base.filter((producto) => {
-          const nombre = producto.nombre?.toLowerCase() ?? '';
-          const descripcion = producto.descripcion?.toLowerCase() ?? '';
-          const categoria = producto.categoria?.toLowerCase() ?? '';
-          return (
-            nombre.includes(queryLower) ||
-            descripcion.includes(queryLower) ||
-            categoria.includes(queryLower)
-          );
-        })
+        const nombre = producto.nombre?.toLowerCase() ?? '';
+        const descripcion = producto.descripcion?.toLowerCase() ?? '';
+        const categoria = producto.categoria?.toLowerCase() ?? '';
+        return (
+          nombre.includes(queryLower) ||
+          descripcion.includes(queryLower) ||
+          categoria.includes(queryLower)
+        );
+      })
       : base;
     return ordenarProductos(activeSort, filtrados);
   }, [activeSort, categoriaParam, productos, searchQuery]);

@@ -7,7 +7,8 @@ import { formatPrice } from '@/utils/format';
 import { usePricing } from '@/hooks/usePricing';
 import { LevelUpConfig } from '@/utils/levelup';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
-import { fetchProductByCode, type ProductDto } from '@/services/products';
+import { fetchProductByCode } from '@/services/products';
+import type { Producto } from '@/types';
 import styles from './ProductoDetalle.module.css';
 
 const ProductoDetalle: React.FC = () => {
@@ -19,7 +20,7 @@ const ProductoDetalle: React.FC = () => {
   const { getPriceBreakdown, discountRate } = usePricing();
   const [cantidad, setCantidad] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [fallbackProduct, setFallbackProduct] = useState<ProductDto | null>(
+  const [fallbackProduct, setFallbackProduct] = useState<Producto | null>(
     null
   );
   const [fallbackLoading, setFallbackLoading] = useState(false);

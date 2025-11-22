@@ -62,7 +62,7 @@ const Pedidos: React.FC = () => {
 
   const logOrderEvent = useCallback(
     (
-      action: 'status-changed' | 'deleted',
+      action: 'status-changed' | 'deleted' | 'restored',
       order: Order,
       summary: string,
       metadata?: unknown
@@ -344,9 +344,8 @@ const Pedidos: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'active'}
-                className={`${styles.tabButton} ${
-                  filters.view === 'active' ? styles.tabButtonActive : ''
-                }`.trim()}
+                className={`${styles.tabButton} ${filters.view === 'active' ? styles.tabButtonActive : ''
+                  }`.trim()}
                 onClick={() =>
                   setFilters((prev) => ({ ...prev, view: 'active' }))
                 }
@@ -357,9 +356,8 @@ const Pedidos: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'deleted'}
-                className={`${styles.tabButton} ${
-                  filters.view === 'deleted' ? styles.tabButtonActive : ''
-                }`.trim()}
+                className={`${styles.tabButton} ${filters.view === 'deleted' ? styles.tabButtonActive : ''
+                  }`.trim()}
                 onClick={() =>
                   setFilters((prev) => ({ ...prev, view: 'deleted' }))
                 }

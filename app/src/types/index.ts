@@ -12,6 +12,8 @@ export interface Producto {
   stock: number;
   stockCritico: number;
   url: string;
+  imagenUrl?: string | null; // Added for compatibility
+  deletedAt?: string | null; // Added for compatibility
   descripcion: string;
 }
 

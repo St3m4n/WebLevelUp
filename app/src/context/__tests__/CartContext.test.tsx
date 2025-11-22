@@ -1,10 +1,10 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CartProvider, useCart } from '../CartContext';
-import type { ProductDto } from '@/services/products';
+import type { Producto } from '@/types';
 import type { AuthenticatedUser } from '@/services/authService';
 
-const mockProducts: ProductDto[] = [
+const mockProducts: Producto[] = [
   {
     codigo: 'prod-1',
     nombre: 'Teclado Gamer',
@@ -20,7 +20,7 @@ const mockProducts: ProductDto[] = [
   },
 ];
 
-const mockRequestProductsSync = vi.fn(() => Promise.resolve(mockProducts));
+
 
 let remoteItems: Array<{ productCode: string; quantity: number }> = [];
 
@@ -32,10 +32,11 @@ const mockGetCart = vi.fn(async () => ({
 }));
 
 const mockUpdateCart = vi.fn(async (payload: unknown) => {
-  const items = Array.isArray(payload?.items)
-    ? payload.items.map((item: { productCode: string; quantity: number }) => ({
-        ...item,
-      }))
+  const p = payload as { items?: { productCode: string; quantity: number }[] };
+  const items = Array.isArray(p?.items)
+    ? p.items.map((item) => ({
+      ...item,
+    }))
     : [];
   remoteItems = items;
   return {

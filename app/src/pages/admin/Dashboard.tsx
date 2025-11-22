@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useProducts } from '@/hooks/useProducts';
 import { useUsers } from '@/hooks/useUsers';
 import { useOrders } from '@/hooks/useOrders';
-import type { ContactMessage, Order } from '@/types';
+import type { ContactMessage } from '@/types';
 import { formatPrice } from '@/utils/format';
 import {
   loadMessages,

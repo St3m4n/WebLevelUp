@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchProducts, type ProductDto } from '@/services/products';
+import { fetchProducts } from '@/services/products';
+import type { Producto } from '@/types';
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<ProductDto[]>([]);
+  const [products, setProducts] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

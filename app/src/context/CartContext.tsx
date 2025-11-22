@@ -8,7 +8,7 @@ import {
   useRef,
 } from 'react';
 import type { Producto } from '@/types';
-import { fetchProducts, type ProductDto } from '@/services/products';
+import { fetchProducts } from '@/services/products';
 import { usePricing, type PriceBreakdown } from '@/hooks/usePricing';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -50,7 +50,7 @@ type CartAction =
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; cantidad: number } }
   | { type: 'CLEAR_CART' }
   | { type: 'SET_ITEMS'; payload: CartItem[] }
-  | { type: 'SYNC_PRODUCTS'; payload: ProductDto[] };
+  | { type: 'SYNC_PRODUCTS'; payload: Producto[] };
 
 export type CartContextValue = {
   items: CartItem[];
@@ -83,7 +83,7 @@ const toCartItemInputs = (items: CartItem[]): CartItemInput[] =>
 
 const mapRemoteItemsToCartItems = (
   items: CartItemInput[],
-  products: ProductDto[]
+  products: Producto[]
 ): CartItem[] => {
   if (!items || items.length === 0) {
     return [];
@@ -221,13 +221,13 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           items: state.items.map((item) =>
             item.id === existing.id
               ? {
-                  ...item,
-                  cantidad: Math.min(
-                    item.cantidad + cantidad,
-                    action.payload.stock
-                  ),
-                  stock: action.payload.stock,
-                }
+                ...item,
+                cantidad: Math.min(
+                  item.cantidad + cantidad,
+                  action.payload.stock
+                ),
+                stock: action.payload.stock,
+              }
               : item
           ),
         };

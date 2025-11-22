@@ -13,6 +13,7 @@ export type ProductDto = {
   descripcion: string;
   imagenUrl?: string | null;
   url?: string | null;
+  category?: string; // Added to handle backend variations
   eliminado?: boolean;
   deletedAt?: string | null;
   createdAt?: string | null;
@@ -22,11 +23,11 @@ export type ProductDto = {
 export type ProductListResponse =
   | ProductDto[]
   | {
-      content?: ProductDto[];
-      items?: ProductDto[];
-      data?: ProductDto[];
-      results?: ProductDto[];
-    };
+    content?: ProductDto[];
+    items?: ProductDto[];
+    data?: ProductDto[];
+    results?: ProductDto[];
+  };
 
 const extractList = (payload: ProductListResponse): ProductDto[] => {
   if (Array.isArray(payload)) {
@@ -50,17 +51,18 @@ const extractList = (payload: ProductListResponse): ProductDto[] => {
   return [];
 };
 
-const mapDtoToProduct = (dto: ProductDto): ProductDto => {
-  // @ts-ignore
+const mapDtoToProduct = (dto: ProductDto): Producto => {
   const categoryAlt = dto.category;
   return {
     ...dto,
     categoria: dto.categoria || categoryAlt || 'Sin categoría',
     url: dto.url || dto.imagenUrl || '',
-  };
+    descripcion: dto.descripcion || '',
+    imagenUrl: dto.imagenUrl || dto.url || null,
+  } as Producto;
 };
 
-export const fetchProducts = async (): Promise<ProductDto[]> => {
+export const fetchProducts = async (): Promise<Producto[]> => {
   const response = await apiGet<ProductListResponse>('/products', {
     auth: false,
   });
@@ -71,13 +73,13 @@ export const fetchProducts = async (): Promise<ProductDto[]> => {
 export type ProductDetailResponse =
   | ProductDto
   | {
-      product?: ProductDto;
-      data?: ProductDto;
-    };
+    product?: ProductDto;
+    data?: ProductDto;
+  };
 
 export const fetchProductByCode = async (
   codigo: string
-): Promise<ProductDto> => {
+): Promise<Producto> => {
   const response = await apiGet<ProductDetailResponse>(
     `/products/${encodeURIComponent(codigo)}`,
     {
@@ -118,7 +120,6 @@ export const createProduct = (
 
 export const updateProduct = (codigo: string, product: Partial<Producto>) => {
   const { url, ...rest } = product;
-  // @ts-ignore
   const imagenUrl = product.imagenUrl;
   const finalUrl = imagenUrl || url;
 
@@ -126,8 +127,8 @@ export const updateProduct = (codigo: string, product: Partial<Producto>) => {
     ...rest,
     ...(finalUrl
       ? {
-          imagenUrl: finalUrl,
-        }
+        imagenUrl: finalUrl,
+      }
       : {}),
   };
   return apiPut<Producto>(`/products/${encodeURIComponent(codigo)}`, payload);
