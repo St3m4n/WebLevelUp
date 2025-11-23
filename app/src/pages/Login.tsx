@@ -19,6 +19,8 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const requiredEmailMessage = 'El correo electrónico es obligatorio.';
 const invalidEmailMessage = 'Ingresa un correo electrónico válido.';
 const commonCredentialError = 'Correo o contraseña incorrectos.';
+const networkErrorMessage =
+  'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.';
 
 const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -123,15 +125,21 @@ const Login: React.FC = () => {
         message === 'Contraseña incorrecta.'
           ? commonCredentialError
           : message;
-      setStatus({ type: 'error', message: normalizedMessage });
-      if (message.startsWith('Usuario no encontrado')) {
-        setErrors((prev) => ({ ...prev, correo: commonCredentialError }));
-      }
-      if (
-        message === 'Ingresa tu contraseña.' ||
-        message === 'Contraseña incorrecta.'
-      ) {
-        setErrors((prev) => ({ ...prev, password: commonCredentialError }));
+      const hasNetworkIssue = /failed to fetch/i.test(message);
+      setStatus({
+        type: 'error',
+        message: hasNetworkIssue ? networkErrorMessage : normalizedMessage,
+      });
+      if (!hasNetworkIssue) {
+        if (message.startsWith('Usuario no encontrado')) {
+          setErrors((prev) => ({ ...prev, correo: commonCredentialError }));
+        }
+        if (
+          message === 'Ingresa tu contraseña.' ||
+          message === 'Contraseña incorrecta.'
+        ) {
+          setErrors((prev) => ({ ...prev, password: commonCredentialError }));
+        }
       }
     } finally {
       setIsSubmitting(false);
@@ -181,6 +189,7 @@ const Login: React.FC = () => {
                 id="correo"
                 type="email"
                 autoComplete="email"
+                placeholder="usuario@correo.com"
                 value={form.correo}
                 onChange={handleFieldChange('correo')}
                 className={errors.correo ? styles.inputError : undefined}
@@ -197,10 +206,10 @@ const Login: React.FC = () => {
                 id="password"
                 type="password"
                 autoComplete="current-password"
+                placeholder="Contraseña segura"
                 value={form.password}
                 onChange={handleFieldChange('password')}
                 className={errors.password ? styles.inputError : undefined}
-                placeholder="Deja en blanco si es una cuenta precargada"
               />
               {errors.password && (
                 <span className={styles.errorMessage}>{errors.password}</span>
