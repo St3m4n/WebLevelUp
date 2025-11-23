@@ -16,6 +16,9 @@ type LocationState = {
 } | null;
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const requiredEmailMessage = 'El correo electrónico es obligatorio.';
+const invalidEmailMessage = 'Ingresa un correo electrónico válido.';
+const commonCredentialError = 'Correo o contraseña incorrectos.';
 
 const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -89,9 +92,9 @@ const Login: React.FC = () => {
   const validateForm = (): LoginErrors => {
     const nextErrors: LoginErrors = {};
     if (!form.correo.trim()) {
-      nextErrors.correo = 'Ingresa tu correo electrónico.';
+      nextErrors.correo = requiredEmailMessage;
     } else if (!emailRegex.test(form.correo.trim())) {
-      nextErrors.correo = 'El formato del correo no es válido.';
+      nextErrors.correo = invalidEmailMessage;
     }
 
     return nextErrors;
@@ -114,15 +117,21 @@ const Login: React.FC = () => {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'No se pudo iniciar sesión.';
-      setStatus({ type: 'error', message });
+      const normalizedMessage =
+        message.startsWith('Usuario no encontrado') ||
+        message === 'Ingresa tu contraseña.' ||
+        message === 'Contraseña incorrecta.'
+          ? commonCredentialError
+          : message;
+      setStatus({ type: 'error', message: normalizedMessage });
       if (message.startsWith('Usuario no encontrado')) {
-        setErrors((prev) => ({ ...prev, correo: message }));
+        setErrors((prev) => ({ ...prev, correo: commonCredentialError }));
       }
       if (
         message === 'Ingresa tu contraseña.' ||
         message === 'Contraseña incorrecta.'
       ) {
-        setErrors((prev) => ({ ...prev, password: message }));
+        setErrors((prev) => ({ ...prev, password: commonCredentialError }));
       }
     } finally {
       setIsSubmitting(false);
