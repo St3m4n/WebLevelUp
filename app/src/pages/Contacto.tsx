@@ -180,6 +180,7 @@ const Contacto: React.FC = () => {
                 <input
                   id="nombre"
                   value={nombre}
+                  placeholder="Ej. Camila Gutiérrez"
                   onChange={handleNombreChange}
                   className={errors.nombre ? styles.inputError : undefined}
                   required
@@ -195,6 +196,7 @@ const Contacto: React.FC = () => {
                   id="email"
                   type="email"
                   value={email}
+                  placeholder="nombre@duoc.cl o @gmail.com"
                   onChange={handleEmailChange}
                   className={errors.email ? styles.inputError : undefined}
                   required
@@ -209,6 +211,7 @@ const Contacto: React.FC = () => {
                 <input
                   id="asunto"
                   value={asunto}
+                  placeholder="Consulta sobre horario de cursos"
                   onChange={handleAsuntoChange}
                   className={errors.asunto ? styles.inputError : undefined}
                   required
@@ -224,6 +227,7 @@ const Contacto: React.FC = () => {
                   id="mensaje"
                   rows={5}
                   value={mensaje}
+                  placeholder="Cuéntanos qué necesitas: soporte, feedback o colaboración"
                   onChange={handleMensajeChange}
                   className={errors.mensaje ? styles.inputError : undefined}
                   required

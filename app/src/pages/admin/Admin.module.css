@@ -773,6 +773,16 @@
     box-shadow 0.2s ease;
 }
 
+.formControl input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.formControl input[type='number']::-webkit-inner-spin-button,
+.formControl input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .formControl input[aria-invalid='true'],
 .formControl textarea[aria-invalid='true'] {
   border-color: rgba(244, 63, 94, 0.35);

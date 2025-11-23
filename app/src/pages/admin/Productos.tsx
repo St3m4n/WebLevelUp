@@ -401,8 +401,13 @@ const Productos: React.FC = () => {
     if (!values.distribuidor.trim()) {
       errors.distribuidor = 'Ingresa un distribuidor.';
     }
-    if (!Number.isFinite(values.precio) || values.precio <= 0) {
-      errors.precio = 'Ingresa un precio válido.';
+    if (
+      !Number.isFinite(values.precio) ||
+      values.precio <= 0 ||
+      !Number.isInteger(values.precio) ||
+      values.precio % 10 !== 0
+    ) {
+      errors.precio = 'El precio debe ser un entero positivo y múltiplo de 10.';
     }
     if (!Number.isFinite(values.stock) || values.stock < 0) {
       errors.stock = 'El stock debe ser 0 o mayor.';
@@ -420,7 +425,9 @@ const Productos: React.FC = () => {
   };
 
   const handleFormInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = event.target;
     setFormValues((prev) => {
@@ -825,19 +832,22 @@ const Productos: React.FC = () => {
 
                     <label className={styles.formControl}>
                       <span>Categoría</span>
-                      <input
+                      <select
                         name="categoria"
                         value={formValues.categoria}
                         onChange={handleFormInputChange}
-                        list="catalog-categories"
                         required
                         aria-invalid={Boolean(formErrors.categoria)}
-                      />
-                      <datalist id="catalog-categories">
+                      >
+                        <option value="" disabled>
+                          Selecciona una categoría
+                        </option>
                         {categories.map((categoria) => (
-                          <option key={categoria} value={categoria} />
+                          <option key={categoria} value={categoria}>
+                            {categoria}
+                          </option>
                         ))}
-                      </datalist>
+                      </select>
                       {formErrors.categoria && (
                         <span className={styles.formError}>
                           {formErrors.categoria}
@@ -891,8 +901,8 @@ const Productos: React.FC = () => {
                       <input
                         name="precio"
                         type="number"
-                        min={0}
-                        step={100}
+                        min={10}
+                        step={10}
                         value={formValues.precio}
                         onChange={handleFormInputChange}
                         required

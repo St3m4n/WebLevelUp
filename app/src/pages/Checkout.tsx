@@ -30,6 +30,22 @@ type CheckoutForm = {
 
 type FormErrors = Partial<Record<keyof CheckoutForm, string>>;
 
+const formatCardNumberInput = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 16);
+  return digits.replace(/(.{4})/g, '$1 ').trim();
+};
+
+const formatCardExpirationInput = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 4);
+  if (digits.length <= 2) {
+    return digits;
+  }
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+};
+
+const formatCardCvvInput = (value: string) =>
+  value.replace(/\D/g, '').slice(0, 4);
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type AuthUserValue = ReturnType<typeof useAuth>['user'];
@@ -90,7 +106,17 @@ const Checkout: React.FC = () => {
   const handleFieldChange =
     (field: keyof CheckoutForm) =>
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const value = event.target.value;
+      const rawValue = event.target.value;
+      let value = rawValue;
+      if (field === 'tarjeta') {
+        value = formatCardNumberInput(rawValue);
+      }
+      if (field === 'expiracion') {
+        value = formatCardExpirationInput(rawValue);
+      }
+      if (field === 'cvv') {
+        value = formatCardCvvInput(rawValue);
+      }
       setForm((prev) => {
         if (field === 'region') {
           return {
@@ -398,6 +424,7 @@ const Checkout: React.FC = () => {
                         id="tarjeta"
                         inputMode="numeric"
                         placeholder="XXXX XXXX XXXX XXXX"
+                        maxLength={19}
                         value={form.tarjeta}
                         onChange={handleFieldChange('tarjeta')}
                         className={
@@ -415,6 +442,7 @@ const Checkout: React.FC = () => {
                       <input
                         id="expiracion"
                         placeholder="MM/AA"
+                        maxLength={5}
                         value={form.expiracion}
                         onChange={handleFieldChange('expiracion')}
                         className={
@@ -433,6 +461,7 @@ const Checkout: React.FC = () => {
                         id="cvv"
                         inputMode="numeric"
                         placeholder="123"
+                        maxLength={4}
                         value={form.cvv}
                         onChange={handleFieldChange('cvv')}
                         className={errors.cvv ? styles.inputError : undefined}
