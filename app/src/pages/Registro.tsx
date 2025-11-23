@@ -8,7 +8,6 @@ import {
 } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { useToast } from '@/context/ToastContext';
 import { useRegions } from '@/hooks/useRegions';
 import styles from './Auth.module.css';
 
@@ -196,7 +195,6 @@ const formatRun = (raw: string): string => {
 
 const Registro: React.FC = () => {
   const { register: registerUser, isAuthenticated } = useAuth();
-  const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = (location.state as LocationState) ?? null;
@@ -440,12 +438,6 @@ const Registro: React.FC = () => {
           })
         );
       }
-      addToast({
-        title: 'Cuenta creada',
-        description: successMessage,
-        variant: 'success',
-        duration: 6000,
-      });
       navigate('/login', {
         replace: true,
         state: locationState?.from ? { from: locationState.from } : undefined,

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import type { UsuarioPerfil } from '@/types';
 import styles from './Admin.module.css';
 
@@ -36,6 +37,7 @@ const navItems: NavItem[] = [
 
 const AdminSidebar: React.FC = () => {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const { user, logout } = useAuth();
 
   const availableItems = useMemo(() => {
@@ -45,6 +47,11 @@ const AdminSidebar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+    addToast({
+      variant: 'info',
+      title: 'Sesión cerrada',
+      description: 'Tu sesión de administrador se cerró correctamente.',
+    });
     navigate('/');
   };
 

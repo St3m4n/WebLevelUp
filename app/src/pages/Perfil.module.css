@@ -752,6 +752,15 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.addressListItemPrimary {
+  border-color: rgba(124, 58, 237, 0.45);
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.25);
+}
+
+.addressListItemSynthetic {
+  opacity: 0.94;
+}
+
 .addressDetails {
   display: grid;
   gap: 0.25rem;

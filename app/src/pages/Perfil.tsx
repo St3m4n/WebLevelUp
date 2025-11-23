@@ -80,6 +80,8 @@ const dateFormatter = new Intl.DateTimeFormat('es-CL', {
   timeStyle: 'short',
 });
 
+const FALLBACK_PROFILE_ADDRESS_ID = 'profile-address';
+
 export const maskEmail = (email: string): string => {
   const [userPart, domainPart] = email.split('@');
   if (!userPart || !domainPart) return email;
@@ -245,7 +247,102 @@ const Perfil: React.FC = () => {
   );
   const [addressMode, setAddressMode] = useState<'create' | 'edit'>('create');
   const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [pendingPrimaryId, setPendingPrimaryId] = useState<string | null>(
+    null
+  );
   const { regions } = useRegions();
+  const fallbackProfileAddress = useMemo(() => {
+    if (!user || !user.direccion) return null;
+    const fullName = [user.nombre, user.apellidos].filter(Boolean).join(' ');
+    return {
+      id: FALLBACK_PROFILE_ADDRESS_ID,
+      fullName: fullName || user.correo,
+      line1: user.direccion,
+      city: user.comuna ?? '',
+      region: user.region ?? '',
+      country: 'Chile',
+      isPrimary: true,
+      createdAt: user.fechaNacimiento ?? new Date().toISOString(),
+    } satisfies UserAddress;
+  }, [user]);
+  const displayedAddresses = useMemo(() => {
+    const base = addresses.map((address) => {
+      if (!pendingPrimaryId) {
+        return address;
+      }
+      if (address.id === pendingPrimaryId) {
+        return {
+          ...address,
+          isPrimary: true,
+        } satisfies UserAddress;
+      }
+      return {
+        ...address,
+        isPrimary: false,
+      } satisfies UserAddress;
+    });
+    const realAddressCount = base.length;
+    const hasRealPrimary = base.some((address) => address.isPrimary);
+    const hasPendingPrimary = Boolean(pendingPrimaryId);
+    if (fallbackProfileAddress) {
+      const fallbackEntry = {
+        ...fallbackProfileAddress,
+        isPrimary:
+          realAddressCount === 0 && !hasRealPrimary && !hasPendingPrimary
+            ? fallbackProfileAddress.isPrimary
+            : false,
+      } satisfies UserAddress;
+      const matchesFallback = base.some((address) => {
+        const sameLine =
+          address.line1.trim().toLowerCase() ===
+          fallbackEntry.line1.trim().toLowerCase();
+        const sameCity = address.city === fallbackEntry.city;
+        const sameRegion = address.region === fallbackEntry.region;
+        return sameLine && sameCity && sameRegion;
+      });
+      if (!matchesFallback) {
+        base.unshift(fallbackEntry);
+      }
+    }
+    if (base.length === 0) {
+      return base;
+    }
+    const hasPrimary = base.some((address) => address.isPrimary);
+    if (hasPrimary) {
+      return base;
+    }
+    const firstRealIndex = base.findIndex(
+      (address) => address.id !== FALLBACK_PROFILE_ADDRESS_ID
+    );
+    if (firstRealIndex >= 0) {
+      return base.map((address, index) =>
+        index === firstRealIndex
+          ? {
+              ...address,
+              isPrimary: true,
+            }
+          : address
+      );
+    }
+    return base.map((address, index) =>
+      index === 0
+        ? {
+            ...address,
+            isPrimary: true,
+          }
+        : address
+    );
+  }, [addresses, fallbackProfileAddress, pendingPrimaryId]);
+
+  useEffect(() => {
+    if (!pendingPrimaryId) return;
+    const promoted = addresses.find(
+      (address) => address.id === pendingPrimaryId
+    );
+    if (promoted?.isPrimary) {
+      setPendingPrimaryId(null);
+    }
+  }, [addresses, pendingPrimaryId]);
 
   useEffect(() => {
     if (!user) {
@@ -430,6 +527,11 @@ const Perfil: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+    addToast({
+      variant: 'info',
+      title: 'Sesión cerrada',
+      description: 'Vuelve pronto para seguir subiendo de nivel.',
+    });
     navigate('/');
   };
 
@@ -824,6 +926,7 @@ const Perfil: React.FC = () => {
     async (id: string) => {
       if (!user) return;
       setIsSavingAddress(true);
+      setPendingPrimaryId(id);
       try {
         await setPrimaryAddress(id);
         addToast({
@@ -832,6 +935,7 @@ const Perfil: React.FC = () => {
           description: 'Usaremos esta dirección por defecto en tus compras.',
         });
       } catch (error) {
+        setPendingPrimaryId(null);
         addToast({
           variant: 'error',
           title: 'No se pudo actualizar la dirección principal',
@@ -847,6 +951,56 @@ const Perfil: React.FC = () => {
     [addToast, setPrimaryAddress, user]
   );
 
+  const handlePromoteFallbackAddress = useCallback(
+    async (address: UserAddress) => {
+      if (!user) return;
+      const sanitizedLine = address.line1.trim();
+      const sanitizedCity = address.city.trim();
+      const sanitizedRegion = address.region.trim();
+      const sanitizedFullName = address.fullName.trim();
+      if (!sanitizedLine || !sanitizedCity || !sanitizedRegion) {
+        addToast({
+          variant: 'warning',
+          title: 'Completa tu información de perfil',
+          description:
+            'Actualiza tu región y comuna en Datos personales antes de usar esta dirección.',
+        });
+        return;
+      }
+      setIsSavingAddress(true);
+      try {
+        const created = await addAddress({
+          fullName: sanitizedFullName || address.fullName,
+          line1: sanitizedLine,
+          city: sanitizedCity,
+          region: sanitizedRegion,
+          country: address.country || 'Chile',
+          isPrimary: true,
+        });
+        if (created?.id) {
+          setPendingPrimaryId(created.id);
+        }
+        addToast({
+          variant: 'success',
+          title: 'Usaremos tu dirección de registro',
+          description: 'La dirección registrada al crear tu cuenta quedó como principal.',
+        });
+      } catch (error) {
+        addToast({
+          variant: 'error',
+          title: 'No pudimos usar la dirección de registro',
+          description:
+            error instanceof Error
+              ? error.message
+              : 'Intenta nuevamente en unos segundos.',
+        });
+      } finally {
+        setIsSavingAddress(false);
+      }
+    },
+    [addAddress, addToast, user]
+  );
+    [addToast, setPrimaryAddress, user]
   const handleCopyCode = async () => {
     if (!referralCode) return;
     try {
@@ -1601,64 +1755,103 @@ const Perfil: React.FC = () => {
                     <h3 className={styles.formSectionTitle}>
                       Direcciones guardadas
                     </h3>
-                    {addresses.length === 0 ? (
+                    {displayedAddresses.length === 0 ? (
                       <p className={styles.referralEmpty}>
                         Aún no agregas direcciones. Guarda al menos una para
                         acelerar tus envíos.
                       </p>
                     ) : (
                       <ul className={styles.addressList}>
-                        {addresses.map((address) => (
-                          <li
-                            key={address.id}
-                            className={styles.addressListItem}
-                          >
-                            <div className={styles.addressDetails}>
-                              <strong>{address.fullName}</strong>
-                              <span>{address.line1}</span>
-                              <span>
-                                {[address.city, address.region]
+                        {displayedAddresses.map((address) => {
+                          const isSynthetic =
+                            address.id === FALLBACK_PROFILE_ADDRESS_ID;
+                          return (
+                            <li
+                              key={address.id}
+                              className={
+                                [
+                                  styles.addressListItem,
+                                  address.isPrimary
+                                    ? styles.addressListItemPrimary
+                                    : '',
+                                  isSynthetic
+                                    ? styles.addressListItemSynthetic
+                                    : '',
+                                ]
                                   .filter(Boolean)
-                                  .join(', ')}
-                              </span>
-                              <span>{address.country}</span>
-                            </div>
-                            <div className={styles.addressActions}>
-                              {address.isPrimary ? (
-                                <span className={styles.addressBadge}>
-                                  Principal
+                                  .join(' ')
+                              }
+                            >
+                              <div className={styles.addressDetails}>
+                                <strong>{address.fullName}</strong>
+                                <span>{address.line1}</span>
+                                <span>
+                                  {[address.city, address.region]
+                                    .filter(Boolean)
+                                    .join(', ')}
                                 </span>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className={styles.ghostButton}
-                                  onClick={() =>
-                                    handleSetPrimaryAddressClick(address.id)
-                                  }
-                                  disabled={isSavingAddress}
-                                >
-                                  Marcar principal
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                className={styles.ghostButton}
-                                onClick={() => handleEditAddress(address)}
-                                disabled={isSavingAddress}
-                              >
-                                Editar
-                              </button>
-                              <button
-                                type="button"
-                                className={styles.dangerButton}
-                                onClick={() => handleDeleteAddress(address.id)}
-                                disabled={isSavingAddress}
-                              >
-                                Eliminar
-                              </button>
-                            </div>
-                          </li>
-                        ))}
+                                <span>{address.country}</span>
+                              </div>
+                              <div className={styles.addressActions}>
+                                {isSynthetic ? (
+                                  address.isPrimary ? (
+                                    <span className={styles.addressBadge}>
+                                      Principal · Datos de perfil
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      className={styles.ghostButton}
+                                      onClick={() =>
+                                        handlePromoteFallbackAddress(address)
+                                      }
+                                      disabled={isSavingAddress}
+                                    >
+                                      Usar como principal
+                                    </button>
+                                  )
+                                ) : address.isPrimary ? (
+                                  <span className={styles.addressBadge}>
+                                    Principal
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className={styles.ghostButton}
+                                    onClick={() =>
+                                      handleSetPrimaryAddressClick(address.id)
+                                    }
+                                    disabled={isSavingAddress}
+                                  >
+                                    Marcar principal
+                                  </button>
+                                )}
+                                {!isSynthetic && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={styles.ghostButton}
+                                      onClick={() => handleEditAddress(address)}
+                                      disabled={isSavingAddress}
+                                    >
+                                      Editar
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className={styles.dangerButton}
+                                      onClick={() =>
+                                        handleDeleteAddress(address.id)
+                                      }
+                                      disabled={isSavingAddress}
+                                    >
+                                      Eliminar
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </div>

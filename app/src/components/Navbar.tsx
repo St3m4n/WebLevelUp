@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { useLevelUpStats } from '@/hooks/useLevelUpStats';
 import logo from '@/assets/logo2.png';
 import styles from './Navbar.module.css';
@@ -62,6 +63,7 @@ const Navbar: React.FC = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { user, logout } = useAuth();
+  const { addToast } = useToast();
   const { totalCantidad } = useCart();
   const { level: userLevel, totalExp } = useLevelUpStats();
   const [isPulsing, setIsPulsing] = useState(false);
@@ -114,7 +116,13 @@ const Navbar: React.FC = () => {
   const handleToggleProfileMenu = () => setIsProfileMenuOpen((p) => !p);
   const handleLogout = () => {
     logout();
+    addToast({
+      variant: 'info',
+      title: 'Sesión cerrada',
+      description: 'Tu cuenta está protegida. ¡Te esperamos pronto!',
+    });
     handleLinkClick();
+    navigate('/');
   };
 
   const handleSearchSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
