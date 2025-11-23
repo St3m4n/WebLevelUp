@@ -41,6 +41,14 @@ vi.mock('@/context/CartContext', () => ({
   }),
 }));
 
+vi.mock('@/context/ToastContext', () => ({
+  useToast: () => ({
+    addToast: vi.fn(),
+    removeToast: vi.fn(),
+    toasts: [],
+  }),
+}));
+
 // Forzamos estadísticas específicas para validar el badge de nivel.
 vi.mock('@/hooks/useLevelUpStats', () => ({
   useLevelUpStats: () => ({

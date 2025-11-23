@@ -58,9 +58,66 @@ const FALLBACK_IMAGES: Record<string, string> = {
   '4gamer': Card4,
 };
 
+const FeaturedOffersSkeleton: React.FC = () => (
+  <section className={styles.section}>
+    <div className="container">
+      <div className={styles.header}>
+        <span className={styles.kicker}>ofertas imperdibles</span>
+        <h2 className={styles.title}>
+          Potencia tu setup sin romper la billetera
+        </h2>
+      </div>
+
+      <div className={styles.grid}>
+        <div
+          className={`${styles.card} ${styles.cardTall} ${styles.cardSkeleton}`}
+          aria-hidden="true"
+        >
+          <div className={styles.cardSkeletonContent}>
+            <span className={styles.skeletonTitle} />
+            <span className={styles.skeletonPrice} />
+            <span className={styles.skeletonBadge} />
+          </div>
+        </div>
+
+        <div className={styles.stack}>
+          {Array.from({ length: 2 }).map((_, index) => (
+            <div
+              key={`featured-offer-skeleton-${index}`}
+              className={`${styles.card} ${styles.cardSkeleton}`}
+              aria-hidden="true"
+            >
+              <div className={styles.cardSkeletonContent}>
+                <span className={styles.skeletonTitle} />
+                <span className={styles.skeletonPrice} />
+                <span className={styles.skeletonCta} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div
+          className={`${styles.card} ${styles.cardTall} ${styles.cardSkeleton}`}
+          aria-hidden="true"
+        >
+          <div className={styles.cardSkeletonContent}>
+            <span className={styles.skeletonTitle} />
+            <span className={styles.skeletonPrice} />
+            <span className={styles.skeletonBadge} />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const FeaturedOffers: React.FC = () => {
-  const { products: productos } = useProducts();
+  const { products: productos, loading } = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
+
+  if (loading) {
+    return <FeaturedOffersSkeleton />;
+  }
 
   const mapProducto = (entry: FeaturedEntry): FeaturedCardData => {
     const producto = productos.find(

@@ -57,23 +57,23 @@ const PAYMENT_METHOD_OPTIONS: Array<{
   label: string;
   helper: string;
 }> = [
-    {
-      value: 'tarjeta',
-      label: 'Tarjeta de crédito o débito',
-      helper: 'Pagos instantáneos y acumulación de EXP al momento de finalizar.',
-    },
-    {
-      value: 'transferencia',
-      label: 'Transferencia bancaria',
-      helper:
-        'Recibirás instrucciones para realizar la transferencia y confirmar tu pago.',
-    },
-    {
-      value: 'efectivo',
-      label: 'Pago en tienda (efectivo)',
-      helper: 'Reserva productos y paga al retirarlos en la tienda Level-Up.',
-    },
-  ];
+  {
+    value: 'tarjeta',
+    label: 'Tarjeta de crédito o débito',
+    helper: 'Pagos instantáneos y acumulación de EXP al momento de finalizar.',
+  },
+  {
+    value: 'transferencia',
+    label: 'Transferencia bancaria',
+    helper:
+      'Recibirás instrucciones para realizar la transferencia y confirmar tu pago.',
+  },
+  {
+    value: 'efectivo',
+    label: 'Pago en tienda (efectivo)',
+    helper: 'Reserva productos y paga al retirarlos en la tienda Level-Up.',
+  },
+];
 
 const dateFormatter = new Intl.DateTimeFormat('es-CL', {
   dateStyle: 'medium',
@@ -247,9 +247,7 @@ const Perfil: React.FC = () => {
   );
   const [addressMode, setAddressMode] = useState<'create' | 'edit'>('create');
   const [isSavingAddress, setIsSavingAddress] = useState(false);
-  const [pendingPrimaryId, setPendingPrimaryId] = useState<string | null>(
-    null
-  );
+  const [pendingPrimaryId, setPendingPrimaryId] = useState<string | null>(null);
   const { regions } = useRegions();
   const fallbackProfileAddress = useMemo(() => {
     if (!user || !user.direccion) return null;
@@ -495,11 +493,11 @@ const Perfil: React.FC = () => {
     () =>
       Boolean(
         profileOverrides.nombre ||
-        profileOverrides.apellidos ||
-        profileOverrides.region ||
-        profileOverrides.comuna ||
-        profileOverrides.direccion ||
-        profileOverrides.preferencias?.defaultPaymentMethod
+          profileOverrides.apellidos ||
+          profileOverrides.region ||
+          profileOverrides.comuna ||
+          profileOverrides.direccion ||
+          profileOverrides.preferencias?.defaultPaymentMethod
       ),
     [profileOverrides]
   );
@@ -983,7 +981,8 @@ const Perfil: React.FC = () => {
         addToast({
           variant: 'success',
           title: 'Usaremos tu dirección de registro',
-          description: 'La dirección registrada al crear tu cuenta quedó como principal.',
+          description:
+            'La dirección registrada al crear tu cuenta quedó como principal.',
         });
       } catch (error) {
         addToast({
@@ -1000,7 +999,6 @@ const Perfil: React.FC = () => {
     },
     [addAddress, addToast, user]
   );
-    [addToast, setPrimaryAddress, user]
   const handleCopyCode = async () => {
     if (!referralCode) return;
     try {
@@ -1293,7 +1291,8 @@ const Perfil: React.FC = () => {
                                           style={{
                                             margin: '0 0 0.75rem 0',
                                             fontSize: '0.9rem',
-                                            color: 'var(--color-text-secondary)',
+                                            color:
+                                              'var(--color-text-secondary)',
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.05em',
                                           }}
@@ -1322,7 +1321,9 @@ const Perfil: React.FC = () => {
                                               }}
                                             >
                                               <span>
-                                                <strong>{item.cantidad}x</strong>{' '}
+                                                <strong>
+                                                  {item.cantidad}x
+                                                </strong>{' '}
                                                 {item.nombre}
                                               </span>
                                               <span>
@@ -1768,19 +1769,17 @@ const Perfil: React.FC = () => {
                           return (
                             <li
                               key={address.id}
-                              className={
-                                [
-                                  styles.addressListItem,
-                                  address.isPrimary
-                                    ? styles.addressListItemPrimary
-                                    : '',
-                                  isSynthetic
-                                    ? styles.addressListItemSynthetic
-                                    : '',
-                                ]
-                                  .filter(Boolean)
-                                  .join(' ')
-                              }
+                              className={[
+                                styles.addressListItem,
+                                address.isPrimary
+                                  ? styles.addressListItemPrimary
+                                  : '',
+                                isSynthetic
+                                  ? styles.addressListItemSynthetic
+                                  : '',
+                              ]
+                                .filter(Boolean)
+                                .join(' ')}
                             >
                               <div className={styles.addressDetails}>
                                 <strong>{address.fullName}</strong>

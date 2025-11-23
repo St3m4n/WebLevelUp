@@ -20,9 +20,7 @@ const ProductoDetalle: React.FC = () => {
   const { getPriceBreakdown, discountRate } = usePricing();
   const [cantidad, setCantidad] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [fallbackProduct, setFallbackProduct] = useState<Producto | null>(
-    null
-  );
+  const [fallbackProduct, setFallbackProduct] = useState<Producto | null>(null);
   const [fallbackLoading, setFallbackLoading] = useState(false);
   const [fallbackError, setFallbackError] = useState(false);
 

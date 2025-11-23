@@ -101,7 +101,7 @@ const PRODUCT_AUDIT_FIELDS = [
   'stockCritico',
   'url',
   'descripcion',
-] as const;
+] as const satisfies ReadonlyArray<keyof AdminProduct>;
 
 type ProductAuditField = (typeof PRODUCT_AUDIT_FIELDS)[number];
 
@@ -115,11 +115,8 @@ const computeProductDiff = (
   previous: AdminProduct,
   next: AdminProduct
 ): ProductDiffEntry[] => {
-  // @ts-ignore - dynamic access
   return PRODUCT_AUDIT_FIELDS.reduce<ProductDiffEntry[]>((acc, field) => {
-    // @ts-ignore
     const before = previous[field];
-    // @ts-ignore
     const after = next[field];
     if (before === after) {
       return acc;
@@ -533,7 +530,6 @@ const Productos: React.FC = () => {
           codigo: formValues.codigo.trim() || undefined,
           imagenUrl: formValues.imagenUrl.trim(),
         });
-        // @ts-ignore
         setStatusMessage(`Producto "${created.nombre}" agregado al catálogo.`);
         logProductEvent(
           'created',
@@ -548,10 +544,13 @@ const Productos: React.FC = () => {
         );
       } else if (formState.initial) {
         const updated = await updateProduct(formState.initial.codigo, payload);
-        // @ts-ignore
-        const changes = computeProductDiff(formState.initial, updated as AdminProduct);
-        // @ts-ignore
-        setStatusMessage(`Producto "${updated.nombre}" actualizado correctamente.`);
+        const changes = computeProductDiff(
+          formState.initial,
+          updated as AdminProduct
+        );
+        setStatusMessage(
+          `Producto "${updated.nombre}" actualizado correctamente.`
+        );
         logProductEvent(
           'updated',
           updated as AdminProduct,
@@ -563,10 +562,11 @@ const Productos: React.FC = () => {
       }
       await refreshProducts();
       handleCloseForm();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn('No se pudo guardar el producto', error);
-      if (error.details) {
-        console.warn('Detalles del error:', error.details);
+      if (error && typeof error === 'object' && 'details' in error) {
+        const { details } = error as { details: unknown };
+        console.warn('Detalles del error:', details);
       }
       setStatusMessage(
         'No se pudo guardar el producto. Revisa los datos e intenta nuevamente.'

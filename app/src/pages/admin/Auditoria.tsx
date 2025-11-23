@@ -28,6 +28,9 @@ const ACTION_LABELS: Record<AuditAction, string> = {
   registered: 'Registro',
   'status-changed': 'Cambio de estado',
   responded: 'Respuesta registrada',
+  audit_export: 'Exportación de bitácora',
+  audit_purge_request: 'Purga de bitácora solicitada',
+  audit_purge: 'Bitácora purgada',
 };
 
 const ENTITY_LABELS: Record<AuditEntityType, string> = {
@@ -45,6 +48,41 @@ const dateFormatter = new Intl.DateTimeFormat('es-CL', {
   timeStyle: 'short',
 });
 
+const humanizeToken = (value: string): string => {
+  if (!value) {
+    return '—';
+  }
+  return value
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
+};
+
+const resolveActionLabel = (action: string): string => {
+  if (!action) {
+    return '—';
+  }
+  const lower = action.toLowerCase();
+  return (
+    ACTION_LABELS[action] ??
+    ACTION_LABELS[lower as AuditAction] ??
+    humanizeToken(action)
+  );
+};
+
+const resolveEntityLabel = (entityType: string): string => {
+  if (!entityType) {
+    return 'Sistema';
+  }
+  const lower = entityType.toLowerCase();
+  return (
+    ENTITY_LABELS[entityType] ??
+    ENTITY_LABELS[lower as AuditEntityType] ??
+    humanizeToken(entityType)
+  );
+};
+
 const formatDate = (value: string) => {
   try {
     return dateFormatter.format(new Date(value));
@@ -60,9 +98,44 @@ const parseDateInput = (value: string): number | null => {
   return Number.isNaN(timestamp) ? null : timestamp;
 };
 
+const toIsoRangeStart = (value: string): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
+  try {
+    return new Date(`${value}T00:00:00`).toISOString();
+  } catch {
+    return undefined;
+  }
+};
+
+const toIsoRangeEnd = (value: string): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
+  try {
+    return new Date(`${value}T23:59:59.999`).toISOString();
+  } catch {
+    return undefined;
+  }
+};
+
 const serializeMetadata = (metadata: unknown): string => {
   if (metadata === undefined || metadata === null) {
     return '—';
+  }
+
+  if (typeof metadata === 'string') {
+    const trimmed = metadata.trim();
+    if (!trimmed) {
+      return '—';
+    }
+    try {
+      const parsed = JSON.parse(trimmed);
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return trimmed;
+    }
   }
 
   try {
@@ -74,21 +147,61 @@ const serializeMetadata = (metadata: unknown): string => {
 };
 
 const Auditoria: React.FC = () => {
-  const [events, setEvents] = useState<AuditEvent[]>(() => loadAuditEvents());
+  const [events, setEvents] = useState<AuditEvent[]>([]);
   const [actionFilter, setActionFilter] = useState<ActionFilter>('all');
   const [entityFilter, setEntityFilter] = useState<EntityFilter>('all');
   const [query, setQuery] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const actor = useAuditActor();
+
+  const fetchEvents = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const data = await loadAuditEvents({
+        action: actionFilter !== 'all' ? actionFilter : undefined,
+        entityType: entityFilter !== 'all' ? entityFilter : undefined,
+        from: toIsoRangeStart(fromDate),
+        to: toIsoRangeEnd(toDate),
+        limit: 250,
+      });
+      setEvents(data);
+    } catch (error) {
+      console.warn('[audit] Error al cargar eventos', error);
+      setErrorMessage(
+        'No se pudo cargar la bitácora. Intenta nuevamente más tarde.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [actionFilter, entityFilter, fromDate, toDate]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   useEffect(() => {
     const unsubscribe = subscribeToAuditLog(() => {
-      setEvents(loadAuditEvents());
+      fetchEvents();
     });
     return () => unsubscribe?.();
-  }, []);
+  }, [fetchEvents]);
 
-  const actor = useAuditActor();
+  useEffect(() => {
+    if (!statusMessage) {
+      return undefined;
+    }
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+    const timeout = window.setTimeout(() => setStatusMessage(null), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [statusMessage]);
 
   const handleActionFilterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setActionFilter(event.target.value as ActionFilter);
@@ -116,6 +229,8 @@ const Auditoria: React.FC = () => {
     setQuery('');
     setFromDate('');
     setToDate('');
+    setErrorMessage(null);
+    setStatusMessage(null);
   };
 
   const filteredEvents = useMemo(() => {
@@ -124,11 +239,17 @@ const Auditoria: React.FC = () => {
     const toTs = parseDateInput(toDate);
 
     return events.filter((event) => {
-      if (actionFilter !== 'all' && event.action !== actionFilter) {
-        return false;
+      if (actionFilter !== 'all') {
+        const normalizedAction = (event.action ?? '').toLowerCase();
+        if (normalizedAction !== actionFilter.toLowerCase()) {
+          return false;
+        }
       }
-      if (entityFilter !== 'all' && event.entity.type !== entityFilter) {
-        return false;
+      if (entityFilter !== 'all') {
+        const normalizedEntity = (event.entity.type ?? '').toLowerCase();
+        if (normalizedEntity !== entityFilter.toLowerCase()) {
+          return false;
+        }
       }
 
       const eventTs = Date.parse(event.timestamp);
@@ -159,22 +280,16 @@ const Auditoria: React.FC = () => {
   }, [actionFilter, entityFilter, events, fromDate, query, toDate]);
 
   const totals = useMemo(() => {
-    const byAction = filteredEvents.reduce<Record<AuditAction, number>>(
+    const byAction = filteredEvents.reduce<Record<string, number>>(
       (acc, event) => {
-        acc[event.action] = (acc[event.action] ?? 0) + 1;
+        const key = (event.action ?? '').toLowerCase();
+        if (!key) {
+          return acc;
+        }
+        acc[key] = (acc[key] ?? 0) + 1;
         return acc;
       },
-      {
-        created: 0,
-        updated: 0,
-        deleted: 0,
-        restored: 0,
-        login: 0,
-        logout: 0,
-        registered: 0,
-        'status-changed': 0,
-        responded: 0,
-      }
+      {}
     );
 
     return {
@@ -183,7 +298,15 @@ const Auditoria: React.FC = () => {
     };
   }, [filteredEvents]);
 
-  const handleExport = useCallback(() => {
+  const getActionCount = (key: string) =>
+    totals.byAction[key.toLowerCase()] ?? 0;
+  const changeEventsCount =
+    getActionCount('created') +
+    getActionCount('updated') +
+    getActionCount('deleted') +
+    getActionCount('restored');
+
+  const handleExport = useCallback(async () => {
     if (filteredEvents.length === 0) {
       return;
     }
@@ -215,8 +338,10 @@ const Auditoria: React.FC = () => {
     window.document.body.removeChild(link);
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
 
-    recordAuditEvent({
-      action: 'created',
+    setStatusMessage('Descarga de la bitácora generada correctamente.');
+
+    await recordAuditEvent({
+      action: 'audit_export',
       summary: 'Bitácora exportada como JSON',
       entity: {
         type: 'sistema',
@@ -233,6 +358,7 @@ const Auditoria: React.FC = () => {
         },
       },
       actor,
+      severity: 'low',
     });
   }, [
     actionFilter,
@@ -244,7 +370,7 @@ const Auditoria: React.FC = () => {
     toDate,
   ]);
 
-  const handleClear = useCallback(() => {
+  const handleClear = useCallback(async () => {
     if (typeof window === 'undefined') {
       return;
     }
@@ -254,17 +380,27 @@ const Auditoria: React.FC = () => {
     if (!confirmed) {
       return;
     }
-    clearAuditEvents();
-    recordAuditEvent({
-      action: 'deleted',
-      summary: 'Bitácora limpiada manualmente',
-      entity: {
-        type: 'sistema',
-        context: 'audit-log',
-      },
-      actor,
-    });
-  }, [actor]);
+    try {
+      await clearAuditEvents();
+      setStatusMessage('Bitácora limpiada correctamente.');
+      await recordAuditEvent({
+        action: 'audit_purge_request',
+        summary: 'Bitácora limpiada manualmente desde el panel',
+        entity: {
+          type: 'sistema',
+          context: 'audit-log',
+        },
+        actor,
+        severity: 'medium',
+      });
+      await fetchEvents();
+    } catch (error) {
+      console.warn('[audit] Error al limpiar la bitácora', error);
+      setErrorMessage(
+        'No se pudo limpiar la bitácora. Verifica tu sesión e inténtalo de nuevo.'
+      );
+    }
+  }, [actor, fetchEvents]);
 
   return (
     <div className="container">
@@ -277,6 +413,15 @@ const Auditoria: React.FC = () => {
             y exporta los registros cuando necesites compartirlos.
           </p>
         </header>
+
+        {statusMessage && (
+          <div className={styles.statusBanner}>{statusMessage}</div>
+        )}
+        {errorMessage && (
+          <div className={styles.statusBannerError} role="alert">
+            {errorMessage}
+          </div>
+        )}
 
         <section className={styles.sectionCard}>
           <div className={styles.controlsBar}>
@@ -348,7 +493,7 @@ const Auditoria: React.FC = () => {
                 type="button"
                 onClick={handleExport}
                 className={styles.primaryAction}
-                disabled={filteredEvents.length === 0}
+                disabled={filteredEvents.length === 0 || isLoading}
               >
                 Exportar JSON
               </button>
@@ -356,6 +501,7 @@ const Auditoria: React.FC = () => {
                 type="button"
                 onClick={handleClear}
                 className={`${styles.secondaryAction} ${styles.dangerOutline}`}
+                disabled={isLoading || events.length === 0}
               >
                 Limpiar bitácora
               </button>
@@ -368,20 +514,19 @@ const Auditoria: React.FC = () => {
               {events.length} eventos registrados
             </span>
             <span>
-              Inicio de sesión: <strong>{totals.byAction.login}</strong>
+              Inicio de sesión: <strong>{getActionCount('login')}</strong>
             </span>
             <span>
-              Cambios:{' '}
-              <strong>
-                {totals.byAction.created +
-                  totals.byAction.updated +
-                  totals.byAction.deleted +
-                  totals.byAction.restored}
-              </strong>
+              Cambios: <strong>{changeEventsCount}</strong>
             </span>
           </div>
 
-          {events.length === 0 ? (
+          {isLoading ? (
+            <div className={styles.emptyState}>
+              <strong>Cargando bitácora...</strong>
+              <span>Esto puede tomar unos segundos.</span>
+            </div>
+          ) : events.length === 0 ? (
             <div className={styles.emptyState}>
               <strong>Aún no se registran eventos.</strong>
               <span>
@@ -430,14 +575,13 @@ const Auditoria: React.FC = () => {
                       </td>
                       <td>
                         <span className={styles.auditBadge}>
-                          {ACTION_LABELS[event.action] ?? event.action}
+                          {resolveActionLabel(event.action)}
                         </span>
                       </td>
                       <td>
                         <div className={styles.auditEntity}>
                           <span className={styles.auditEntityType}>
-                            {ENTITY_LABELS[event.entity.type] ??
-                              event.entity.type}
+                            {resolveEntityLabel(event.entity.type)}
                           </span>
                           {event.entity.name && (
                             <span className={styles.auditEntityName}>

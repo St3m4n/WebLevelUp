@@ -174,25 +174,9 @@ export interface CommunityEvent {
   content: string[];
 }
 
-export type AuditAction =
-  | 'created'
-  | 'updated'
-  | 'deleted'
-  | 'restored'
-  | 'login'
-  | 'logout'
-  | 'registered'
-  | 'status-changed'
-  | 'responded';
+export type AuditAction = string;
 
-export type AuditEntityType =
-  | 'producto'
-  | 'usuario'
-  | 'orden'
-  | 'mensaje'
-  | 'categoria'
-  | 'auth'
-  | 'sistema';
+export type AuditEntityType = string;
 
 export type AuditSeverity = 'low' | 'medium' | 'high';
 

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
+import ProductCardSkeleton from '@/components/ProductCardSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import type { Producto } from '@/types';
 import { useCart } from '@/context/CartContext';
@@ -59,7 +60,7 @@ const Tienda: React.FC = () => {
   );
   const categoriaParam = searchParams.get('categoria') ?? undefined;
   const searchQuery = (searchParams.get('q') ?? '').trim();
-  const { products: productos } = useProducts();
+  const { products: productos, loading } = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
   const { addToast } = useToast();
@@ -84,22 +85,22 @@ const Tienda: React.FC = () => {
   const productosFiltrados = useMemo(() => {
     const base = categoriaParam
       ? productos.filter(
-        (producto) =>
-          producto.categoria?.toLowerCase() === categoriaParam.toLowerCase()
-      )
+          (producto) =>
+            producto.categoria?.toLowerCase() === categoriaParam.toLowerCase()
+        )
       : productos;
     const queryLower = searchQuery.toLowerCase();
     const filtrados = queryLower
       ? base.filter((producto) => {
-        const nombre = producto.nombre?.toLowerCase() ?? '';
-        const descripcion = producto.descripcion?.toLowerCase() ?? '';
-        const categoria = producto.categoria?.toLowerCase() ?? '';
-        return (
-          nombre.includes(queryLower) ||
-          descripcion.includes(queryLower) ||
-          categoria.includes(queryLower)
-        );
-      })
+          const nombre = producto.nombre?.toLowerCase() ?? '';
+          const descripcion = producto.descripcion?.toLowerCase() ?? '';
+          const categoria = producto.categoria?.toLowerCase() ?? '';
+          return (
+            nombre.includes(queryLower) ||
+            descripcion.includes(queryLower) ||
+            categoria.includes(queryLower)
+          );
+        })
       : base;
     return ordenarProductos(activeSort, filtrados);
   }, [activeSort, categoriaParam, productos, searchQuery]);
@@ -115,21 +116,22 @@ const Tienda: React.FC = () => {
     return productosFiltrados.slice(startIndex, endIndex);
   }, [currentPage, pageSize, productosFiltrados]);
 
+  const filtersKey = useMemo(
+    () => [activeSort, categoriaParam ?? '', searchQuery, pageSize].join('|'),
+    [activeSort, categoriaParam, searchQuery, pageSize]
+  );
+  const lastFiltersKeyRef = useRef(filtersKey);
+
   useEffect(() => {
-    if (currentPage !== 1) {
-      setCurrentPage(1);
-      const next = new URLSearchParams(searchParams);
-      next.set('pagina', '1');
-      setSearchParams(next, { replace: true });
+    if (lastFiltersKeyRef.current === filtersKey) {
+      return;
     }
-  }, [
-    activeSort,
-    categoriaParam,
-    searchQuery,
-    currentPage,
-    searchParams,
-    setSearchParams,
-  ]);
+    lastFiltersKeyRef.current = filtersKey;
+    setCurrentPage(1);
+    const next = new URLSearchParams(searchParams);
+    next.set('pagina', '1');
+    setSearchParams(next, { replace: true });
+  }, [filtersKey, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -179,6 +181,8 @@ const Tienda: React.FC = () => {
     productosFiltrados.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const showingTo = Math.min(currentPage * pageSize, productosFiltrados.length);
   const showPagination = totalPages > 1;
+  const showEmptyState = !loading && productosFiltrados.length === 0;
+  const skeletonCount = pageSize;
 
   return (
     <div className="container">
@@ -193,7 +197,9 @@ const Tienda: React.FC = () => {
           <div className={styles.title}>
             <h1>Tienda Level-Up</h1>
             <span className={styles.badge}>
-              {productosFiltrados.length} productos
+              {loading
+                ? 'Cargando...'
+                : `${productosFiltrados.length} productos`}
             </span>
             {searchQuery && (
               <span className={styles.searchTag}>
@@ -237,7 +243,13 @@ const Tienda: React.FC = () => {
           </div>
         </header>
 
-        {productosFiltrados.length === 0 ? (
+        {loading ? (
+          <div className={styles.grid}>
+            {Array.from({ length: skeletonCount }).map((_, index) => (
+              <ProductCardSkeleton key={`store-skeleton-${index}`} />
+            ))}
+          </div>
+        ) : showEmptyState ? (
           <div className={styles.emptyState}>
             <h2>No encontramos productos</h2>
             <p>Intenta cambiar los filtros o revisar otra categoría.</p>

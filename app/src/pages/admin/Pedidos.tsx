@@ -9,7 +9,11 @@ import {
 import type { Order } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { useOrders } from '@/hooks/useOrders';
-import { updateOrderStatus, deleteOrder, restoreOrder } from '@/services/orderService';
+import {
+  updateOrderStatus,
+  deleteOrder,
+  restoreOrder,
+} from '@/services/orderService';
 import { useAuditActor } from '@/hooks/useAuditActor';
 import { useToast } from '@/context/ToastContext';
 import { recordAuditEvent } from '@/utils/audit';
@@ -344,8 +348,9 @@ const Pedidos: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'active'}
-                className={`${styles.tabButton} ${filters.view === 'active' ? styles.tabButtonActive : ''
-                  }`.trim()}
+                className={`${styles.tabButton} ${
+                  filters.view === 'active' ? styles.tabButtonActive : ''
+                }`.trim()}
                 onClick={() =>
                   setFilters((prev) => ({ ...prev, view: 'active' }))
                 }
@@ -356,8 +361,9 @@ const Pedidos: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'deleted'}
-                className={`${styles.tabButton} ${filters.view === 'deleted' ? styles.tabButtonActive : ''
-                  }`.trim()}
+                className={`${styles.tabButton} ${
+                  filters.view === 'deleted' ? styles.tabButtonActive : ''
+                }`.trim()}
                 onClick={() =>
                   setFilters((prev) => ({ ...prev, view: 'deleted' }))
                 }

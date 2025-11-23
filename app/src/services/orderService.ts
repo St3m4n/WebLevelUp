@@ -35,4 +35,3 @@ export const deleteOrder = (orderId: string) =>
 
 export const restoreOrder = (orderId: string) =>
   apiPost<Order>(`/orders/${encodeURIComponent(orderId)}/restore`);
-

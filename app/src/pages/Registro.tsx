@@ -428,7 +428,6 @@ const Registro: React.FC = () => {
         messageParts.push(`Tu código Level-Up es ${result.referralCode}.`);
       }
       messageParts.push('Inicia sesión para comenzar a jugar.');
-      const successMessage = messageParts.join(' ');
       if (typeof window !== 'undefined') {
         window.sessionStorage.setItem(
           'registrationSuccess',

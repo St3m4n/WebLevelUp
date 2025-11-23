@@ -20,8 +20,6 @@ const mockProducts: Producto[] = [
   },
 ];
 
-
-
 let remoteItems: Array<{ productCode: string; quantity: number }> = [];
 
 const mockGetCart = vi.fn(async () => ({
@@ -35,8 +33,8 @@ const mockUpdateCart = vi.fn(async (payload: unknown) => {
   const p = payload as { items?: { productCode: string; quantity: number }[] };
   const items = Array.isArray(p?.items)
     ? p.items.map((item) => ({
-      ...item,
-    }))
+        ...item,
+      }))
     : [];
   remoteItems = items;
   return {

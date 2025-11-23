@@ -41,12 +41,14 @@ type ExtraUsuario = Usuario & {
   passwordHash?: string;
   passwordSalt?: string;
   createdAt?: string;
+  fechaNacimientoRaw?: string | null;
 };
 
 type AdminUsuario = Usuario & {
   origin: 'seed' | 'extra';
   deletedAt?: string;
   createdAt?: string | null;
+  fechaNacimientoRaw?: string | null;
 };
 
 const EXTRA_USERS_STORAGE_KEY = 'levelup-extra-users';
@@ -113,17 +115,25 @@ const composeAdminSnapshot = (
   base?: AdminUsuario,
   overrides?: Partial<Pick<AdminUsuario, 'origin' | 'deletedAt' | 'createdAt'>>
 ): AdminUsuario => {
+  const normalizedBirthDate = toDateInputValue(
+    data.fechaNacimiento ?? data.fechaNacimientoRaw ?? null
+  );
   return {
     run: data.run,
     nombre: data.nombre,
     apellidos: data.apellidos,
     correo: data.correo,
     perfil: data.perfil,
-    fechaNacimiento: data.fechaNacimiento ?? null,
+    fechaNacimiento: normalizedBirthDate || null,
     region: data.region,
     comuna: data.comuna,
     direccion: data.direccion,
     descuentoVitalicio: data.descuentoVitalicio,
+    fechaNacimientoRaw:
+      data.fechaNacimientoRaw ??
+      data.fechaNacimiento ??
+      base?.fechaNacimientoRaw ??
+      null,
     isSystem: base?.isSystem ?? data.isSystem ?? false,
     passwordHash: base?.passwordHash ?? data.passwordHash,
     passwordSalt: base?.passwordSalt ?? data.passwordSalt,
@@ -166,6 +176,44 @@ const formatRun = (raw: string): string => {
   return `${formatted}-${dv}`;
 };
 
+const toDateInputValue = (value?: string | null): string => {
+  if (!value) return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return trimmed;
+  }
+  const normalized = trimmed.replace(/\//g, '-');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return normalized;
+  }
+  const dayFirstMatch = normalized.match(
+    /^([0-3]?\d)-([01]?\d)-(\d{4})(?:\D.*)?$/
+  );
+  if (dayFirstMatch) {
+    const [, dayRaw, monthRaw, year] = dayFirstMatch;
+    const day = dayRaw.padStart(2, '0');
+    const month = monthRaw.padStart(2, '0');
+    if (
+      Number(month) >= 1 &&
+      Number(month) <= 12 &&
+      Number(day) >= 1 &&
+      Number(day) <= 31
+    ) {
+      return `${year}-${month}-${day}`;
+    }
+  }
+  const isoMatch = trimmed.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (isoMatch) {
+    return isoMatch[1] ?? '';
+  }
+  const parsed = new Date(trimmed);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+  return parsed.toISOString().slice(0, 10);
+};
+
 const sanitizeExtraUsuario = (candidate: unknown): ExtraUsuario | null => {
   if (!candidate || typeof candidate !== 'object') return null;
   const partial = candidate as Partial<ExtraUsuario>;
@@ -178,13 +226,19 @@ const sanitizeExtraUsuario = (candidate: unknown): ExtraUsuario | null => {
     return null;
   }
 
+  const rawBirthDate =
+    typeof partial.fechaNacimientoRaw === 'string'
+      ? partial.fechaNacimientoRaw
+      : (partial.fechaNacimiento ?? null);
+
   return {
     run: normalizeRun(partial.run),
     nombre: partial.nombre,
     apellidos: partial.apellidos,
     correo: normalizeCorreo(partial.correo),
     perfil: partial.perfil ?? 'Cliente',
-    fechaNacimiento: partial.fechaNacimiento ?? null,
+    fechaNacimiento: toDateInputValue(rawBirthDate) || null,
+    fechaNacimientoRaw: rawBirthDate,
     region: partial.region ?? '',
     comuna: partial.comuna ?? '',
     direccion: partial.direccion ?? '',
@@ -233,11 +287,18 @@ const mergeUsuarios = (
     const runKey = normalizeRun(usuario.run);
     const correoKey = normalizeCorreo(usuario.correo);
     if (!runKey || !correoKey) return;
+    const rawBirthDate =
+      (usuario as AdminUsuario).fechaNacimientoRaw ??
+      usuario.fechaNacimiento ??
+      null;
+    const normalizedBirthDate = toDateInputValue(rawBirthDate);
 
     const adminUsuario: AdminUsuario = {
       ...usuario,
       run: runKey,
       correo: correoKey,
+      fechaNacimiento: normalizedBirthDate || null,
+      fechaNacimientoRaw: rawBirthDate,
       origin,
       createdAt:
         origin === 'extra'
@@ -556,7 +617,9 @@ const Usuarios: React.FC = () => {
       apellidos: usuario.apellidos,
       correo: usuario.correo,
       perfil: usuario.perfil,
-      fechaNacimiento: usuario.fechaNacimiento ?? '',
+      fechaNacimiento: toDateInputValue(
+        usuario.fechaNacimiento ?? usuario.fechaNacimientoRaw ?? null
+      ),
       region: usuario.region,
       comuna: usuario.comuna,
       direccion: usuario.direccion,
@@ -687,7 +750,8 @@ const Usuarios: React.FC = () => {
       apellidos: formValues.apellidos.trim(),
       correo: normalizedCorreo,
       perfil: formValues.perfil,
-      fechaNacimiento: formValues.fechaNacimiento || null,
+      fechaNacimiento: toDateInputValue(formValues.fechaNacimiento) || null,
+      fechaNacimientoRaw: formValues.fechaNacimiento || null,
       region: formValues.region.trim(),
       comuna: formValues.comuna.trim(),
       direccion: formValues.direccion.trim(),
@@ -1021,8 +1085,9 @@ const Usuarios: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'active'}
-                className={`${styles.tabButton} ${filters.view === 'active' ? styles.tabButtonActive : ''
-                  }`.trim()}
+                className={`${styles.tabButton} ${
+                  filters.view === 'active' ? styles.tabButtonActive : ''
+                }`.trim()}
                 onClick={() => handleViewChange('active')}
               >
                 Activos
@@ -1031,8 +1096,9 @@ const Usuarios: React.FC = () => {
                 type="button"
                 role="tab"
                 aria-selected={filters.view === 'deleted'}
-                className={`${styles.tabButton} ${filters.view === 'deleted' ? styles.tabButtonActive : ''
-                  }`.trim()}
+                className={`${styles.tabButton} ${
+                  filters.view === 'deleted' ? styles.tabButtonActive : ''
+                }`.trim()}
                 onClick={() => handleViewChange('deleted')}
               >
                 Eliminados
@@ -1108,12 +1174,12 @@ const Usuarios: React.FC = () => {
                         <td>
                           {usuario.deletedAt
                             ? new Date(usuario.deletedAt).toLocaleString(
-                              'es-CL',
-                              {
-                                dateStyle: 'medium',
-                                timeStyle: 'short',
-                              }
-                            )
+                                'es-CL',
+                                {
+                                  dateStyle: 'medium',
+                                  timeStyle: 'short',
+                                }
+                              )
                             : '—'}
                         </td>
                       ) : (
@@ -1180,8 +1246,9 @@ const Usuarios: React.FC = () => {
                 <h2>
                   {formState.mode === 'create'
                     ? 'Registrar nuevo usuario'
-                    : `Editar "${formState.initial?.nombre ?? ''} ${formState.initial?.apellidos ?? ''
-                    }"`}
+                    : `Editar "${formState.initial?.nombre ?? ''} ${
+                        formState.initial?.apellidos ?? ''
+                      }"`}
                 </h2>
                 <button
                   type="button"

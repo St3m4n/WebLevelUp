@@ -52,6 +52,14 @@ vi.mock('@/context/CartContext', () => ({
   }),
 }));
 
+vi.mock('@/context/ToastContext', () => ({
+  useToast: () => ({
+    addToast: vi.fn(),
+    removeToast: vi.fn(),
+    toasts: [],
+  }),
+}));
+
 vi.mock('@/hooks/useLevelUpStats', () => ({
   useLevelUpStats: () => ({
     stats: null,

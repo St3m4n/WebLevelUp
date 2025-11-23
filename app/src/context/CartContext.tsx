@@ -221,13 +221,13 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           items: state.items.map((item) =>
             item.id === existing.id
               ? {
-                ...item,
-                cantidad: Math.min(
-                  item.cantidad + cantidad,
-                  action.payload.stock
-                ),
-                stock: action.payload.stock,
-              }
+                  ...item,
+                  cantidad: Math.min(
+                    item.cantidad + cantidad,
+                    action.payload.stock
+                  ),
+                  stock: action.payload.stock,
+                }
               : item
           ),
         };
@@ -379,7 +379,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
             quantity: entry.quantity,
           }))
         );
-        const remoteItems = mapRemoteItemsToCartItems(remoteItemsInput, products);
+        const remoteItems = mapRemoteItemsToCartItems(
+          remoteItemsInput,
+          products
+        );
 
         let mergedItems = remoteItems;
         if (options?.mergeGuest) {

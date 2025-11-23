@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import ImageWithSkeleton from '@/components/ImageWithSkeleton';
+import ProductCardSkeleton from '@/components/ProductCardSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
@@ -10,7 +11,7 @@ import styles from './RecommendationsGrid.module.css';
 
 const RecommendationsGrid: React.FC = () => {
   const navigate = useNavigate();
-  const { products: productos } = useProducts();
+  const { products: productos, loading } = useProducts();
   const { getPriceBreakdown, discountRate } = usePricing();
   const { addItem } = useCart();
   const { addToast } = useToast();
@@ -18,6 +19,30 @@ const RecommendationsGrid: React.FC = () => {
   const recomendados = productos
     .filter((producto) => !producto.deletedAt && producto.stock > 0)
     .slice(0, 4);
+
+  if (loading) {
+    return (
+      <section className={styles.section}>
+        <div className="container">
+          <header className={styles.header}>
+            <h2 className={styles.title}>Te recomendamos</h2>
+            <p className={styles.subtitle}>
+              Selección curada según tendencias de la comunidad Level-Up.
+            </p>
+          </header>
+
+          <div className={styles.grid}>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <ProductCardSkeleton
+                key={`recommendation-skeleton-${index}`}
+                variant="compact"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (recomendados.length === 0) {
     return null;

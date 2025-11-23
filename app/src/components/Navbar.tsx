@@ -75,16 +75,23 @@ const Navbar: React.FC = () => {
     return categorySource
       .filter((categoria) => !categoria.deletedAt)
       .map((categoria) => categoria.name.trim())
-      .filter((name, index, arr) => name.length > 0 && arr.indexOf(name) === index)
+      .filter(
+        (name, index, arr) => name.length > 0 && arr.indexOf(name) === index
+      )
       .sort((a, b) => a.localeCompare(b, 'es'));
   }, [categorySource]);
 
   const categoryGroups = useMemo(() => {
     if (activeCategories.length === 0) {
-      return [] as Array<{ title: string; links: { to: string; label: string }[] }>;
+      return [] as Array<{
+        title: string;
+        links: { to: string; label: string }[];
+      }>;
     }
-    const columnCount = activeCategories.length > 12 ? 3 : activeCategories.length > 6 ? 2 : 1;
-    const itemsPerColumn = Math.ceil(activeCategories.length / columnCount) || 1;
+    const columnCount =
+      activeCategories.length > 12 ? 3 : activeCategories.length > 6 ? 2 : 1;
+    const itemsPerColumn =
+      Math.ceil(activeCategories.length / columnCount) || 1;
     return Array.from({ length: columnCount }, (_, columnIndex) => {
       const slice = activeCategories.slice(
         columnIndex * itemsPerColumn,
@@ -95,17 +102,21 @@ const Navbar: React.FC = () => {
       }
       const firstLetter = slice[0].charAt(0).toUpperCase();
       const lastLetter = slice[slice.length - 1].charAt(0).toUpperCase();
-      const title = firstLetter && lastLetter
-        ? firstLetter === lastLetter
-          ? firstLetter
-          : `${firstLetter} - ${lastLetter}`
-        : 'Categorías';
+      const title =
+        firstLetter && lastLetter
+          ? firstLetter === lastLetter
+            ? firstLetter
+            : `${firstLetter} - ${lastLetter}`
+          : 'Categorías';
       const links = slice.map((name) => ({
         to: `/tienda?categoria=${encodeURIComponent(name)}`,
         label: name,
       }));
       return { title, links };
-    }).filter(Boolean) as Array<{ title: string; links: { to: string; label: string }[] }>;
+    }).filter(Boolean) as Array<{
+      title: string;
+      links: { to: string; label: string }[];
+    }>;
   }, [activeCategories]);
 
   const profileMenuId = 'profile-menu';
@@ -135,7 +146,6 @@ const Navbar: React.FC = () => {
       }
     };
   }, []);
-
 
   const handleToggleMenu = () => {
     setIsMobileMenuOpen((prev) => {

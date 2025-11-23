@@ -23,11 +23,11 @@ export type ProductDto = {
 export type ProductListResponse =
   | ProductDto[]
   | {
-    content?: ProductDto[];
-    items?: ProductDto[];
-    data?: ProductDto[];
-    results?: ProductDto[];
-  };
+      content?: ProductDto[];
+      items?: ProductDto[];
+      data?: ProductDto[];
+      results?: ProductDto[];
+    };
 
 const extractList = (payload: ProductListResponse): ProductDto[] => {
   if (Array.isArray(payload)) {
@@ -73,13 +73,11 @@ export const fetchProducts = async (): Promise<Producto[]> => {
 export type ProductDetailResponse =
   | ProductDto
   | {
-    product?: ProductDto;
-    data?: ProductDto;
-  };
+      product?: ProductDto;
+      data?: ProductDto;
+    };
 
-export const fetchProductByCode = async (
-  codigo: string
-): Promise<Producto> => {
+export const fetchProductByCode = async (codigo: string): Promise<Producto> => {
   const response = await apiGet<ProductDetailResponse>(
     `/products/${encodeURIComponent(codigo)}`,
     {
@@ -127,8 +125,8 @@ export const updateProduct = (codigo: string, product: Partial<Producto>) => {
     ...rest,
     ...(finalUrl
       ? {
-        imagenUrl: finalUrl,
-      }
+          imagenUrl: finalUrl,
+        }
       : {}),
   };
   return apiPut<Producto>(`/products/${encodeURIComponent(codigo)}`, payload);

@@ -75,10 +75,7 @@ export const loadCategories = (): Categoria[] => {
       .filter((item): item is Categoria => Boolean(item));
     return dedupeCategorias(sanitized);
   } catch (error) {
-    console.warn(
-      'No se pudieron cargar las categorías',
-      error
-    );
+    console.warn('No se pudieron cargar las categorías', error);
     return [];
   }
 };
