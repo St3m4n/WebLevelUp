@@ -18,7 +18,7 @@ type LocationState = {
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const requiredEmailMessage = 'El correo electrónico es obligatorio.';
 const invalidEmailMessage = 'Ingresa un correo electrónico válido.';
-const commonCredentialError = 'Correo o contraseña incorrectos.';
+const commonCredentialError = 'Contraseña o correo incorrectos.';
 const networkErrorMessage =
   'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.';
 
