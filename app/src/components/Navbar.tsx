@@ -4,6 +4,14 @@ import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { useLevelUpStats } from '@/hooks/useLevelUpStats';
+import { useProducts } from '@/hooks/useProducts';
+import type { Categoria } from '@/types';
+import {
+  CATEGORY_STORAGE_KEYS,
+  loadCategories,
+  seedCategoriesFromProducts,
+  subscribeToCategories,
+} from '@/utils/categories';
 import logo from '@/assets/logo2.png';
 import styles from './Navbar.module.css';
 
@@ -13,47 +21,6 @@ const baseNavLinks = [
   { to: '/nosotros', label: 'Nosotros' },
   { to: '/comunidad', label: 'Comunidad' },
   { to: '/contacto', label: 'Contacto' },
-];
-
-const categoryGroups = [
-  {
-    title: 'Hardware y Consolas',
-    links: [
-      { to: '/tienda?categoria=Consolas', label: 'Consolas' },
-      {
-        to: '/tienda?categoria=Computadores Gamers',
-        label: 'Computadores Gamers',
-      },
-    ],
-  },
-  {
-    title: 'Periféricos y Accesorios',
-    links: [
-      { to: '/tienda?categoria=Mouse', label: 'Mouse' },
-      { to: '/tienda?categoria=Mousepad', label: 'Mousepad' },
-      { to: '/tienda?categoria=Sillas Gamers', label: 'Sillas Gamers' },
-      { to: '/tienda?categoria=Accesorios', label: 'Accesorios' },
-    ],
-  },
-  {
-    title: 'Juegos',
-    links: [
-      { to: '/tienda?categoria=Juegos de Mesa', label: 'Juegos de Mesa' },
-    ],
-  },
-  {
-    title: 'Ropa',
-    links: [
-      {
-        to: '/tienda?categoria=Poleras Personalizadas',
-        label: 'Poleras Personalizadas',
-      },
-      {
-        to: '/tienda?categoria=Polerones Gamers Personalizados',
-        label: 'Polerones Gamers Personalizados',
-      },
-    ],
-  },
 ];
 
 const Navbar: React.FC = () => {
@@ -66,6 +33,10 @@ const Navbar: React.FC = () => {
   const { addToast } = useToast();
   const { totalCantidad } = useCart();
   const { level: userLevel, totalExp } = useLevelUpStats();
+  const { products } = useProducts();
+  const [storedCategories, setStoredCategories] = useState<Categoria[]>(() =>
+    loadCategories()
+  );
   const [isPulsing, setIsPulsing] = useState(false);
   const prevExpRef = useRef<number>(0);
 
@@ -90,12 +61,81 @@ const Navbar: React.FC = () => {
     user && (user.perfil === 'Administrador' || user.perfil === 'Vendedor')
   );
 
+  const categorySource = useMemo(() => {
+    if (storedCategories.length > 0) {
+      return storedCategories;
+    }
+    if (!products || products.length === 0) {
+      return [] as Categoria[];
+    }
+    return seedCategoriesFromProducts([], products);
+  }, [products, storedCategories]);
+
+  const activeCategories = useMemo(() => {
+    return categorySource
+      .filter((categoria) => !categoria.deletedAt)
+      .map((categoria) => categoria.name.trim())
+      .filter((name, index, arr) => name.length > 0 && arr.indexOf(name) === index)
+      .sort((a, b) => a.localeCompare(b, 'es'));
+  }, [categorySource]);
+
+  const categoryGroups = useMemo(() => {
+    if (activeCategories.length === 0) {
+      return [] as Array<{ title: string; links: { to: string; label: string }[] }>;
+    }
+    const columnCount = activeCategories.length > 12 ? 3 : activeCategories.length > 6 ? 2 : 1;
+    const itemsPerColumn = Math.ceil(activeCategories.length / columnCount) || 1;
+    return Array.from({ length: columnCount }, (_, columnIndex) => {
+      const slice = activeCategories.slice(
+        columnIndex * itemsPerColumn,
+        (columnIndex + 1) * itemsPerColumn
+      );
+      if (slice.length === 0) {
+        return null;
+      }
+      const firstLetter = slice[0].charAt(0).toUpperCase();
+      const lastLetter = slice[slice.length - 1].charAt(0).toUpperCase();
+      const title = firstLetter && lastLetter
+        ? firstLetter === lastLetter
+          ? firstLetter
+          : `${firstLetter} - ${lastLetter}`
+        : 'Categorías';
+      const links = slice.map((name) => ({
+        to: `/tienda?categoria=${encodeURIComponent(name)}`,
+        label: name,
+      }));
+      return { title, links };
+    }).filter(Boolean) as Array<{ title: string; links: { to: string; label: string }[] }>;
+  }, [activeCategories]);
+
   const profileMenuId = 'profile-menu';
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     setSearchTerm(params.get('q') ?? '');
   }, [location.search]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToCategories(() => {
+      setStoredCategories(loadCategories());
+    });
+    let storageHandler: ((event: StorageEvent) => void) | undefined;
+    if (typeof window !== 'undefined') {
+      storageHandler = (event: StorageEvent) => {
+        if (event.key === CATEGORY_STORAGE_KEYS.key) {
+          setStoredCategories(loadCategories());
+        }
+      };
+      window.addEventListener('storage', storageHandler);
+    }
+    return () => {
+      unsubscribe?.();
+      if (storageHandler) {
+        window.removeEventListener('storage', storageHandler);
+      }
+    };
+  }, []);
+
 
   const handleToggleMenu = () => {
     setIsMobileMenuOpen((prev) => {
@@ -213,28 +253,34 @@ const Navbar: React.FC = () => {
 
                 {isCategoryDropdownOpen && (
                   <div className={styles.categoryDropdownMenu}>
-                    <div className={styles.categoryGroupsMenu}>
-                      {categoryGroups.map(({ title, links }) => (
-                        <div className={styles.categoryGroup} key={title}>
-                          <div className={styles.categoryGroupTitle}>
-                            {title}
+                    {categoryGroups.length === 0 ? (
+                      <p className={styles.emptyCategoryNotice}>
+                        No hay categorías disponibles.
+                      </p>
+                    ) : (
+                      <div className={styles.categoryGroupsMenu}>
+                        {categoryGroups.map(({ title, links }) => (
+                          <div className={styles.categoryGroup} key={title}>
+                            <div className={styles.categoryGroupTitle}>
+                              {title}
+                            </div>
+                            <ul>
+                              {links.map(({ to, label }) => (
+                                <li key={to}>
+                                  <NavLink
+                                    to={to}
+                                    className={styles.categoryDropdownItem}
+                                    onClick={handleLinkClick}
+                                  >
+                                    {label}
+                                  </NavLink>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                          <ul>
-                            {links.map(({ to, label }) => (
-                              <li key={to}>
-                                <NavLink
-                                  to={to}
-                                  className={styles.categoryDropdownItem}
-                                  onClick={handleLinkClick}
-                                >
-                                  {label}
-                                </NavLink>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -468,26 +514,32 @@ const Navbar: React.FC = () => {
                 id="mobile-category-menu"
                 className={styles.mobileCategoryMenu}
               >
-                <div className={styles.categoryGroupsMenu}>
-                  {categoryGroups.map(({ title, links }) => (
-                    <div className={styles.categoryGroup} key={title}>
-                      <div className={styles.categoryGroupTitle}>{title}</div>
-                      <ul>
-                        {links.map(({ to, label }) => (
-                          <li key={to}>
-                            <NavLink
-                              to={to}
-                              className={styles.categoryDropdownItem}
-                              onClick={handleLinkClick}
-                            >
-                              {label}
-                            </NavLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
+                {categoryGroups.length === 0 ? (
+                  <p className={styles.emptyCategoryNotice}>
+                    No hay categorías disponibles.
+                  </p>
+                ) : (
+                  <div className={styles.categoryGroupsMenu}>
+                    {categoryGroups.map(({ title, links }) => (
+                      <div className={styles.categoryGroup} key={title}>
+                        <div className={styles.categoryGroupTitle}>{title}</div>
+                        <ul>
+                          {links.map(({ to, label }) => (
+                            <li key={to}>
+                              <NavLink
+                                to={to}
+                                className={styles.categoryDropdownItem}
+                                onClick={handleLinkClick}
+                              >
+                                {label}
+                              </NavLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { Producto } from '@/types';
+import type { Categoria, Producto } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { useProducts } from '@/hooks/useProducts';
 import { useAuditActor } from '@/hooks/useAuditActor';
@@ -19,6 +19,13 @@ import {
   type ProductDto,
 } from '@/services/products';
 import { recordAuditEvent } from '@/utils/audit';
+import {
+  CATEGORY_STORAGE_KEYS,
+  loadCategories,
+  saveCategories,
+  seedCategoriesFromProducts,
+  subscribeToCategories,
+} from '@/utils/categories';
 import styles from './Admin.module.css';
 
 type StockFilter = 'all' | 'healthy' | 'critical' | 'out';
@@ -125,6 +132,9 @@ const Productos: React.FC = () => {
   const navigate = useNavigate();
   const { products: productos, refreshProducts } = useProducts();
   const auditActor = useAuditActor();
+  const [storedCategories, setStoredCategories] = useState<Categoria[]>(() =>
+    loadCategories()
+  );
 
   const [filters, setFilters] = useState<FiltersState>({
     query: '',
@@ -175,15 +185,71 @@ const Productos: React.FC = () => {
     return () => window.clearTimeout(timeout);
   }, [statusMessage]);
 
-  const categories = useMemo(() => {
-    const unique = new Set(
-      productos
-        .filter((producto) => !producto.deletedAt)
-        .map((producto) => producto.categoria)
-        .filter(Boolean)
-    );
-    return Array.from(unique).sort((a, b) => a.localeCompare(b, 'es'));
+  useEffect(() => {
+    const unsubscribe = subscribeToCategories(() => {
+      setStoredCategories(loadCategories());
+    });
+    let storageHandler: ((event: StorageEvent) => void) | undefined;
+    if (typeof window !== 'undefined') {
+      storageHandler = (event: StorageEvent) => {
+        if (event.key === CATEGORY_STORAGE_KEYS.key) {
+          setStoredCategories(loadCategories());
+        }
+      };
+      window.addEventListener('storage', storageHandler);
+    }
+    return () => {
+      unsubscribe?.();
+      if (storageHandler) {
+        window.removeEventListener('storage', storageHandler);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (productos.length === 0) {
+      return;
+    }
+    setStoredCategories((prev) => {
+      const seeded = seedCategoriesFromProducts(prev, productos);
+      const prevKeys = new Set(
+        prev.map((categoria) => categoria.name.toLowerCase())
+      );
+      const seededKeys = new Set(
+        seeded.map((categoria) => categoria.name.toLowerCase())
+      );
+      const sameSize = prevKeys.size === seededKeys.size;
+      const sameContent =
+        sameSize && [...prevKeys].every((key) => seededKeys.has(key));
+      if (sameContent) {
+        return prev;
+      }
+      saveCategories(seeded);
+      return seeded;
+    });
   }, [productos]);
+
+  const categorySource = useMemo(() => {
+    if (storedCategories.length > 0) {
+      return storedCategories;
+    }
+    if (productos.length === 0) {
+      return [] as Categoria[];
+    }
+    return seedCategoriesFromProducts([], productos);
+  }, [productos, storedCategories]);
+
+  const categories = useMemo(() => {
+    const active = categorySource
+      .filter((categoria) => !categoria.deletedAt)
+      .map((categoria) => categoria.name.trim())
+      .filter((name) => name.length > 0);
+    const fallback = productos
+      .map((producto) => producto.categoria?.trim())
+      .filter((name): name is string => Boolean(name));
+    const combined = new Set<string>([...active, ...fallback]);
+    return Array.from(combined).sort((a, b) => a.localeCompare(b, 'es'));
+  }, [categorySource, productos]);
 
   const adminProducts = useMemo<AdminProduct[]>(
     () => productos.map((producto) => ({ ...producto })),
