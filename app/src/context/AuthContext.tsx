@@ -172,6 +172,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [baseUser, refreshSession, token]);
 
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== AUTH_STORAGE_KEY) return;
+
+      setToken(readStoredToken());
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   const login = useCallback(
     async (credentials: LoginRequest) => {
       const response = await loginRequest(credentials);
