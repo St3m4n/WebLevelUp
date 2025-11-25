@@ -47,6 +47,7 @@ export interface Comuna {
 }
 
 export interface Region {
+  id?: number;
   nombre: string;
   comunas: Comuna[];
 }
@@ -56,7 +57,7 @@ export interface Categoria {
   deletedAt?: string | null;
 }
 
-export type OrderStatus = 'Pagado' | 'Pendiente' | 'Cancelado';
+export type OrderStatus = 'Pagado' | 'Cancelado' | 'Entregado';
 
 export type PaymentPreferenceMethod = 'tarjeta' | 'transferencia' | 'efectivo';
 

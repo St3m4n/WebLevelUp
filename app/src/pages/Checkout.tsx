@@ -5,12 +5,12 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { formatPrice } from '@/utils/format';
-import { createOrder } from '@/services/orderService';
+import { createOrder, updateOrderStatus } from '@/services/orderService';
 import { addPurchasePoints } from '@/utils/levelup';
 import styles from './Checkout.module.css';
 import { useRegions } from '@/hooks/useRegions';
@@ -72,15 +72,17 @@ const Checkout: React.FC = () => {
     getItemPricing,
     clearCart,
   } = useCart();
-  const { user } = useAuth();
+  const { user, refreshSession } = useAuth();
   const { addToast } = useToast();
   const { regions } = useRegions();
+  const navigate = useNavigate();
   const [form, setForm] = useState<CheckoutForm>(() => buildInitialForm(user));
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<{
     type: 'success' | 'error';
     message: string;
   }>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const pointsFormatter = useMemo(() => new Intl.NumberFormat('es-CL'), []);
 
   useEffect(() => {
@@ -186,6 +188,10 @@ const Checkout: React.FC = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
     if (cartEstaVacio) {
       setStatus({
         type: 'error',
@@ -226,27 +232,19 @@ const Checkout: React.FC = () => {
       });
 
       const orderId = createdOrder.id;
+      try {
+        await updateOrderStatus(orderId, 'Pagado');
+      } catch (error) {
+        console.warn('No se pudo marcar el pedido como pagado', error);
+      }
       let expEarned = 0;
       if (user?.run) {
         const result = addPurchasePoints({ run: user.run, totalCLP: total });
         expEarned = result.pointsAdded ?? 0;
       }
 
-      const loyaltySnippet =
-        expEarned > 0
-          ? ` Además, sumaste +${pointsFormatter.format(expEarned)} EXP Level-Up.`
-          : user?.run
-            ? ' Cada $1.000 en compras acumula EXP Level-Up.'
-            : '';
-
+      await refreshSession();
       clearCart();
-      setStatus({
-        type: 'success',
-        message:
-          form.metodo === 'transferencia'
-            ? `Pedido ${orderId} registrado. Recuerda enviar el comprobante a pagos@levelup.cl.${loyaltySnippet}`
-            : `Pedido ${orderId} confirmado. Te enviaremos un correo con los detalles en unos instantes.${loyaltySnippet}`,
-      });
       addToast({
         title: 'Pedido confirmado',
         description:
@@ -262,12 +260,18 @@ const Checkout: React.FC = () => {
         expiracion: '',
         cvv: '',
       }));
+      navigate('/perfil', {
+        replace: true,
+        state: { focusTab: 'orders' as const },
+      });
     } catch (error) {
       console.error('Error creating order', error);
       setStatus({
         type: 'error',
         message: 'No se pudo procesar el pedido. Inténtalo nuevamente.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -490,9 +494,9 @@ const Checkout: React.FC = () => {
               <button
                 type="submit"
                 className={styles.confirmButton}
-                disabled={cartEstaVacio}
+                disabled={cartEstaVacio || isSubmitting}
               >
-                Confirmar pedido
+                {isSubmitting ? 'Procesando...' : 'Confirmar pedido'}
               </button>
             </form>
           </section>

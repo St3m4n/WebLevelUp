@@ -1,29 +1,38 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchProducts } from '@/services/products';
 import type { Producto } from '@/types';
 
+const PRODUCTS_QUERY_KEY = ['products'] as const;
+
 export const useProducts = () => {
-  const [products, setProducts] = useState<Producto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const query = useQuery<Producto[]>({
+    queryKey: PRODUCTS_QUERY_KEY,
+    queryFn: fetchProducts,
+  });
 
   const refreshProducts = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await fetchProducts();
-      setProducts(data);
-      setError(null);
-    } catch (err) {
-      console.error('Failed to fetch products', err);
-      setError('No se pudieron cargar los productos.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await queryClient.invalidateQueries({
+      queryKey: PRODUCTS_QUERY_KEY,
+      refetchType: 'all',
+    });
+  }, [queryClient]);
 
-  useEffect(() => {
-    refreshProducts();
-  }, [refreshProducts]);
+  const error = query.isError
+    ? query.error instanceof Error
+      ? query.error.message
+      : 'No se pudieron cargar los productos.'
+    : null;
 
-  return { products, loading, error, refreshProducts };
+  return {
+    products: query.data ?? [],
+    loading: query.isInitialLoading,
+    error,
+    refreshProducts,
+  };
+};
+
+export const productsQueryKeys = {
+  all: PRODUCTS_QUERY_KEY,
 };

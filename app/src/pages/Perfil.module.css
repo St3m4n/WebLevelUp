@@ -422,14 +422,205 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.ordersTableWrapper {
-  overflow-x: auto;
+.ordersList {
+  display: grid;
+  gap: 1rem;
 }
 
-.ordersTable {
-  width: 100%;
-  border-collapse: collapse;
+.paginationInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.paginationControls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.paginationButton {
+  padding: 0.5rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(199, 41, 242, 0.3);
+  background: rgba(199, 41, 242, 0.1);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginationButton:not(:disabled):hover {
+  border-color: rgba(199, 41, 242, 0.8);
+  background: rgba(199, 41, 242, 0.2);
+}
+
+.orderCard {
+  border-radius: 20px;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(25, 25, 40, 0.9),
+    rgba(16, 12, 32, 0.85)
+  );
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+
+.orderCardHeader {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.orderMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.orderMetaLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.orderMetaValue {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0.03em;
+}
+
+.orderStatusBadge {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.orderStatusPending {
+  background: rgba(255, 205, 96, 0.15);
+  color: #ffd16a;
+  border-color: rgba(255, 205, 96, 0.5);
+}
+
+.orderStatusPaid {
+  background: rgba(92, 248, 171, 0.15);
+  color: #7ef7b3;
+  border-color: rgba(92, 248, 171, 0.5);
+}
+
+.orderStatusDelivered {
+  background: rgba(90, 200, 255, 0.15);
+  color: #8fe3ff;
+  border-color: rgba(90, 200, 255, 0.4);
+}
+
+.orderStatusCancelled {
+  background: rgba(255, 112, 163, 0.18);
+  color: #ff9fb7;
+  border-color: rgba(255, 112, 163, 0.4);
+}
+
+.orderStatusNeutral {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.orderActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.orderToggleButton {
+  padding: 0.55rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.orderToggleButton:hover {
+  border-color: rgba(199, 41, 242, 0.8);
+  transform: translateY(-1px);
+}
+
+.orderDetails {
+  margin-top: 0.85rem;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.orderDetailsTitle {
+  margin: 0;
   font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.orderItemsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.9rem;
+}
+
+.orderItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.orderItemName {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.orderItemPrice {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
 }
 
 .actions {
@@ -471,18 +662,6 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
-}
-
-.ordersBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 999px;
-  background: rgba(83, 58, 250, 0.16);
-  color: #cdd5ff;
-  font-size: 0.75rem;
-  text-transform: uppercase;
 }
 
 .loyaltyCard {

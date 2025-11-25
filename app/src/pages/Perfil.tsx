@@ -1,13 +1,13 @@
 import {
-  Fragment,
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ChangeEvent,
   type FormEvent,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { type PaymentPreferenceMethod, type UserAddress } from '@/types';
 import { useToast } from '@/context/ToastContext';
@@ -42,6 +42,14 @@ type ProfileTab =
   | 'addresses'
   | 'preferences'
   | 'referrals';
+
+const PROFILE_TABS: ProfileTab[] = [
+  'orders',
+  'details',
+  'addresses',
+  'preferences',
+  'referrals',
+];
 
 const createEmptyAddressForm = (): AddressFormState => ({
   fullName: '',
@@ -229,6 +237,19 @@ const Perfil: React.FC = () => {
   const [referralFeedback, setReferralFeedback] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('orders');
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const statusClassMap: Record<string, string> = {
+    pendiente: styles.orderStatusPending,
+    pagado: styles.orderStatusPaid,
+    cancelado: styles.orderStatusCancelled,
+    entregado: styles.orderStatusDelivered,
+  };
+  const normalizeStatusLabel = (value?: string) => {
+    const raw = value?.trim() || 'Pagado';
+    if (raw.toLowerCase() === 'pendiente') {
+      return 'Pagado';
+    }
+    return raw;
+  };
   const [profileForm, setProfileForm] = useState<ProfileFormState>({
     nombre: '',
     apellidos: '',
@@ -378,6 +399,9 @@ const Perfil: React.FC = () => {
     }
   }, [addressForm.id, addressMode, addresses]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const ORDERS_PER_PAGE = 5;
+
   const userOrders = useMemo(() => {
     if (!user) return [];
     const correo = user.correo.toLowerCase();
@@ -388,6 +412,18 @@ const Perfil: React.FC = () => {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
   }, [orders, user]);
+
+  const totalPages = Math.max(1, Math.ceil(userOrders.length / ORDERS_PER_PAGE));
+  const paginatedOrders = useMemo(() => {
+    const start = (currentPage - 1) * ORDERS_PER_PAGE;
+    return userOrders.slice(start, start + ORDERS_PER_PAGE);
+  }, [currentPage, userOrders]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const totalGastado = useMemo(() => {
     return userOrders.reduce((sum, order) => sum + order.total, 0);
@@ -672,9 +708,44 @@ const Perfil: React.FC = () => {
     [addToast, profileForm, updateProfile, user]
   );
 
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const requestedTab =
+    (location.state as { focusTab?: ProfileTab } | null)?.focusTab;
+  const tabParam = searchParams.get('tab');
+  const handledFocusRef = useRef(false);
+
   const handleTabClick = useCallback((tab: ProfileTab) => {
     setActiveTab(tab);
   }, []);
+
+  const goToPreviousPage = useCallback(() => {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  }, [totalPages]);
+
+  useEffect(() => {
+    if (
+      requestedTab &&
+      PROFILE_TABS.includes(requestedTab) &&
+      !handledFocusRef.current
+    ) {
+      setActiveTab(requestedTab);
+      handledFocusRef.current = true;
+      navigate(location.pathname, { replace: true });
+      return;
+    }
+    if (
+      tabParam &&
+      tabParam !== activeTab &&
+      PROFILE_TABS.includes(tabParam as ProfileTab)
+    ) {
+      setActiveTab(tabParam as ProfileTab);
+    }
+  }, [activeTab, location.pathname, navigate, requestedTab, tabParam]);
 
   const handleResetProfile = useCallback(async () => {
     if (!user) return;
@@ -1232,115 +1303,133 @@ const Perfil: React.FC = () => {
                       tu próximo setup!
                     </div>
                   ) : (
-                    <div className={styles.ordersTableWrapper}>
-                      <table className={styles.ordersTable}>
-                        <thead>
-                          <tr>
-                            <th scope="col">Pedido</th>
-                            <th scope="col">Fecha</th>
-                            <th scope="col">Total</th>
-                            <th scope="col">Productos</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Detalle</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {userOrders.map((order) => {
-                            const itemsCount = order.items.reduce(
-                              (sum, item) => sum + item.cantidad,
-                              0
-                            );
-                            const formattedDate = dateFormatter.format(
-                              new Date(order.createdAt)
-                            );
-                            const isExpanded = expandedOrderId === order.id;
-                            return (
-                              <Fragment key={order.id}>
-                                <tr>
-                                  <td>{order.id}</td>
-                                  <td>{formattedDate}</td>
-                                  <td>{formatPrice(order.total)}</td>
-                                  <td>{itemsCount}</td>
-                                  <td>{order.status}</td>
-                                  <td>
-                                    <button
-                                      type="button"
-                                      className={styles.ghostButton}
-                                      onClick={() =>
-                                        setExpandedOrderId(
-                                          isExpanded ? null : order.id
-                                        )
-                                      }
+                    <div className={styles.ordersList}>
+                      <div className={styles.paginationInfo}>
+                        <span>
+                          Mostrando {paginatedOrders.length} de {userOrders.length}{' '}
+                          pedidos
+                        </span>
+                        <span>
+                          Página {currentPage} de {totalPages}
+                        </span>
+                      </div>
+                      {paginatedOrders.map((order) => {
+                        const itemsCount = order.items.reduce(
+                          (sum, item) => sum + item.cantidad,
+                          0
+                        );
+                        const formattedDate = dateFormatter.format(
+                          new Date(order.createdAt)
+                        );
+                        const isExpanded = expandedOrderId === order.id;
+                        const truncatedId =
+                          order.id.length > 12
+                            ? `${order.id.slice(0, 12)}...`
+                            : order.id;
+                        const statusText = normalizeStatusLabel(order.status);
+                        const normalizedStatus = statusText.toLowerCase();
+                        const statusClass =
+                          statusClassMap[normalizedStatus] ??
+                          styles.orderStatusNeutral;
+                        return (
+                          <article key={order.id} className={styles.orderCard}>
+                            <div className={styles.orderCardHeader}>
+                              <div className={styles.orderMeta}>
+                                <span className={styles.orderMetaLabel}>Pedido</span>
+                                <strong
+                                  className={styles.orderMetaValue}
+                                  title={order.id}
+                                >
+                                  {truncatedId}
+                                </strong>
+                              </div>
+                              <div className={styles.orderMeta}>
+                                <span className={styles.orderMetaLabel}>Fecha</span>
+                                <span className={styles.orderMetaValue}>
+                                  {formattedDate}
+                                </span>
+                              </div>
+                              <div className={styles.orderMeta}>
+                                <span className={styles.orderMetaLabel}>Total</span>
+                                <span className={styles.orderMetaValue}>
+                                  {formatPrice(order.total)}
+                                </span>
+                              </div>
+                              <div className={styles.orderMeta}>
+                                <span className={styles.orderMetaLabel}>Productos</span>
+                                <span className={styles.orderMetaValue}>
+                                  {itemsCount}
+                                </span>
+                              </div>
+                              <div className={styles.orderMeta}>
+                                <span className={styles.orderMetaLabel}>Estado</span>
+                                <span
+                                  className={
+                                    `${styles.orderStatusBadge} ${statusClass}`
+                                  }
+                                >
+                                  {statusText}
+                                </span>
+                              </div>
+                              <div className={styles.orderActions}>
+                                <button
+                                  type="button"
+                                  className={styles.orderToggleButton}
+                                  onClick={() =>
+                                    setExpandedOrderId(
+                                      isExpanded ? null : order.id
+                                    )
+                                  }
+                                >
+                                  {isExpanded ? 'Ocultar detalle' : 'Ver detalle'}
+                                </button>
+                              </div>
+                            </div>
+                            {isExpanded && (
+                              <div className={styles.orderDetails}>
+                                <h4 className={styles.orderDetailsTitle}>
+                                  Detalle de productos
+                                </h4>
+                                <ul className={styles.orderItemsList}>
+                                  {order.items.map((item, idx) => (
+                                    <li
+                                      key={`${order.id}-${item.codigo}-${idx}`}
+                                      className={styles.orderItem}
                                     >
-                                      {isExpanded ? 'Ocultar' : 'Ver'}
-                                    </button>
-                                  </td>
-                                </tr>
-                                {isExpanded && (
-                                  <tr>
-                                    <td colSpan={6}>
-                                      <div
-                                        style={{
-                                          padding: '1rem',
-                                          background: 'rgba(255,255,255,0.05)',
-                                          borderRadius: '8px',
-                                          marginTop: '0.5rem',
-                                        }}
-                                      >
-                                        <h4
-                                          style={{
-                                            margin: '0 0 0.75rem 0',
-                                            fontSize: '0.9rem',
-                                            color:
-                                              'var(--color-text-secondary)',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.05em',
-                                          }}
-                                        >
-                                          Detalle de productos
-                                        </h4>
-                                        <ul
-                                          style={{
-                                            listStyle: 'none',
-                                            padding: 0,
-                                            margin: 0,
-                                            display: 'grid',
-                                            gap: '0.5rem',
-                                          }}
-                                        >
-                                          {order.items.map((item, idx) => (
-                                            <li
-                                              key={`${order.id}-${item.codigo}-${idx}`}
-                                              style={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                padding: '0.5rem 0',
-                                                borderBottom:
-                                                  '1px solid rgba(255,255,255,0.1)',
-                                                fontSize: '0.9rem',
-                                              }}
-                                            >
-                                              <span>
-                                                <strong>
-                                                  {item.cantidad}x
-                                                </strong>{' '}
-                                                {item.nombre}
-                                              </span>
-                                              <span>
-                                                {formatPrice(item.subtotal)}
-                                              </span>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )}
-                              </Fragment>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                                      <span className={styles.orderItemName}>
+                                        <strong>{item.cantidad}x</strong> {item.nombre}
+                                      </span>
+                                      <span className={styles.orderItemPrice}>
+                                        {formatPrice(item.subtotal)}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </article>
+                        );
+                      })}
+                      {totalPages > 1 && (
+                        <div className={styles.paginationControls}>
+                          <button
+                            type="button"
+                            className={styles.paginationButton}
+                            onClick={goToPreviousPage}
+                            disabled={currentPage <= 1}
+                          >
+                            Anterior
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.paginationButton}
+                            onClick={goToNextPage}
+                            disabled={currentPage >= totalPages}
+                          >
+                            Siguiente
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
