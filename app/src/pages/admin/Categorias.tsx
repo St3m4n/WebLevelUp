@@ -5,6 +5,7 @@ import {
   useMemo,
   useState,
   useRef,
+  useCallback,
 } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import type { Categoria } from '@/types';
@@ -17,6 +18,13 @@ import {
 } from '@/utils/categories';
 import { useAuditActor } from '@/hooks/useAuditActor';
 import { recordAuditEvent } from '@/utils/audit';
+import {
+  createCategory as createRemoteCategory,
+  deleteCategory as deleteRemoteCategory,
+  restoreCategory as restoreRemoteCategory,
+  fetchCategories as fetchRemoteCategories,
+} from '@/services/categoriesService';
+import { ApiError } from '@/services/apiClient';
 import styles from './Admin.module.css';
 
 type ViewMode = 'active' | 'deleted';
@@ -42,6 +50,8 @@ const Categorias: React.FC = () => {
   const [newCategoria, setNewCategoria] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isMutating, setIsMutating] = useState(false);
   const { products: productos } = useProducts();
   const auditActor = useAuditActor();
   const prevCategoriasLength = useRef(categorias.length);
@@ -78,6 +88,40 @@ const Categorias: React.FC = () => {
     return counts;
   }, [productos]);
 
+  const updateCategorias = useCallback(
+    (updater: (current: Categoria[]) => Categoria[]) => {
+      setCategorias((prev) => {
+        const next = updater(prev);
+        saveCategories(next);
+        return next;
+      });
+    },
+    []
+  );
+
+  const syncCategoriesFromServer = useCallback(
+    async (showSuccessMessage = false) => {
+      setIsSyncing(true);
+      try {
+        const remoteCategorias = await fetchRemoteCategories();
+        updateCategorias(() => remoteCategorias);
+        if (showSuccessMessage) {
+          setStatusMessage('Categorías sincronizadas con el servidor.');
+        }
+      } catch (error) {
+        console.warn('No se pudieron sincronizar las categorías', error);
+        const message =
+          error instanceof Error && error.message
+            ? error.message
+            : 'Revisa tu conexión e inténtalo nuevamente.';
+        setStatusMessage(`No se pudo sincronizar con el servidor: ${message}`);
+      } finally {
+        setIsSyncing(false);
+      }
+    },
+    [updateCategorias]
+  );
+
   useEffect(() => {
     const unsubscribe = subscribeToCategories(() => {
       setCategorias(loadCategories());
@@ -97,6 +141,10 @@ const Categorias: React.FC = () => {
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
   }, []);
+
+  useEffect(() => {
+    syncCategoriesFromServer().catch(() => undefined);
+  }, [syncCategoriesFromServer]);
 
   // Sincronización automática con el catálogo
   useEffect(() => {
@@ -136,14 +184,6 @@ const Categorias: React.FC = () => {
     prevCategoriasLength.current = categorias.length;
   }, [categorias.length, auditActor]);
 
-  const updateCategorias = (updater: (current: Categoria[]) => Categoria[]) => {
-    setCategorias((prev) => {
-      const next = updater(prev);
-      saveCategories(next);
-      return next;
-    });
-  };
-
   const validateCategoria = (nombre: string): ValidationResult => {
     const clean = nombre.trim();
     if (!clean) {
@@ -165,7 +205,7 @@ const Categorias: React.FC = () => {
     return { ok: true };
   };
 
-  const handleAddCategoria = (event: FormEvent<HTMLFormElement>) => {
+  const handleAddCategoria = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatusMessage(null);
     const validation = validateCategoria(newCategoria);
@@ -174,69 +214,135 @@ const Categorias: React.FC = () => {
       return;
     }
     const clean = newCategoria.trim();
-    updateCategorias((prev) => [...prev, { name: clean }]);
-    setNewCategoria('');
-    setFormError(null);
-    setStatusMessage(`Categoría "${clean}" agregada correctamente.`);
-    logCategoryEvent(
-      'created',
-      clean,
-      `Categoría "${clean}" creada manualmente`,
-      {
-        origen: 'panel',
+    setIsMutating(true);
+    try {
+      const created = await createRemoteCategory(clean);
+      updateCategorias((prev) => [...prev, created]);
+      setNewCategoria('');
+      setFormError(null);
+      setStatusMessage(`Categoría "${clean}" agregada correctamente.`);
+      logCategoryEvent(
+        'created',
+        created.name,
+        `Categoría "${created.name}" creada manualmente`,
+        {
+          origen: 'panel',
+          categoriaId: created.id ?? null,
+        }
+      );
+      await syncCategoriesFromServer();
+    } catch (error) {
+      console.warn('No se pudo crear la categoría', error);
+      let message = 'No se pudo guardar la categoría. Inténtalo nuevamente.';
+      if (error instanceof ApiError && error.message) {
+        message = error.message;
+      } else if (error instanceof Error && error.message) {
+        message = error.message;
       }
-    );
+      setFormError(message);
+      setStatusMessage(null);
+    } finally {
+      setIsMutating(false);
+    }
   };
 
-  const handleDelete = (categoria: Categoria) => {
+  const handleDelete = async (categoria: Categoria) => {
     if (typeof window === 'undefined') return;
     const confirmed = window.confirm(
       `¿Eliminar la categoría "${categoria.name}"? Podrás restaurarla luego.`
     );
     if (!confirmed) return;
+    if (categoria.id == null) {
+      setStatusMessage(
+        'No se encontró el identificador de la categoría. Se intentará sincronizar con el servidor.'
+      );
+      await syncCategoriesFromServer();
+      return;
+    }
     const deletedAt = new Date().toISOString();
-    updateCategorias((prev) =>
-      prev.map((item) =>
-        item.name.toLowerCase() === categoria.name.toLowerCase()
-          ? { ...item, deletedAt }
-          : item
-      )
-    );
-    setStatusMessage(`Categoría "${categoria.name}" eliminada.`);
-    const usage = productUsage.get(categoria.name.toLowerCase()) ?? 0;
-    logCategoryEvent(
-      'deleted',
-      categoria.name,
-      `Categoría "${categoria.name}" eliminada`,
-      {
-        deletedAt,
-        productosAsociados: usage,
-      }
-    );
+    setIsMutating(true);
+    try {
+      await deleteRemoteCategory(categoria.id);
+      updateCategorias((prev) =>
+        prev.map((item) =>
+          item.name.toLowerCase() === categoria.name.toLowerCase()
+            ? { ...item, deletedAt }
+            : item
+        )
+      );
+      setStatusMessage(`Categoría "${categoria.name}" eliminada.`);
+      const usage = productUsage.get(categoria.name.toLowerCase()) ?? 0;
+      logCategoryEvent(
+        'deleted',
+        categoria.name,
+        `Categoría "${categoria.name}" eliminada`,
+        {
+          deletedAt,
+          productosAsociados: usage,
+          categoriaId: categoria.id,
+        }
+      );
+      await syncCategoriesFromServer();
+    } catch (error) {
+      console.warn('No se pudo eliminar la categoría', error);
+      const message =
+        error instanceof ApiError && error.message
+          ? error.message
+          : error instanceof Error && error.message
+            ? error.message
+            : 'No se pudo eliminar la categoría. Intenta nuevamente.';
+      setStatusMessage(message);
+    } finally {
+      setIsMutating(false);
+    }
   };
 
-  const handleRestore = (categoria: Categoria) => {
+  const handleRestore = async (categoria: Categoria) => {
     if (typeof window === 'undefined') return;
     const confirmed = window.confirm(
       `¿Restaurar la categoría "${categoria.name}"?`
     );
     if (!confirmed) return;
-    updateCategorias((prev) =>
-      prev.map((item) =>
-        item.name.toLowerCase() === categoria.name.toLowerCase()
-          ? { name: item.name }
-          : item
-      )
-    );
-    setStatusMessage(`Categoría "${categoria.name}" restaurada.`);
-    logCategoryEvent(
-      'restored',
-      categoria.name,
-      `Categoría "${categoria.name}" restaurada`,
-      {
-        eliminadoAnteriormente: categoria.deletedAt ?? null,
-      }
-    );
+    if (categoria.id == null) {
+      setStatusMessage(
+        'No se encontró el identificador de la categoría. Se intentará sincronizar con el servidor.'
+      );
+      await syncCategoriesFromServer();
+      return;
+    }
+    setIsMutating(true);
+    try {
+      const restored = await restoreRemoteCategory(categoria.id);
+      updateCategorias((prev) =>
+        prev.map((item) =>
+          item.name.toLowerCase() === categoria.name.toLowerCase()
+            ? { ...item, deletedAt: restored.deletedAt, id: restored.id }
+            : item
+        )
+      );
+      setStatusMessage(`Categoría "${categoria.name}" restaurada.`);
+      logCategoryEvent(
+        'restored',
+        categoria.name,
+        `Categoría "${categoria.name}" restaurada`,
+        {
+          eliminadoAnteriormente: categoria.deletedAt ?? null,
+          categoriaId: categoria.id,
+        }
+      );
+      await syncCategoriesFromServer();
+    } catch (error) {
+      console.warn('No se pudo restaurar la categoría', error);
+      const message =
+        error instanceof ApiError && error.message
+          ? error.message
+          : error instanceof Error && error.message
+            ? error.message
+            : 'No se pudo restaurar la categoría. Intenta nuevamente.';
+      setStatusMessage(message);
+    } finally {
+      setIsMutating(false);
+    }
   };
 
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -297,6 +403,11 @@ const Categorias: React.FC = () => {
           </p>
         </header>
 
+        {isSyncing && (
+          <div className={styles.statusBanner}>
+            Sincronizando categorías con el servidor...
+          </div>
+        )}
         {statusMessage && (
           <div className={styles.statusBanner}>{statusMessage}</div>
         )}
@@ -320,7 +431,11 @@ const Categorias: React.FC = () => {
               aria-invalid={Boolean(formError)}
               aria-describedby={formError ? 'categoria-error' : undefined}
             />
-            <button type="submit" className={styles.primaryAction}>
+            <button
+              type="submit"
+              className={styles.primaryAction}
+              disabled={isMutating || isSyncing}
+            >
               Agregar categoría
             </button>
           </form>
@@ -418,6 +533,7 @@ const Categorias: React.FC = () => {
                                 type="button"
                                 className={`${styles.tableActionButton} ${styles.tableActionButtonDanger}`.trim()}
                                 onClick={() => handleDelete(categoria)}
+                                disabled={isMutating || isSyncing}
                               >
                                 Eliminar
                               </button>
@@ -465,6 +581,7 @@ const Categorias: React.FC = () => {
                               type="button"
                               className={`${styles.tableActionButton} ${styles.tableActionButtonSuccess}`.trim()}
                               onClick={() => handleRestore(categoria)}
+                              disabled={isMutating || isSyncing}
                             >
                               Restaurar
                             </button>

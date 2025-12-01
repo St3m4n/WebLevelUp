@@ -28,13 +28,20 @@ const sanitizeCategoria = (candidate: unknown): Categoria | null => {
   if (!candidate || typeof candidate !== 'object') {
     return null;
   }
-  const partial = candidate as { name?: unknown; deletedAt?: unknown };
+  const partial = candidate as {
+    id?: unknown;
+    name?: unknown;
+    deletedAt?: unknown;
+  };
   if (typeof partial.name !== 'string') {
     return null;
   }
   const clean = partial.name.trim();
   if (!clean) return null;
   const categoria: Categoria = { name: clean };
+  if (typeof partial.id === 'number' && Number.isFinite(partial.id)) {
+    categoria.id = partial.id;
+  }
   if (typeof partial.deletedAt === 'string' && partial.deletedAt) {
     categoria.deletedAt = partial.deletedAt;
   }
@@ -45,14 +52,28 @@ const dedupeCategorias = (categorias: Categoria[]): Categoria[] => {
   const map = new Map<string, Categoria>();
   categorias.forEach((categoria) => {
     const key = categoria.name.toLowerCase();
+    const normalizedDeletedAt =
+      categoria.deletedAt == null || categoria.deletedAt === ''
+        ? undefined
+        : categoria.deletedAt;
+    const normalizedEntry: Categoria = {
+      ...categoria,
+      deletedAt: normalizedDeletedAt,
+    };
     const existing = map.get(key);
     if (!existing) {
-      map.set(key, { ...categoria });
+      map.set(key, { ...normalizedEntry });
       return;
     }
-    if (!existing.deletedAt && categoria.deletedAt) {
-      map.set(key, { ...existing, deletedAt: categoria.deletedAt });
+    const merged: Categoria = {
+      ...existing,
+      id: existing.id ?? normalizedEntry.id,
+      deletedAt: normalizedEntry.deletedAt ?? existing.deletedAt,
+    };
+    if (normalizedEntry.deletedAt === undefined) {
+      merged.deletedAt = undefined;
     }
+    map.set(key, merged);
   });
   return Array.from(map.values());
 };
@@ -83,11 +104,18 @@ export const loadCategories = (): Categoria[] => {
 const persistCategories = (categorias: Categoria[]) => {
   if (!isBrowser) return;
   try {
-    const payload = categorias.map((categoria) =>
-      categoria.deletedAt
-        ? { name: categoria.name, deletedAt: categoria.deletedAt }
-        : categoria.name
-    );
+    const payload = categorias.map((categoria) => {
+      const base: Record<string, unknown> = {
+        name: categoria.name,
+      };
+      if (typeof categoria.id === 'number') {
+        base.id = categoria.id;
+      }
+      if (categoria.deletedAt) {
+        base.deletedAt = categoria.deletedAt;
+      }
+      return base;
+    });
     window.localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(payload));
     window.dispatchEvent(new Event(CATEGORY_UPDATED_EVENT));
   } catch (error) {

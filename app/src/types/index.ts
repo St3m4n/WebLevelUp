@@ -53,6 +53,7 @@ export interface Region {
 }
 
 export interface Categoria {
+  id?: number;
   name: string;
   deletedAt?: string | null;
 }
