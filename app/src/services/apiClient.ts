@@ -3,7 +3,8 @@ const resolveBaseUrl = (): string => {
   if (typeof envUrl === 'string' && envUrl.trim().length > 0) {
     return envUrl.trim().replace(/\/?$/, '');
   }
-  return 'https://backleveluprail-production.up.railway.app/api/v1';
+  return 'https://backleveluprail-backenrailway-production.up.railway.app/api/v1';
+
 };
 
 const API_BASE_URL = resolveBaseUrl();
