@@ -1,7 +1,8 @@
-# LEVEL-UP GAMER — Evaluación Parcial 1 (Fullstack 2)
+# LEVEL-UP GAMER - ET - FULLSTACK 2
 
-Tienda online + sistema de administración, desarrollados con **HTML, CSS (admin.css/style.css) y JavaScript**.  
-Esta entrega se centra en **estructura**, **diseño**, **validaciones en JS** y **colaboración en GitHub**.
+Tienda online de videojuegos y accesorios con sistema de administración, desarrollados con **React 18**, **TypeScript**, **Vite** y **Tailwind CSS**.
+
+Esta aplicación Fullstack 2 presenta una migración modernizada desde la base HTML/CSS/JavaScript original, con arquitectura de componentes reutilizables, state management con Context API, y herramientas avanzadas de testing y análisis de código.
 
 ---
 
@@ -11,187 +12,257 @@ Esta entrega se centra en **estructura**, **diseño**, **validaciones en JS** y 
 
 ---
 
-## 🧭 Mapas de navegación
+## 🏗 Estructura del Proyecto
 
-### Admin
-- **Dashboard** `/pages/admin/index.html`
-- **Productos (listado)** `/pages/admin/productos.html`
-- **Producto (form)** `/pages/admin/producto-form.html`
-- **Usuarios (listado)** `/pages/admin/usuarios.html`
-- **Usuario (form)** `/pages/admin/usuario-form.html`
-- **Perfil (admin)** `/pages/admin/perfil.html`
-
-### Tienda
-- **Inicio** `/index.html`
-- **Categorías** `/pages/tienda/categorias.html`
-- **Categoría** `/pages/tienda/categoria.html?categoria=...`
-- **Búsqueda** `/pages/tienda/busqueda.html?q=...`
-- **Producto** `/pages/tienda/producto.html?codigo=...`
-- **Carrito** `/pages/tienda/carrito.html`
-- **Perfil** `/pages/tienda/perfil.html`
-- **Login** `/pages/tienda/login.html`
-- **Registro** `/pages/tienda/registro.html`
-- **Contacto** `/pages/tienda/contacto.html`
-- **Olvidaste contraseña** `/pages/tienda/olvidaste.html`
-
----
-
-## 🗂 Estructura de carpetas
-/css
-  admin.css            # tema claro del panel admin (Orbitron/Roboto)
-  style.css            # estilos públicos de la tienda
-
-/data
-  productos.js         # seed catálogo (window.productos)
-  usuarios.js          # seed usuarios (window.usuarios)
-  regiones-comunas.js  # catálogo regiones/comunas
-
-/js
-  /admin
-    admin-productos.js
-    admin-producto-form.js
-    admin-usuarios.js
-    admin-usuario-form.js
-    index.js           # métricas dashboard + stock crítico
-    perfil.js          # perfil del admin + validación y guardado
-    auth.js            # validación de sesión admin
-    menu-active.js     # marca activo el item del sidebar (autodetect)
-  /tienda
-    producto.js        # render de detalle con descuento DUOC
-    carrito.js         # carrito + notificaciones
-    categorias.js, categoria.js, busqueda.js
-    contacto.js, login.js, perfil.js, registro.js, olvidaste.js
-  secondary-nav.js     # navegación secundaria (categorías)
-  script.js            # helpers globales (showNotification, RUN, etc.)
-
-/pages
-  /admin
-    index.html
-    productos.html
-    producto-form.html
-    usuarios.html
-    usuario-form.html
-    perfil.html
-  /tienda
-
----
-
-## 🎨 Tema Admin (admin.css)
-- **Usar siempre** `admin.css` en las páginas del panel.
-- **Sidebar unificado** con clases: `.lup-sidebar`, `.lup-brand`, `.border-secondary`.
-- Las **cards** del admin llevan además la clase `lup-card`.
-- Fuentes: **Orbitron** (titulares) y **Roboto** (texto).
-
----
-
-## 🧩 Sidebar
-- Sidebar estándar (idéntico) en todas las vistas admin.
- - Branding unificado: logo (`assets/logo.png`) + texto "LevelUP- GAMER".
- - Tamaños controlados exclusivamente por CSS (`.lup-logo`, `.lup-brand`).
-
----
-
-## 💾 Semillas y persistencia (LocalStorage)
-
-### Claves de LS
-- `productos` — catálogo persistente
-- `usuarios` — usuarios persistentes
-- `auditLog` — bitácora de acciones
-- `currentUserRun` — usuario “logueado” (simulación E1)
-
-### Estrategia
-- **Listados** (`admin-productos.js`, `admin-usuarios.js`) cargan desde LS.  
-  Si LS está vacío, **siembran** con `window.productos` / `window.usuarios` y guardan.
-- **Forms** guardan cambios en LS y el listado se mantiene consistente.
-
-### Orden de scripts (crítico)
-En páginas que requieren seed:
-- Seed primero (`data/*.js`)
-- Lógica después (`js/admin/*.js`)
-
----
-
-## 👤 Perfil del administrador
-- Página: `/pages/admin/perfil.html`
-- Carga el usuario actual desde `currentUserRun`.  
-  Si no existe, usa el **primer Administrador** del seed/LS.
-- Permite editar: **nombre, apellidos, correo, región/comuna, dirección**.  
-  Valida dominios de correo y longitudes, y guarda en `usuarios` (LS).
-- **Bitácora (auditLog)**: muestra últimas acciones (crear/editar/eliminar) y permite “Limpiar log”.
-
-### Simular login (E1)
-```js
-localStorage.setItem("currentUserRun", "19011022K"); // RUN admin
+```
+WebLevelUp/
+├── app/                      # Aplicación moderna (React + TypeScript)
+│   ├── src/
+│   │   ├── components/       # Componentes reutilizables
+│   │   ├── context/          # Context API (Auth, Cart, Toast)
+│   │   ├── pages/            # Páginas (Home, Tienda, Admin, etc.)
+│   │   ├── hooks/            # Custom hooks
+│   │   ├── services/         # API client y servicios
+│   │   ├── types/            # Tipos TypeScript
+│   │   ├── utils/            # Utilities y helpers
+│   │   ├── App.tsx           # Componente raíz
+│   │   ├── main.tsx          # Entry point
+│   │   └── routes.tsx        # Definición de rutas
+│   ├── vite.config.ts        # Configuración Vite
+│   ├── tsconfig.json         # TypeScript config
+│   ├── package.json          # Dependencias del proyecto
+│   └── coverage/             # Reportes de cobertura de tests
+│
+└── legacy/                    # Versión anterior (HTML/CSS/JS)
+    ├── index.html
+    ├── pages/
+    ├── js/
+    ├── css/
+    └── data/
 ```
 
 ---
 
-## 📊 Dashboard (index.html del admin)
-- Métricas en tiempo real desde LS:
-  - **Catálogo total** de productos
-  - **Stock bajo** (stock ≤ stockCrítico)
-  - **Usuarios** totales
-- Lista “Top 5” de **stock crítico** (orden ascendente).
+## 🎯 Características Principales
+
+### Tienda (Store)
+- **Catálogo de productos** con filtrado por categorías
+- **Búsqueda avanzada** de productos
+- **Carrito de compras** persistente (LocalStorage)
+- **Sistema de puntos Level-Up**: acumula EXP y sube de nivel
+- **Descuento automático DUOC** (-20%) para correos @duoc.cl
+- **Detalles de producto** con stock en tiempo real
+- **Autenticación de usuarios** (login/registro)
+- **Perfil de usuario** personalizado
+- **Sistema de comentarios** en comunidad
+
+### Panel Administrativo
+- **Dashboard** con métricas en tiempo real
+- **Gestión de productos**: crear, editar, eliminar
+- **Gestión de usuarios**: perfiles, roles, permisos
+- **Gestión de órdenes** y historial de compras
+- **Bitácora de auditoría** de todas las acciones
+- **Reportes** de ventas y estadísticas
 
 ---
 
-## ✅ Validaciones implementadas
-### Usuarios
-- RUN: requerido, sin puntos/guion, 7–9, módulo 11.
-- Nombre ≤ 50, Apellidos ≤ 100, Dirección ≤ 300.
-- Correo ≤ 100, dominios válidos.
-- Perfil: Administrador, Vendedor, Cliente.
-- Región/Comuna dependiente.
+## 🛠 Stack Tecnológico
 
-### Productos
-- Código requerido, min 3.
-- Nombre ≤ 100, Descripción ≤ 500.
-- Precio min 0, Stock min 0, entero.
-- Stock crítico opcional; alerta si stock ≤ crítico.
-- Categoría requerida.
+### Frontend
+- **React 18** - Biblioteca UI
+- **TypeScript** - Type safety
+- **Vite** - Build tool y dev server
+- **Tailwind CSS** - Utilidades de estilos
+- **TanStack Query** - State management del servidor
+- **React Router** - Enrutamiento
+- **Sonner** - Notificaciones toast
 
-### Tienda
-- Login: correo válido + contraseña 4–10.
-- Contacto: nombre ≤100, correo ≤100 (dominios válidos), comentario ≤500.
-- Carrito: añadir/quitar, no stock negativo, persistencia LS.
-- Olvidé contraseña: al enviar, muestra notificación de correo enviado.
+### Testing
+- **Vitest** - Test runner
+- **React Testing Library** - Testing de componentes
+- **Coverage Reports** - Análisis de cobertura
+
+### DevTools
+- **ESLint** - Linting
+- **TypeScript** - Type checking
+- **PostCSS** - Procesamiento de CSS
 
 ---
 
-## 🛠 Cómo correr el proyecto
-1. Clonar:
+## 🚀 Cómo ejecutar el proyecto
+
+### Instalación
 ```bash
-git clone https://github.com/usuario/proyecto-levelup.git
+cd app
+npm install
 ```
-2. Abrir:
-- Admin → `/pages/admin/index.html`
-- Tienda → `/index.html`
 
-Notas de navegación:
-- En escritorio, el link "Categorías" no despliega menú en top-nav (solo link).  
-  La navegación por categorías se ofrece en la barra secundaria (`secondary-nav`).
-- El badge "Lv. N" del sistema de puntos aparece junto al icono de usuario en la barra principal.
+### Desarrollo
+```bash
+npm run dev
+```
+
+La aplicación estará disponible en `http://localhost:5173`
+
+### Build para producción
+```bash
+npm run build
+```
+
+### Tests
+```bash
+npm run test           # Ejecutar tests
+npm run test:ui       # Interfaz visual de tests
+npm run test:coverage # Reporte de cobertura
+```
+
+### Linting
+```bash
+npm run lint           # Verificar código
+npm run lint:fix       # Corregir problemas automáticos
+```
+
 ---
 
-## 🌿 Flujo de ramas (Git)
-- `main` — integración
-- `adminPages` — admin
-- `frani` — tienda
-- `frani` — tienda
-- `puntosLevel` — sistema de puntos y mejoras tienda
-Convenciones de commits:
-- `feat(admin): persistencia de productos`
-- `fix(admin): validar RUN en edición`
+## 📊 Arquitectura de Datos
+
+### Context API
+- **AuthContext** - Gestión de autenticación y usuario actual
+- **CartContext** - Carrito de compras compartido
+- **ToastContext** - Sistema de notificaciones
+
+### Custom Hooks
+- `useProducts()` - Productos del catálogo
+- `useCategories()` - Categorías disponibles
+- `useOrders()` - Órdenes del usuario
+- `useUsers()` - Gestión de usuarios (admin)
+- `usePricing()` - Cálculos de precios
+- `useLevelUpStats()` - Estadísticas del sistema Level-Up
+- `useComunas()` / `useRegiones()` - Datos geográficos
+
+### Servicios
+- **apiClient.ts** - Cliente HTTP centralizado
+- Endpoints para productos, usuarios, órdenes, etc.
+
+---
+
+## 🎨 Componentes Principales
+
+- `Navbar` - Barra de navegación principal
+- `SecondaryNav` - Navegación secundaria (categorías)
+- `FeaturedOffers` - Sección de ofertas destacadas
+- `RecommendationsGrid` - Grid de recomendaciones de productos
+- `ProductCard` - Card individual de producto
+- `CommunityComments` - Sección de comentarios
+- `Footer` - Pie de página
+- `ToastViewport` - Contenedor de notificaciones
+
+---
+
+## ✅ Validaciones Implementadas
+
+### Usuarios
+- RUN: formato válido con módulo 11
+- Correo: formato correcto, dominios válidos
+- Contraseña: mínimo 4-10 caracteres
+- Región/Comuna: dependencia validada
+- Dirección: máximo 300 caracteres
+
+### Productos (Admin)
+- Código: mínimo 3 caracteres, requerido
+- Nombre: máximo 100 caracteres
+- Descripción: máximo 500 caracteres
+- Precio: número positivo
+- Stock: número entero no negativo
+- Stock crítico: alerta visual cuando alcanza el mínimo
+
+### Carrito
+- Validación de stock disponible
+- Persistencia automática
+- Cálculo dinámico de totales
+- Descuentos automáticos aplicados
+
+---
+
+## 🔐 Persistencia y Estado
+
+### LocalStorage
+- Carrito de compras
+- Preferencias de usuario
+- Token de autenticación (si aplica)
+- Configuración de la aplicación
+
+### API
+- Productos y categorías
+- Información de usuario
+- Órdenes y transacciones
+- Auditoría de acciones
+
+---
+
+## 📱 Responsividad
+
+La aplicación está completamente optimizada para:
+- **Desktop** (1920px+)
+- **Tablet** (768px - 1024px)
+- **Mobile** (320px - 767px)
+
+---
+
+## 🧪 Testing
+
+Cobertura de tests incluye:
+- Componentes React
+- Custom hooks
+- Utilities y helpers
+- Integración de componentes
+
+Ver reporte en: `app/coverage/lcov-report/index.html`
+
+---
+
+## 📝 Convenciones de Código
+
+### Naming
+- Componentes: `PascalCase` (ej: `ProductCard.tsx`)
+- Funciones: `camelCase` (ej: `calculateDiscount()`)
+- Constantes: `UPPER_SNAKE_CASE`
+- Archivos CSS Modules: `ComponentName.module.css`
+
+### Estructura de Commits
+```
+feat(feature): descripción
+fix(module): descripción
+refactor(module): descripción
+test(module): descripción
+```
+
+---
+
+## 🌿 Ramas del Repositorio
+- `main` — Rama principal (producción)
+- `develop` — Desarrollo e integración
+- `feature/*` — Features específicas
+- `fix/*` — Correcciones de bugs
+
 ---
 
 ## 🧪 Troubleshooting
-- **No cargan productos/usuarios**: limpia LS y revisa orden de scripts.
-- **Perfil vacío**: define `currentUserRun` o revisa que haya admin en seed.
-- **No aparece el toast**: asegúrate de incluir el contenedor del toast y `js/script.js` en la página.
+
+| Problema | Solución |
+|----------|----------|
+| Node modules no instalan | Elimina `node_modules` y `package-lock.json`, luego `npm install` |
+| Errores de TypeScript | Ejecuta `npm run type-check` para ver errores completos |
+| Build fallando | Verifica que no haya errores de ESLint con `npm run lint` |
+| Tests no corren | Asegúrate de tener `node` 18+ con `node --version` |
+| Puerto 5173 en uso | Cambia el puerto en `vite.config.ts` o mata el proceso |
 
 ---
 
-## 🕹️ Extras de Tienda
-- Sistema de puntos "Level-Up": badge de nivel en navbar; cálculo de EXP en producto y carrito.
-- Descuento automático DUOC (-20%) para correos `@duoc.cl`.
-- Detalle de producto incluye "Fabricante" (en implementación) y "Distribuidor" (Level-Up Gamer).
+## 📚 Recursos Útiles
+
+- [React Docs](https://react.dev)
+- [TypeScript Docs](https://www.typescriptlang.org/docs)
+- [Vite Guide](https://vitejs.dev/guide)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [TanStack Query](https://tanstack.com/query/latest)
