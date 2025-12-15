@@ -71,6 +71,16 @@ vi.mock('@/hooks/useLevelUpStats', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useProducts', () => ({
+  useProducts: () => ({
+    productos: [],
+    isLoading: false,
+    isError: false,
+    error: null,
+    refetch: vi.fn(),
+  }),
+}));
+
 vi.mock('@/assets/logo2.png', () => ({
   default: 'logo.png',
 }));
